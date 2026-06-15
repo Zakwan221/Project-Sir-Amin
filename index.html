@@ -1,3 +1,4 @@
+
 <!--  comment -->
 <!DOCTYPE html>
 <html lang="en">
@@ -334,10 +335,10 @@ tbody tr:hover{background:var(--bg)}
     <div class="lf"><label>Username</label><div class="liw"><i data-lucide="user"></i><input id="iu" placeholder="Enter username" autocomplete="off"/></div></div>
     <div class="lf"><label>Password</label><div class="liw"><i data-lucide="lock"></i><input id="ip" type="password" placeholder="Enter password"/></div></div>
     <div class="lf"><label>Role</label><div class="liw"><i data-lucide="shield"></i>
-      <select id="ir"><option value="">— Select role —</option><option>Admin</option><option>Manager</option><option>Staff</option><option>Supplier</option></select>
+      <select id="ir"><option value="">— Select role —</option><option>Admin</option><option>Manager</option><option>Staff</option></select>
     </div></div>
     <button class="lbtn" onclick="doLogin()">Sign in</button>
-    <div class="lhint"><b>Admin:</b> admin/admin123 &nbsp;|&nbsp; <b>Manager:</b> manager/mgr123<br><b>Staff:</b> staff/staff123 &nbsp;|&nbsp; <b>Supplier:</b> supplier1/sup123</div>
+    <div class="lhint"><b>Admin:</b> admin/admin123 &nbsp;|&nbsp; <b>Manager:</b> manager/mgr123<br><b>Staff:</b> staff/staff123</div>
   </div></div>
 </div>
 <!-- APP -->
@@ -622,17 +623,22 @@ notifications:[
   {id:'n4',title:'New restock request from Buku Kita Trading',sub:'Data Structures & Algorithms — 15 units',time:'2026-06-08T09:30:00',read:false,targetRole:'Manager',link:'requests'},
   {id:'n5',title:'Your missing report was confirmed',sub:'MR-2606-001 confirmed by manager — inventory deducted',time:'2026-06-10T09:30:00',read:false,targetRole:'Staff',link:'missing'},
 ],
+/* Stock alert settings — manager-configurable rule for what counts as "low stock" */
+settings:{lowStockThreshold:10},
 };
 
 const CATS=['Business','Computer Science','Economics','Engineering','History','Literature','Mathematics','Science'];
+/* Sales tax rate (%) — fixed by system, cannot be changed via the UI */
+const TAX_RATE_FIXED=6;
 function getCats(){return[...new Set(DB.books.map(b=>b.category))].sort();}
-function sSt(b){if(b.qty===0)return{label:'Out of Stock',cls:'br2'};if(b.qty<b.minStock)return{label:'Low Stock',cls:'by'};return{label:'In Stock',cls:'bg2'};}
+function lowThresh(){return DB.settings.lowStockThreshold;}
+function sSt(b){if(b.qty===0)return{label:'Out of Stock',cls:'br2'};if(b.qty<lowThresh())return{label:'Low Stock',cls:'by'};return{label:'In Stock',cls:'bg2'};}
 function rmF(v){return'RM '+parseFloat(v).toFixed(2);}
 function fmtD(d){return new Date(d).toLocaleDateString('en-MY',{day:'2-digit',month:'short',year:'numeric'});}
 function fmtDT(d){return new Date(d).toLocaleString('en-MY',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
 function fmtTime(d){return new Date(d).toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 function uid(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
-function getLow(){return DB.books.filter(b=>b.qty<b.minStock);}
+function getLow(){return DB.books.filter(b=>b.qty<lowThresh());}
 function getPend(){return DB.stockRequests.filter(r=>r.status==='pending');}
 function getPendMR(){return DB.missingReports.filter(r=>r.status==='pending');}
 function getPendCustReturns(){return DB.customerReturns.filter(r=>r.status==='pending');}
@@ -643,6 +649,24 @@ function isel(id){return document.getElementById(id);}
 function setHTML(h){isel('pc').innerHTML=h;if(window.lucide&&lucide.createIcons)try{if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){};}catch(e){}}
 function bookByRFID(rfid){return DB.books.find(b=>b.rfid===rfid);}
 function bookBySKU(sku){return DB.books.find(b=>b.sku===sku);}
+/* Scan-to-lookup helpers — match a scanned/typed code against barcode, SKU or RFID tag */
+function findBookByCode(code){
+  const c=(code||'').trim();if(!c)return null;
+  const cl=c.toLowerCase();
+  return DB.books.find(b=>b.barcode===c||b.sku.toLowerCase()===cl||b.rfid.toLowerCase()===cl);
+}
+function findTxnByCode(code){
+  const c=(code||'').trim();if(!c)return null;
+  const cl=c.toLowerCase();
+  let t=DB.transactions.find(x=>x.ref.toLowerCase()===cl||x.id.toLowerCase()===cl);
+  if(t)return t;
+  const b=findBookByCode(c);
+  if(b){
+    const txns=DB.transactions.filter(x=>x.bookId===b.id).slice().sort((a,b2)=>b2.date.localeCompare(a.date));
+    if(txns.length)return txns[0];
+  }
+  return null;
+}
 /* ===== AUTH & NAV ===== */
 let CU=null,CP='';
 const NAVDEF=[
@@ -803,14 +827,14 @@ function pgDash(){
   const lowR=low.length?low.map(b=>{const s=sSt(b);return`<tr>
     <td><div style="font-weight:600">${b.title}</div><div style="font-size:.71rem;color:var(--tl)">${b.category}</div></td>
     <td><span class="sku">${b.sku}</span></td>
-    <td style="color:var(--dg);font-weight:700">${b.qty}</td><td>${b.minStock}</td>
+    <td style="color:var(--dg);font-weight:700">${b.qty}</td><td>${lowThresh()}</td>
     <td><span class="badge ${s.cls}">${s.label}</span></td></tr>`;}).join('')
     :`<tr><td colspan="5"><div class="empty"><div class="eico"><i data-lucide="check-circle"></i></div><p>All books well-stocked</p></div></td></tr>`;
   const actH=recent.map(t=>`<div class="ait"><div class="adot sale"></div>
     <div class="atx"><b>${t.custId}</b> — ${t.bookTitle} x${t.qty}<br>
     <span style="font-size:.71rem;color:var(--tl)">${t.staffName} · ${fmtD(t.date)}</span></div>
     <div class="atm">${rmF(t.qty*t.unitPrice)}</div></div>`).join('');
-  const cm={};DB.books.forEach(b=>{if(!cm[b.category])cm[b.category]={t:0,q:0,low:0,val:0};cm[b.category].t++;cm[b.category].q+=b.qty;cm[b.category].val+=b.qty*b.price;if(b.qty<b.minStock)cm[b.category].low++;});
+  const cm={};DB.books.forEach(b=>{if(!cm[b.category])cm[b.category]={t:0,q:0,low:0,val:0};cm[b.category].t++;cm[b.category].q+=b.qty;cm[b.category].val+=b.qty*b.price;if(b.qty<lowThresh())cm[b.category].low++;});
   const cR=Object.entries(cm).sort((a,b)=>b[1].q-a[1].q).map(([c,v])=>`<tr>
     <td><span class="badge bgr">${c}</span></td><td>${v.t}</td><td>${v.q}</td>
     <td>${v.low>0?`<span class="badge by">${v.low}</span>`:'<span class="badge bg2">0</span>'}</td>
@@ -825,7 +849,7 @@ function pgDash(){
   </div>
   <div class="dg">
     <div class="card"><div class="ch"><h2>Low Stock Alert</h2><span class="badge br2">${low.length} items</span></div>
-      <div class="tw"><table><thead><tr><th>Title</th><th>SKU</th><th>Current</th><th>Min</th><th>Status</th></tr></thead><tbody>${lowR}</tbody></table></div></div>
+      <div class="tw"><table><thead><tr><th>Title</th><th>SKU</th><th>Current</th><th>Threshold</th><th>Status</th></tr></thead><tbody>${lowR}</tbody></table></div></div>
     <div class="card"><div class="ch"><h2>Recent Transactions</h2></div>
       <div class="cb">${actH||'<p style="color:var(--tl);font-size:.79rem">No transactions yet.</p>'}</div></div>
   </div>
@@ -904,11 +928,19 @@ function delBook(id){
 /* Shows: RFID Gate panel, Low stock cards, Missing Reports table */
 let rfidTimer=null;
 
+function saveLowStockThreshold(){
+  const v=parseInt(isel('lst-input').value);
+  if(isNaN(v)||v<0){toast('Enter a valid non-negative number.','error');return;}
+  DB.settings.lowStockThreshold=v;
+  toast('Low stock threshold updated to '+v+' unit(s).');
+  refreshBadges();
+  pgMissing();
+}
 function pgMissing(s='',cf=''){
   const all=DB.books.filter(b=>{const q=s.toLowerCase();
-    return b.qty<b.minStock&&(!q||b.title.toLowerCase().includes(q)||b.sku.toLowerCase().includes(q)||b.category.toLowerCase().includes(q))&&(!cf||b.category===cf);});
-  const outOf=all.filter(b=>b.qty===0),lw=all.filter(b=>b.qty>0&&b.qty<b.minStock);
-  const def=all.reduce((a,b)=>a+(b.minStock-b.qty),0);
+    return b.qty<lowThresh()&&(!q||b.title.toLowerCase().includes(q)||b.sku.toLowerCase().includes(q)||b.category.toLowerCase().includes(q))&&(!cf||b.category===cf);});
+  const outOf=all.filter(b=>b.qty===0),lw=all.filter(b=>b.qty>0&&b.qty<lowThresh());
+  const def=all.reduce((a,b)=>a+(lowThresh()-b.qty),0);
   const unconfRFID=DB.rfidEvents.filter(e=>e.type==='unauthorized'&&!e.confirmed);
   const pendMR=getPendMR();
   const co=getCats().map(c=>`<option value="${c}"${cf===c?' selected':''}>${c}</option>`).join('');
@@ -927,7 +959,7 @@ function pgMissing(s='',cf=''){
       </div>
     </div>`).join('');
 
-  const card=b=>{const d=b.minStock-b.qty;const pct=Math.round(b.qty/b.minStock*100);const out=b.qty===0;
+  const card=b=>{const d=lowThresh()-b.qty;const pct=Math.round(b.qty/lowThresh()*100);const out=b.qty===0;
     return`<div class="msc ${out?'crit':'low'}">
       <div class="msi">
         <h4>${b.title}</h4>
@@ -939,7 +971,7 @@ function pgMissing(s='',cf=''){
           <span style="font-size:.7rem;color:var(--tl);white-space:nowrap">${pct}% stocked</span></div></div>
       <div class="msn">
         <div class="msnn"><div class="v" style="color:${out?'var(--dg)':'var(--wn)'}">${b.qty}</div><div class="l">Current</div></div>
-        <div class="msnn"><div class="v" style="color:var(--tl)">${b.minStock}</div><div class="l">Min</div></div>
+        <div class="msnn"><div class="v" style="color:var(--tl)">${lowThresh()}</div><div class="l">Alert Level</div></div>
         <div class="msnn"><div class="v" style="color:var(--navy)">${d}</div><div class="l">Deficit</div></div>
       </div></div>`;};
 
@@ -969,6 +1001,18 @@ function pgMissing(s='',cf=''){
     <div class="sc"><div class="si ${pendMR.length>0?'warn':'slate'}"><i data-lucide="alert-triangle"></i></div><div><div class="sv">${pendMR.length}</div><div class="sl">Pending Reports</div></div></div>
     <div class="sc"><div class="si blue"><i data-lucide="minus-circle"></i></div><div><div class="sv">${def}</div><div class="sl">Units Needed</div></div></div>
   </div>
+
+  ${CU.role==='Manager'?`<div class="card" style="margin-bottom:16px"><div class="ch"><h2>Stock Alert Settings</h2></div>
+    <div class="cb">
+      <div class="finfo"><i data-lucide="info"></i>Set the quantity rule used to flag a book as "Low Stock" for alerts, the dashboard and this page. Any book with quantity below this number is treated as low stock.</div>
+      <div class="fgrid one" style="max-width:260px">
+        <div class="fg"><label>Low Stock Threshold (units)</label>
+          <input type="number" id="lst-input" min="0" step="1" value="${lowThresh()}"/>
+        </div>
+      </div>
+      <div class="fa"><button class="btn bnn" onclick="saveLowStockThreshold()"><i data-lucide="save"></i>Save Rule</button></div>
+    </div>
+  </div>` : ''}
 
   <!-- RFID Gate Panel -->
   <div class="rfid-gate">
@@ -1696,15 +1740,13 @@ function pgReports(){
           <div class="fg"><label>Category</label>
             <select class="flt" onchange="RPT.cat=this.value;refreshRpt()"><option value="">All Categories</option>${co}</select></div>
           <div class="fg"><label>Tax Rate (%)</label>
-            <input type="number" id="rpt-tax" min="0" max="100" step="1" value="${RPT.tax||6}"
-              readonly
-              style="padding:7px 9px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.79rem;background:#f0f0f0;width:100%;cursor:not-allowed;color:#666"/>
+            <input type="number" id="rpt-tax" value="${TAX_RATE_FIXED}" readonly disabled title="Tax rate is fixed by the system and cannot be changed."
+              style="padding:7px 9px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.79rem;background:var(--bgm);color:var(--tl);width:100%;cursor:not-allowed"/>
           </div>
         </div>
       </div>
     </div>
     <div id="rptbody"></div>`);
-  if(!RPT.tax&&RPT.tax!==0) RPT.tax=6;
   refreshRpt();
 }
 function setRptMode(m){RPT.mode=m;pgReports();}
@@ -1712,7 +1754,7 @@ function setRptQ(p){const td=new Date(),iso=d=>d.toISOString().split('T')[0];
   if(p==='week'){const d=td.getDay()||7;const mo=new Date(td);mo.setDate(td.getDate()-d+1);RPT.from=iso(mo);RPT.to=iso(td);}
   else{RPT.from=td.toISOString().slice(0,7)+'-01';RPT.to=iso(td);}
   RPT.mode='range';pgReports();}
-function resetRpt(){const td=new Date().toISOString().split('T')[0];RPT={from:td.slice(0,7)+'-01',to:td,cat:'',mode:'range',single:td,tax:6};pgReports();}
+function resetRpt(){const td=new Date().toISOString().split('T')[0];RPT={from:td.slice(0,7)+'-01',to:td,cat:'',mode:'range',single:td};pgReports();}
 function getFiltTxns(){return DB.transactions.filter(t=>{
   if(RPT.mode==='single'){if(t.date!==RPT.single)return false;}
   else{if(RPT.from&&t.date<RPT.from)return false;if(RPT.to&&t.date>RPT.to)return false;}
@@ -1726,7 +1768,7 @@ function refreshRpt(){
     el.innerHTML='<div class="card cb"><div class="empty"><div class="eico"><i data-lucide="search-x"></i></div><h3>No data for selected filters</h3></div></div>';
     if(window.lucide&&lucide.createIcons)try{if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){};}catch(e){}return;
   }
-  const TAX_RATE=RPT.tax||6;
+  const TAX_RATE=TAX_RATE_FIXED;
   const lbl=RPT.mode==='single'?fmtD(RPT.single):(fmtD(RPT.from)+' — '+fmtD(RPT.to));
 
   /* Aggregate by book */
@@ -2060,13 +2102,12 @@ function doDispose(id,method){
 }
 
 function reportDefectManual(){
-  const bOpts=DB.books.map(function(b){return '<option value="'+b.id+'" data-sku="'+b.sku+'" data-rfid="'+b.rfid+'">'+b.sku+' — '+b.title+'</option>';}).join('');
   openMo('Report Defective Item',
     '<div class="fgrid">'
-      +'<div class="fg full"><label>Book *</label>'
-        +'<select id="df-book" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">'
-          +'<option value="">Select book…</option>'+bOpts
-        +'</select>'
+      +'<div class="fg full"><label>Scan Book Code *</label>'
+        +'<input id="df-scan" type="text" placeholder="e.g. 1234567890" autocomplete="off" oninput="dfScanLookup()" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)"/>'
+        +'<div style="font-size:.71rem;color:var(--tl);margin-top:3px">Scan the book\'s barcode, SKU or RFID tag — or type it manually.</div>'
+        +'<div id="df-book-info" style="margin-top:6px"></div>'
       +'</div>'
       +'<div class="fg"><label>Qty Defective *</label><input id="df-qty" type="number" min="1" value="1"/></div>'
       +'<div class="fg"><label>Source</label>'
@@ -2085,15 +2126,28 @@ function reportDefectManual(){
   );
 }
 
+function dfScanLookup(){
+  const code=isel('df-scan').value;
+  const infoEl=isel('df-book-info');
+  if(!code.trim()){infoEl.innerHTML='';return;}
+  const b=findBookByCode(code);
+  if(b){
+    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0"><i data-lucide="check-circle"></i>'+b.title+' — <span class="sku">'+b.sku+'</span> · '+b.category+' · Qty in stock: '+b.qty+'</div>';
+  } else {
+    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0;background:var(--dlt);color:var(--dg)"><i data-lucide="alert-circle"></i>No book found for this code.</div>';
+  }
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+}
 function saveDefectReport(){
-  const bId=isel('df-book')?.value;
+  const code=isel('df-scan')?.value||'';
+  const b=findBookByCode(code);
   const qty=parseInt(isel('df-qty')?.value)||0;
   const src=isel('df-src')?.value||'staff_report';
   const reason=isel('df-reason')?.value.trim()||'';
-  if(!bId||qty<=0||!reason){toast('Please fill all required fields.','error');return;}
-  const b=DB.books.find(function(x){return x.id===bId;});
+  if(!b){toast('Scan or enter a valid book code first.','error');return;}
+  if(qty<=0||!reason){toast('Please fill all required fields.','error');return;}
   getDefectiveItems().push({
-    id:uid('df'),bookId:bId,bookTitle:b.title,sku:b.sku,rfid:b.rfid,qty:qty,
+    id:uid('df'),bookId:b.id,bookTitle:b.title,sku:b.sku,rfid:b.rfid,qty:qty,
     reason:reason,source:src,sourceRef:'',
     reportedBy:CU.name,reportedAt:new Date().toISOString(),
     status:'pending',disposalNote:'',disposedBy:null,disposedAt:null
@@ -2292,15 +2346,14 @@ function pgReturns(tab='customer'){
 
 /* ── Record Customer Return Form ── */
 function openCustReturnForm(){
-  const txnOpts=DB.transactions.map(t=>`<option value="${t.id}">${t.ref} — ${t.bookTitle} (${t.custName})</option>`).join('');
   const td=new Date().toISOString().split('T')[0];
   openMo('Record Customer Return',`
-    <div class="finfo"><i data-lucide="info"></i>Select the original transaction. Inventory will be updated based on the item condition.</div>
+    <div class="finfo"><i data-lucide="info"></i>Scan the receipt or the book's code to load the original purchase. Inventory will be updated based on the item condition.</div>
     <div class="fgrid">
-      <div class="fg full"><label>Original Transaction *</label>
-        <select id="cr-txn" onchange="crLoadTxn()" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
-          <option value="">Select transaction…</option>${txnOpts}
-        </select></div>
+      <div class="fg full"><label>Scan Receipt / Book Code *</label>
+        <input id="cr-scan" type="text" placeholder="e.g. 1234567890" autocomplete="off" oninput="crScanLookup()" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)"/>
+        <div style="font-size:.71rem;color:var(--tl);margin-top:3px">Scan the receipt's transaction code, or the book's barcode, SKU or RFID tag — or type it manually.</div>
+      </div>
       <div id="cr-txn-info" style="grid-column:1/-1;display:none;background:var(--bg);border-radius:var(--r);padding:10px 12px;font-size:.79rem"></div>
       <div class="fg"><label>Return Reason *</label>
         <select id="cr-reason" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
@@ -2331,17 +2384,23 @@ function openCustReturnForm(){
      <button class="btn bnn" onclick="saveCustReturn()"><i data-lucide="save"></i>Record Return</button>`, true);
 }
 
-function crLoadTxn(){
-  const txnId=isel('cr-txn').value;
+function crScanLookup(){
+  const code=isel('cr-scan').value;
   const infoEl=isel('cr-txn-info');
-  if(!txnId){infoEl.style.display='none';return;}
-  const t=DB.transactions.find(x=>x.id===txnId);
+  if(!code.trim()){infoEl.style.display='none';return;}
+  const t=findTxnByCode(code);
+  if(!t){
+    infoEl.style.display='block';
+    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0;background:var(--dlt);color:var(--dg)"><i data-lucide="alert-circle"></i>No matching purchase found for this code.</div>';
+    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+    return;
+  }
   const b=DB.books.find(x=>x.id===t.bookId);
   infoEl.style.display='block';
   infoEl.innerHTML=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+    <div><span style="font-size:.66rem;color:var(--tl);display:block;text-transform:uppercase">Transaction</span><span class="txr">${t.ref}</span></div>
     <div><span style="font-size:.66rem;color:var(--tl);display:block;text-transform:uppercase">Customer</span><b>${t.custName}</b></div>
-    <div><span style="font-size:.66rem;color:var(--tl);display:block;text-transform:uppercase">Book</span>${t.bookTitle}</div>
-    <div><span style="font-size:.66rem;color:var(--tl);display:block;text-transform:uppercase">SKU</span><span class="sku">${b?.sku||'—'}</span></div>
+    <div><span style="font-size:.66rem;color:var(--tl);display:block;text-transform:uppercase">Book</span>${t.bookTitle} <span class="sku">${b?.sku||'—'}</span></div>
     <div><span style="font-size:.66rem;color:var(--tl);display:block;text-transform:uppercase">Qty / Price</span>${t.qty} × ${rmF(t.unitPrice)}</div>
   </div>`;
   isel('cr-qty').max=t.qty;
@@ -2350,11 +2409,9 @@ function crLoadTxn(){
 }
 
 function crCalcRefund(){
-  const txnId=isel('cr-txn')?.value;
+  const t=findTxnByCode(isel('cr-scan')?.value);
   const type=isel('cr-reftype')?.value;
   const qty=parseFloat(isel('cr-qty')?.value)||1;
-  if(!txnId){return;}
-  const t=DB.transactions.find(x=>x.id===txnId);
   if(!t)return;
   const full=t.unitPrice*qty;
   const amtEl=isel('cr-refamt');
@@ -2364,7 +2421,7 @@ function crCalcRefund(){
 }
 
 function saveCustReturn(){
-  const txnId=isel('cr-txn').value;
+  const t=findTxnByCode(isel('cr-scan')?.value);
   const reason=isel('cr-reason').value;
   const cond=isel('cr-cond').value;
   const qty=parseInt(isel('cr-qty').value)||0;
@@ -2373,8 +2430,8 @@ function saveCustReturn(){
   const detail=isel('cr-detail').value.trim();
   const date=isel('cr-date').value;
   const note=isel('cr-note').value.trim();
-  if(!txnId||!reason||qty<=0||!detail){toast('Please fill all required fields.','error');return;}
-  const t=DB.transactions.find(x=>x.id===txnId);
+  if(!t){toast('Scan or enter a valid receipt/book code first.','error');return;}
+  if(!reason||qty<=0||!detail){toast('Please fill all required fields.','error');return;}
   const b=DB.books.find(x=>x.id===t.bookId);
   const retId='RET-CUST-'+String(DB.customerReturns.length+1).padStart(3,'0');
   const newRet={
@@ -2507,14 +2564,15 @@ function doRequestSupplierReturn(custReturnId){
 
 /* ── Direct Supplier Return (not linked to customer return) ── */
 function openDirectSupplierReturn(){
-  const bOpts=DB.books.map(b=>`<option value="${b.id}" data-p="${b.price}">${b.sku} — ${b.title} (Qty:${b.qty})</option>`).join('');
   const sOpts=DB.suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
   openMo('Direct Supplier Return',`
     <div class="finfo"><i data-lucide="info"></i>Return items to a supplier without a linked customer return. E.g. excess stock or unsold damaged items.</div>
     <div class="fgrid">
-      <div class="fg full"><label>Book *</label>
-        <select id="dsr-book" onchange="dsrLoadBook()" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
-          <option value="">Select book…</option>${bOpts}</select></div>
+      <div class="fg full"><label>Scan Book Code *</label>
+        <input id="dsr-scan" type="text" placeholder="e.g. 1234567890" autocomplete="off" oninput="dsrScanLookup()" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)"/>
+        <div style="font-size:.71rem;color:var(--tl);margin-top:3px">Scan the book's barcode, SKU or RFID tag — or type it manually.</div>
+        <div id="dsr-book-info" style="margin-top:6px"></div>
+      </div>
       <div class="fg full"><label>Supplier *</label>
         <select id="dsr-sup" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
           <option value="">Select supplier…</option>${sOpts}</select></div>
@@ -2532,24 +2590,35 @@ function openDirectSupplierReturn(){
      <button class="btn bna" onclick="saveDirectSupRet()"><i data-lucide="send"></i>Send to Supplier</button>`, true);
 }
 
-function dsrLoadBook(){
-  const bId=isel('dsr-book').value;if(!bId)return;
-  const b=DB.books.find(x=>x.id===bId);
-  const supSel=isel('dsr-sup');
-  if(b?.supplierId) supSel.value=b.supplierId;
+function dsrScanLookup(){
+  const code=isel('dsr-scan').value;
+  const infoEl=isel('dsr-book-info');
+  if(!code.trim()){infoEl.innerHTML='';return;}
+  const b=findBookByCode(code);
+  if(b){
+    infoEl.innerHTML=`<div class="finfo" style="margin-bottom:0"><i data-lucide="check-circle"></i>${b.title} — <span class="sku">${b.sku}</span> · In stock: ${b.qty}</div>`;
+    const supSel=isel('dsr-sup');
+    if(b.supplierId) supSel.value=b.supplierId;
+  } else {
+    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0;background:var(--dlt);color:var(--dg)"><i data-lucide="alert-circle"></i>No book found for this code.</div>';
+  }
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
 function saveDirectSupRet(){
-  const bId=isel('dsr-book').value,supId=isel('dsr-sup').value;
+  const code=isel('dsr-scan')?.value||'';
+  const b=findBookByCode(code);
+  const supId=isel('dsr-sup').value;
   const reason=isel('dsr-reason').value,qty=parseInt(isel('dsr-qty').value)||0;
   const detail=isel('dsr-detail').value.trim();
-  if(!bId||!supId||qty<=0||!detail){toast('Please fill all fields.','error');return;}
-  const b=DB.books.find(x=>x.id===bId),sup=DB.suppliers.find(x=>x.id===supId);
+  if(!b){toast('Scan or enter a valid book code first.','error');return;}
+  if(!supId||qty<=0||!detail){toast('Please fill all fields.','error');return;}
+  const sup=DB.suppliers.find(x=>x.id===supId);
   if(qty>b.qty){toast(`Only ${b.qty} units in stock.`,'error');return;}
   const retId='RET-SUP-'+String(DB.supplierReturns.length+1).padStart(3,'0');
   DB.supplierReturns.push({
     id:uid('sr'),returnId:retId,supplierId:supId,supplierName:sup.name,
-    bookId:bId,bookTitle:b.title,sku:b.sku,qty,unitPrice:b.price,
+    bookId:b.id,bookTitle:b.title,sku:b.sku,qty,unitPrice:b.price,
     reason,detail,linkedCustReturnId:null,
     status:'supplier-pending',requestedBy:CU.name,requestedAt:new Date().toISOString(),
     supplierNote:'',supplierRespondedAt:null,creditNote:'',creditAmount:0,
@@ -2608,6 +2677,7 @@ function pgSupReturns(){
       <div class="sc"><div class="si green"><i data-lucide="check-circle"></i></div><div><div class="sv">${received.length}</div><div class="sl">Received &amp; Credited</div></div></div>
       <div class="sc"><div class="si red"><i data-lucide="x-circle"></i></div><div><div class="sv">${declined.length}</div><div class="sl">Declined</div></div></div>
     </div>
+    <div class="ph"><div><h2>Return Requests from Store</h2><p>Review and respond to items the store wants to return
     <div class="ph"><div><h2>Return Requests from Store</h2><p>Review and respond to items the store wants to return</p></div></div>
     ${rows.length?rows.join(''):
       `<div class="card cb"><div class="empty"><div class="eico"><i data-lucide="package-open"></i></div><h3>No return requests</h3><p>The store has not sent any return requests yet.</p></div></div>`}`);
