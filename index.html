@@ -1,4 +1,3 @@
-
 <!--  comment -->
 <!DOCTYPE html>
 <html lang="en">
@@ -1698,8 +1697,8 @@ function pgReports(){
             <select class="flt" onchange="RPT.cat=this.value;refreshRpt()"><option value="">All Categories</option>${co}</select></div>
           <div class="fg"><label>Tax Rate (%)</label>
             <input type="number" id="rpt-tax" min="0" max="100" step="1" value="${RPT.tax||6}"
-              onchange="RPT.tax=parseFloat(this.value)||0;refreshRpt()"
-              style="padding:7px 9px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.79rem;background:var(--wh);width:100%"/>
+              readonly
+              style="padding:7px 9px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.79rem;background:#f0f0f0;width:100%;cursor:not-allowed;color:#666"/>
           </div>
         </div>
       </div>
