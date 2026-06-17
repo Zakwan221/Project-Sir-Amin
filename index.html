@@ -1,4 +1,3 @@
-
 <!--  comment -->
 <!DOCTYPE html>
 <html lang="en">
@@ -499,11 +498,11 @@ books: RAWBOOKS.map((r,i) => ({
   barcode: genBarcode(i+1),
 })),
 users:[
-  {id:'u1',name:'System Admin',username:'admin',password:'admin123',role:'Admin'},
-  {id:'u2',name:'Sarah Tan',username:'manager',password:'mgr123',role:'Manager'},
-  {id:'u3',name:'Ahmad Ismail',username:'staff',password:'staff123',role:'Staff'},
-  {id:'u4',name:'Nurul Huda',username:'nurul',password:'staff123',role:'Staff'},
-  {id:'u5',name:'Tan Mei Li',username:'meili',password:'staff123',role:'Staff'},
+  {id:'u1',name:'System Admin',username:'admin',password:'admin123',role:'Admin',employeeId:'EMP-ADM-001'},
+  {id:'u2',name:'Sarah Tan',username:'manager',password:'mgr123',role:'Manager',employeeId:'EMP-MGR-001'},
+  {id:'u3',name:'Ahmad Ismail',username:'staff',password:'staff123',role:'Staff',employeeId:'EMP-STF-001'},
+  {id:'u4',name:'Nurul Huda',username:'nurul',password:'staff123',role:'Staff',employeeId:'EMP-STF-002'},
+  {id:'u5',name:'Tan Mei Li',username:'meili',password:'staff123',role:'Staff',employeeId:'EMP-STF-003'},
   {id:'s1',name:'Pustaka Sdn Bhd',username:'supplier1',password:'sup123',role:'Supplier',supplierId:'sp1'},
   {id:'s2',name:'Buku Kita Trading',username:'supplier2',password:'sup123',role:'Supplier',supplierId:'sp2'},
   {id:'s3',name:'KL Book Distributors',username:'supplier3',password:'sup123',role:'Supplier',supplierId:'sp3'},
@@ -624,13 +623,13 @@ notifications:[
   {id:'n5',title:'Your missing report was confirmed',sub:'MR-2606-001 confirmed by manager — inventory deducted',time:'2026-06-10T09:30:00',read:false,targetRole:'Staff',link:'missing'},
 ],
 /* Stock alert settings — manager-configurable rule for what counts as "low stock" */
-settings:{lowStockThreshold:10},
+settings:{lowStockThreshold:10,categories:['Business','Computer Science','Economics','Engineering','History','Literature','Mathematics','Science']},
 };
 
-const CATS=['Business','Computer Science','Economics','Engineering','History','Literature','Mathematics','Science'];
+/* Categories are stored in DB.settings.categories so they persist in-session */
 /* Sales tax rate (%) — fixed by system, cannot be changed via the UI */
 const TAX_RATE_FIXED=6;
-function getCats(){return[...new Set(DB.books.map(b=>b.category))].sort();}
+function getCats(){return[...new Set([...DB.settings.categories,...DB.books.map(b=>b.category)])].sort();}
 function lowThresh(){return DB.settings.lowStockThreshold;}
 function sSt(b){if(b.qty===0)return{label:'Out of Stock',cls:'br2'};if(b.qty<lowThresh())return{label:'Low Stock',cls:'by'};return{label:'In Stock',cls:'bg2'};}
 function rmF(v){return'RM '+parseFloat(v).toFixed(2);}
@@ -644,7 +643,7 @@ function getPendMR(){return DB.missingReports.filter(r=>r.status==='pending');}
 function getPendCustReturns(){return DB.customerReturns.filter(r=>r.status==='pending');}
 function getDefectiveItems(){return DB.defectiveItems||(DB.defectiveItems=[]);}
 function getPendDefective(){return getDefectiveItems().filter(r=>r.status==='pending');}
-function cOpts(s=''){return CATS.map(c=>`<option value="${c}"${s===c?' selected':''}>${c}</option>`).join('');}
+function cOpts(s=''){return getCats().map(c=>`<option value="${c}"${s===c?' selected':''}>${c}</option>`).join('');}
 function isel(id){return document.getElementById(id);}
 function setHTML(h){isel('pc').innerHTML=h;if(window.lucide&&lucide.createIcons)try{if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){};}catch(e){}}
 function bookByRFID(rfid){return DB.books.find(b=>b.rfid===rfid);}
@@ -723,6 +722,15 @@ function doLogin(){
   isel('tbd').textContent=new Date().toLocaleDateString('en-MY',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
   isel('sbnm').textContent=CU.name;isel('sbrl').textContent=CU.role;
   isel('sbav').textContent=CU.name[0];isel('rchip').textContent=CU.role;
+  if(CU.employeeId){
+    let eidEl=isel('sb-eid');
+    if(!eidEl){
+      const foot=document.querySelector('.sbusr');
+      if(foot){const d=document.createElement('div');d.style.cssText='font-size:.62rem;color:rgba(255,255,255,.35);margin-top:1px;font-family:monospace;letter-spacing:.3px';d.id='sb-eid';foot.parentNode.insertBefore(d,foot.nextSibling);}
+      eidEl=isel('sb-eid');
+    }
+    if(eidEl)eidEl.textContent=CU.employeeId;
+  }
   buildNav();refreshDot();
   const def={Admin:'dashboard',Manager:'dashboard',Staff:'dashboard',Supplier:'sup-dash'};
   nav(def[CU.role]||'dashboard');
@@ -876,8 +884,10 @@ function pgBooks(s='',cf=''){
       <button class="bic dl" onclick="delBook('${b.id}')" style="margin-left:3px"><i data-lucide="trash-2"></i></button>`
       :'<span style="font-size:.7rem;color:var(--tl)">View</span>'}</td></tr>`;}).join('')
     :`<tr><td colspan="12"><div class="empty"><div class="eico"><i data-lucide="search-x"></i></div><h3>No books found</h3></div></td></tr>`;
+  var catBtn=ce?'<button class="btn bno" onclick="openManageCats()"><i data-lucide="tag"></i>Manage Categories</button>':'';
+  var addBookBtn=ce?'<button class="btn bnn" onclick="editBook(null)"><i data-lucide="plus"></i>Add Book</button>':'';
   setHTML(`<div class="ph"><div><h2>Book Catalogue</h2><p>${DB.books.length} titles — each with unique SKU, RFID tag &amp; Barcode</p></div>
-    <div class="pha">${ce?`<button class="btn bnn" onclick="editBook(null)"><i data-lucide="plus"></i>Add Book</button>`:''}</div></div>
+    <div class="pha">${catBtn}${addBookBtn}</div></div>
     <div class="card"><div class="ch"><div class="tb2">
       <div class="sbox"><i data-lucide="search"></i><input type="text" placeholder="Search title, author, SKU, RFID…" value="${s}" oninput="pgBooks(this.value,isel('bkf').value)"/></div>
       <select class="flt" id="bkf" onchange="pgBooks(isel('pc').querySelector('.sbox input').value,this.value)"><option value="">All Categories</option>${co}</select>
@@ -924,6 +934,58 @@ function delBook(id){
   const b=DB.books.find(x=>x.id===id);
   openCo('Delete Book',`Delete "${b.title}"?`,()=>{DB.books=DB.books.filter(x=>x.id!==id);toast('Book removed.');pgBooks();});
 }
+function openManageCats(){
+  function renderCatList(){
+    var cats=getCats();
+    var usedCats={};
+    DB.books.forEach(function(b){usedCats[b.category]=(usedCats[b.category]||0)+1;});
+    return cats.map(function(c){
+      var cnt=usedCats[c]||0;
+      var inSettings=DB.settings.categories.indexOf(c)>=0;
+      var delBtn=(!cnt&&inSettings)?'<button class="bic dl" onclick="delCat(this)" data-cat="'+c+'" title="Remove category"><i data-lucide="trash-2"></i></button>':'<span style="font-size:.67rem;color:var(--tl)">In use</span>';
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--r);background:var(--wh);margin-bottom:6px">'
+        +'<div style="display:flex;align-items:center;gap:8px">'
+        +'<span class="badge bgr">'+c+'</span>'
+        +(cnt?'<span style="font-size:.68rem;color:var(--tl)">'+cnt+' book(s)</span>':'<span style="font-size:.68rem;color:var(--tl)">No books yet</span>')
+        +'</div>'
+        +delBtn
+        +'</div>';
+    }).join('');
+  }
+  window.delCat=function(btn){
+    var c=btn.dataset.cat;
+    if(DB.books.some(function(b){return b.category===c;})){toast('Cannot remove — category has books.','error');return;}
+    DB.settings.categories=DB.settings.categories.filter(function(x){return x!==c;});
+    toast('Category "'+c+'" removed.','info');
+    var listEl=document.getElementById('cat-list');
+    if(listEl){listEl.innerHTML=renderCatList();if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}}
+  };
+  window.addCatFromModal=function(){
+    var inp=document.getElementById('new-cat-inp');
+    if(!inp)return;
+    var val=inp.value.trim();
+    if(!val){toast('Enter a category name.','error');return;}
+    var norm=val.charAt(0).toUpperCase()+val.slice(1);
+    var existing=getCats().map(function(c){return c.toLowerCase();});
+    if(existing.indexOf(norm.toLowerCase())>=0){toast('Category already exists.','error');return;}
+    DB.settings.categories.push(norm);
+    DB.settings.categories.sort();
+    inp.value='';
+    toast('Category "'+norm+'" added.','success');
+    var listEl=document.getElementById('cat-list');
+    if(listEl){listEl.innerHTML=renderCatList();if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}}
+    pgBooks();
+  };
+  var body='<div class="finfo"><i data-lucide="info"></i>Categories used by books cannot be deleted. Add new ones below \u2014 they appear instantly in all dropdowns.</div>'
+    +'<div style="display:flex;gap:7px;margin-bottom:14px">'
+    +'<input id="new-cat-inp" placeholder="New category name\u2026" style="flex:1;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.85rem;font-family:var(--fn)" onkeydown="if(event.key===\'Enter\')addCatFromModal()"/>'
+    +'<button class="btn bna" onclick="addCatFromModal()"><i data-lucide="plus"></i>Add</button>'
+    +'</div>'
+    +'<div id="cat-list">'+renderCatList()+'</div>';
+  openMo('Manage Categories',body,'<button class="btn bno" onclick="closeMo()">Close</button>');
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+}
+
 /* ===== MISSING STOCK PAGE (Manager + Staff) ===== */
 /* Shows: RFID Gate panel, Low stock cards, Missing Reports table */
 let rfidTimer=null;
@@ -1442,73 +1504,163 @@ function submitRestock(){
 
 /* ===== STAFF ===== */
 function pgStaff(s=''){
-  const list=DB.users.filter(u=>u.role==='Staff'&&(!s||u.name.toLowerCase().includes(s.toLowerCase())||u.username.includes(s)));
+  const list=DB.users.filter(u=>u.role==='Staff'&&(!s||u.name.toLowerCase().includes(s.toLowerCase())||u.username.includes(s)||(u.employeeId&&u.employeeId.toLowerCase().includes(s.toLowerCase()))));
   const rows=list.length?list.map(u=>`<tr>
+    <td><span class="sku" style="font-size:.75rem;letter-spacing:.6px">${u.employeeId||'—'}</span></td>
     <td style="font-weight:600">${u.name}</td>
     <td style="font-family:monospace;font-size:.79rem">${u.username}</td>
     <td style="font-size:.79rem">${u.email||'—'}</td>
     <td><button class="bic ed" onclick="editStaff('${u.id}')"><i data-lucide="pencil"></i></button>
       <button class="bic dl" onclick="delUser('${u.id}','staff')" style="margin-left:3px"><i data-lucide="trash-2"></i></button></td>
-  </tr>`).join(''):`<tr><td colspan="4"><div class="empty"><div class="eico"><i data-lucide="users"></i></div><h3>No staff</h3></div></td></tr>`;
-  setHTML(`<div class="ph"><div><h2>Manage Staff</h2></div>
+  </tr>`).join(''):`<tr><td colspan="5"><div class="empty"><div class="eico"><i data-lucide="users"></i></div><h3>No staff</h3></div></td></tr>`;
+  setHTML(`<div class="ph"><div><h2>Manage Staff</h2><p>Staff accounts with unique Employee IDs</p></div>
     <button class="btn bnn" onclick="editStaff(null)"><i data-lucide="plus"></i>Add Staff</button></div>
-    <div class="card"><div class="ch"><div class="sbox" style="max-width:270px"><i data-lucide="search"></i>
-      <input type="text" placeholder="Search…" value="${s}" oninput="pgStaff(this.value)"/></div></div>
-    <div class="tw"><table><thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Action</th></tr></thead>
+    <div class="card"><div class="ch"><div class="sbox" style="max-width:300px"><i data-lucide="search"></i>
+      <input type="text" placeholder="Search name, username or Employee ID…" value="${s}" oninput="pgStaff(this.value)"/></div></div>
+    <div class="tw"><table><thead><tr><th>Employee ID</th><th>Name</th><th>Username</th><th>Email</th><th>Action</th></tr></thead>
     <tbody>${rows}</tbody></table></div></div>`);
 }
 function editStaff(id){
-  const u=id?DB.users.find(x=>x.id===id):{name:'',username:'',email:''};
-  openMo(id?'Edit Staff':'Add Staff',`<div class="fgrid">
-    <div class="fg"><label>Full Name *</label><input id="stfn" value="${u.name}"/></div>
-    <div class="fg"><label>Username *</label><input id="stfu" value="${u.username}"/></div>
-    <div class="fg"><label>Password ${id?'(blank=keep)':' *'}</label><input id="stfp" type="password" placeholder="${id?'Leave blank to keep':'Set password'}"/></div>
-    <div class="fg"><label>Email</label><input id="stfe" type="email" value="${u.email||''}"/></div>
-  </div>`,`<button class="btn bno" onclick="closeMo()">Cancel</button>
-    <button class="btn bnn" onclick="saveStaff('${id||''}')"><i data-lucide="save"></i>Save</button>`);
+  const u=id?DB.users.find(x=>x.id===id):{name:'',username:'',email:'',employeeId:''};
+  const autoId=id?'':genEmployeeId('Staff');
+  const eidInfo=id?'Employee ID is fixed and cannot be changed.':'A unique Employee ID is auto-generated. You may also enter a custom one.';
+  const pwLabel=id?'Password (blank=keep)':'Password *';
+  const pwPH=id?'Leave blank to keep':'Set password';
+  const eidRO=id?'readonly':'';
+  const regenBtn=id?'':'<button class="btn bno bsm" type="button" onclick="stfGenId()" title="Re-generate"><i data-lucide="refresh-cw"></i></button>';
+  const eidNote=id?'<div style="font-size:.68rem;color:var(--tl);margin-top:3px">Employee ID cannot be changed.</div>':'<div style="font-size:.68rem;color:var(--tl);margin-top:3px">Auto-generated — or enter a custom ID.</div>';
+  const body='<div class="finfo"><i data-lucide="id-card"></i>'+eidInfo+'</div>'
+    +'<div class="fgrid">'
+    +'<div class="fg"><label>Full Name *</label><input id="stfn" value="'+u.name+'"/></div>'
+    +'<div class="fg"><label>Username *</label><input id="stfu" value="'+u.username+'"/></div>'
+    +'<div class="fg"><label>'+pwLabel+'</label><input id="stfp" type="password" placeholder="'+pwPH+'"/></div>'
+    +'<div class="fg"><label>Email</label><input id="stfe" type="email" value="'+(u.email||'')+'"/></div>'
+    +'<div class="fg"><label>Employee ID *</label>'
+    +'<div style="display:flex;gap:6px;align-items:center">'
+    +'<input id="stfeid" value="'+(u.employeeId||autoId)+'" '+eidRO+' style="font-family:monospace;letter-spacing:.5px;text-transform:uppercase;flex:1"/>'
+    +regenBtn
+    +'</div>'+eidNote+'</div>'
+    +'</div>';
+  const foot='<button class="btn bno" onclick="closeMo()">Cancel</button>'
+    +'<button class="btn bnn" onclick="saveStaff(\''+(id||'')+'\')"><i data-lucide="save"></i>Save</button>';
+  openMo(id?'Edit Staff':'Add Staff',body,foot);
 }
+function stfGenId(){const el=isel('stfeid');if(el)el.value=genEmployeeId('Staff');}
 function saveStaff(id){
   const n=isel('stfn').value.trim(),u=isel('stfu').value.trim(),p=isel('stfp').value,e=isel('stfe').value.trim();
+  const eid=(isel('stfeid').value||'').trim().toUpperCase();
   if(!n||!u){toast('Name and username required.','error');return;}
+  if(!eid){toast('Employee ID is required.','error');return;}
+  if(!id&&DB.users.find(x=>x.employeeId&&x.employeeId===eid)){toast('Employee ID already in use.','error');return;}
   if(id){const usr=DB.users.find(x=>x.id===id);Object.assign(usr,{name:n,username:u,email:e});if(p)usr.password=p;toast('Staff updated.');}
-  else{if(!p){toast('Password required.','error');return;}if(DB.users.find(x=>x.username===u)){toast('Username taken.','error');return;}DB.users.push({id:uid('u'),name:n,username:u,password:p,role:'Staff',email:e});toast('Staff added.');}
+  else{if(!p){toast('Password required.','error');return;}if(DB.users.find(x=>x.username===u)){toast('Username taken.','error');return;}DB.users.push({id:uid('u'),name:n,username:u,password:p,role:'Staff',email:e,employeeId:eid});toast('Staff added. Employee ID: '+eid);}
   closeMo();pgStaff();
 }
 
 /* ===== USERS ===== */
-function pgUsers(s=''){
-  const list=DB.users.filter(u=>u.role!=='Admin'&&u.role!=='Supplier'&&(!s||u.name.toLowerCase().includes(s.toLowerCase())));
-  const rows=list.length?list.map(u=>`<tr>
-    <td style="font-weight:600">${u.name}</td>
-    <td style="font-family:monospace;font-size:.79rem">${u.username}</td>
-    <td><span class="badge ${u.role==='Manager'?'bb':'bg2'}">${u.role}</span></td>
-    <td style="font-size:.79rem">${u.email||'—'}</td>
-    <td><button class="bic ed" onclick="editUserA('${u.id}')"><i data-lucide="pencil"></i></button>
-      <button class="bic dl" onclick="delUser('${u.id}','admin')" style="margin-left:3px"><i data-lucide="trash-2"></i></button></td>
-  </tr>`).join(''):`<tr><td colspan="5"><div class="empty"><div class="eico"><i data-lucide="shield"></i></div><h3>No users</h3></div></td></tr>`;
-  setHTML(`<div class="ph"><div><h2>User Management</h2></div>
-    <button class="btn bnn" onclick="editUserA(null)"><i data-lucide="plus"></i>Add User</button></div>
-    <div class="card"><div class="ch"><div class="sbox" style="max-width:270px"><i data-lucide="search"></i>
-      <input type="text" placeholder="Search…" value="${s}" oninput="pgUsers(this.value)"/></div></div>
-    <div class="tw"><table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Email</th><th>Action</th></tr></thead>
-    <tbody>${rows}</tbody></table></div></div>`);
+function genEmployeeId(role){
+  const prefix=role==='Manager'?'MGR':'STF';
+  const existing=DB.users.filter(u=>u.employeeId&&u.employeeId.includes('EMP-'+prefix));
+  const nums=existing.map(u=>{const m=u.employeeId.match(/(\d+)$/);return m?parseInt(m[1]):0;});
+  const next=(nums.length?Math.max(...nums):0)+1;
+  return 'EMP-'+prefix+'-'+String(next).padStart(3,'0');
 }
+function pgUsers(s,rf){
+  if(s===undefined)s='';
+  if(rf===undefined)rf='all';
+  var allUsers=DB.users.filter(function(u){return u.role!=='Supplier';});
+  var roleCounts={all:allUsers.length,Admin:0,Manager:0,Staff:0};
+  allUsers.forEach(function(u){if(roleCounts[u.role]!==undefined)roleCounts[u.role]++;});
+  var list=allUsers.filter(function(u){
+    var roleOk=rf==='all'||u.role===rf;
+    var q=s.toLowerCase();
+    var searchOk=!q||u.name.toLowerCase().indexOf(q)>=0||u.username.indexOf(q)>=0||(u.employeeId&&u.employeeId.toLowerCase().indexOf(q)>=0);
+    return roleOk&&searchOk;
+  });
+  var roleBadge={Admin:'bp',Manager:'bb',Staff:'bg2'};
+  var tabRoles=['all','Admin','Manager','Staff'];
+  var tabs=tabRoles.map(function(r){
+    var active=rf===r;
+    var label=r==='all'?'All':r;
+    var cls=active?'bnn':'bno';
+    return '<button class="btn bsm '+cls+'" onclick="pgUsers(document.getElementById(\'usr-search\').value,\''+r+'\')">'+label+' <span class="badge bgr" style="margin-left:3px">'+roleCounts[r]+'</span></button>';
+  }).join('');
+  var rows=list.length?list.map(function(u){
+    var eid=u.employeeId?'<span class="sku" style="font-size:.75rem;letter-spacing:.6px">'+u.employeeId+'</span>':'<span style="color:var(--tl)">—</span>';
+    var badge=roleBadge[u.role]||'bgr';
+    var actions=u.role==='Admin'?'<span style="font-size:.7rem;color:var(--tl)">Protected</span>':'<button class="bic ed" onclick="editUserA(\''+u.id+'\')"><i data-lucide="pencil"></i></button> <button class="bic dl" onclick="delUser(\''+u.id+'\',\'admin\')"><i data-lucide="trash-2"></i></button>';
+    return '<tr><td>'+eid+'</td><td style="font-weight:600">'+u.name+'</td><td style="font-family:monospace;font-size:.79rem">'+u.username+'</td><td><span class="badge '+badge+'">'+u.role+'</span></td><td style="font-size:.79rem">'+(u.email||'—')+'</td><td>'+actions+'</td></tr>';
+  }).join(''):'<tr><td colspan="6"><div class="empty"><div class="eico"><i data-lucide="shield"></i></div><h3>No users found</h3></div></td></tr>';
+  setHTML('<div class="ph"><div><h2>User Management</h2><p>Manage system accounts — filter by role below</p></div>'
+    +'<button class="btn bnn" onclick="editUserA(null)"><i data-lucide="plus"></i>Add User</button></div>'
+    +'<div style="display:flex;gap:6px;margin-bottom:13px;flex-wrap:wrap">'+tabs+'</div>'
+    +'<div class="card"><div class="ch"><div class="sbox" style="max-width:320px"><i data-lucide="search"></i>'
+    +'<input id="usr-search" type="text" placeholder="Search name, username or Employee ID\u2026" value="'+s+'" oninput="pgUsers(this.value,\''+rf+'\')"/></div></div>'
+    +'<div class="tw"><table><thead><tr><th>Employee ID</th><th>Name</th><th>Username</th><th>Role</th><th>Email</th><th>Action</th></tr></thead>'
+    +'<tbody>'+rows+'</tbody></table></div></div>');
+}
+
 function editUserA(id){
-  const u=id?DB.users.find(x=>x.id===id):{name:'',username:'',role:'Staff',email:''};
-  openMo(id?'Edit User':'Add User',`<div class="fgrid">
-    <div class="fg"><label>Full Name *</label><input id="un" value="${u.name}"/></div>
-    <div class="fg"><label>Username *</label><input id="uu" value="${u.username}"/></div>
-    <div class="fg"><label>Password ${id?'(blank=keep)':' *'}</label><input id="upw" type="password"/></div>
-    <div class="fg"><label>Role *</label><select id="ur"><option value="Manager"${u.role==='Manager'?' selected':''}>Manager</option><option value="Staff"${u.role==='Staff'?' selected':''}>Staff</option></select></div>
-    <div class="fg full"><label>Email</label><input id="ue" type="email" value="${u.email||''}"/></div>
-  </div>`,`<button class="btn bno" onclick="closeMo()">Cancel</button>
-    <button class="btn bnn" onclick="saveUserA('${id||''}')"><i data-lucide="save"></i>Save</button>`);
+  const u=id?DB.users.find(x=>x.id===id):{name:'',username:'',role:'Staff',email:'',employeeId:''};
+  const autoId=id?'':(u.role==='Manager'?genEmployeeId('Manager'):genEmployeeId('Staff'));
+  const eidInfo=id?'Employee ID is fixed and cannot be changed.':'A unique Employee ID will be auto-generated based on the selected role. You can also set a custom one.';
+  const pwLabel=id?'Password (blank=keep)':'Password *';
+  const eidRO=id?'readonly':'';
+  const regenBtn=id?'':'<button class="btn bno bsm" type="button" onclick="uaGenId()" title="Re-generate ID"><i data-lucide="refresh-cw"></i></button>';
+  const eidNote=id?'<div style="font-size:.68rem;color:var(--tl);margin-top:3px">Employee ID cannot be changed after creation.</div>':'<div style="font-size:.68rem;color:var(--tl);margin-top:3px">Auto-generated — or enter a custom ID.</div>';
+  const selMgr=u.role==='Manager'?' selected':'';
+  const selStf=u.role==='Staff'?' selected':'';
+  const isEditStr=id?'true':'false';
+  const body='<div class="finfo"><i data-lucide="id-card"></i>'+eidInfo+'</div>'
+    +'<div class="fgrid">'
+    +'<div class="fg"><label>Full Name *</label><input id="un" value="'+u.name+'"/></div>'
+    +'<div class="fg"><label>Username *</label><input id="uu" value="'+u.username+'"/></div>'
+    +'<div class="fg"><label>'+pwLabel+'</label><input id="upw" type="password"/></div>'
+    +'<div class="fg"><label>Role *</label>'
+    +'<select id="ur" onchange="uaRoleChg('+isEditStr+')">'
+    +'<option value="Manager"'+selMgr+'>Manager</option>'
+    +'<option value="Staff"'+selStf+'>Staff</option>'
+    +'</select></div>'
+    +'<div class="fg"><label>Employee ID *</label>'
+    +'<div style="display:flex;gap:6px;align-items:center">'
+    +'<input id="ueid" value="'+(u.employeeId||autoId)+'" '+eidRO+' style="font-family:monospace;letter-spacing:.5px;text-transform:uppercase;flex:1"/>'
+    +regenBtn
+    +'</div>'+eidNote+'</div>'
+    +'<div class="fg full"><label>Email</label><input id="ue" type="email" value="'+(u.email||'')+'"/></div>'
+    +'</div>';
+  const foot='<button class="btn bno" onclick="closeMo()">Cancel</button>'
+    +'<button class="btn bnn" onclick="saveUserA(\''+(id||'')+'\')"><i data-lucide="save"></i>Save</button>';
+  openMo(id?'Edit User':'Add User',body,foot);
+}
+function uaRoleChg(isEdit){
+  if(isEdit)return;
+  const r=isel('ur').value;
+  const el=isel('ueid');
+  if(el)el.value=genEmployeeId(r);
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+}
+function uaGenId(){
+  const r=isel('ur')?.value||'Staff';
+  const el=isel('ueid');
+  if(el)el.value=genEmployeeId(r);
 }
 function saveUserA(id){
   const n=isel('un').value.trim(),u=isel('uu').value.trim(),p=isel('upw').value,r=isel('ur').value,e=isel('ue').value.trim();
+  const eid=(isel('ueid').value||'').trim().toUpperCase();
   if(!n||!u){toast('Name and username required.','error');return;}
-  if(id){const usr=DB.users.find(x=>x.id===id);Object.assign(usr,{name:n,username:u,role:r,email:e});if(p)usr.password=p;toast('User updated.');}
-  else{if(!p){toast('Password required.','error');return;}if(DB.users.find(x=>x.username===u)){toast('Username taken.','error');return;}DB.users.push({id:uid('u'),name:n,username:u,password:p,role:r,email:e});toast('User added.');}
+  if(!eid){toast('Employee ID is required.','error');return;}
+  if(!id&&DB.users.find(x=>x.employeeId&&x.employeeId===eid)){toast('Employee ID already in use. Please generate a new one.','error');return;}
+  if(id){
+    const usr=DB.users.find(x=>x.id===id);
+    Object.assign(usr,{name:n,username:u,role:r,email:e});
+    if(p)usr.password=p;
+    toast('User updated.');
+  } else {
+    if(!p){toast('Password required.','error');return;}
+    if(DB.users.find(x=>x.username===u)){toast('Username taken.','error');return;}
+    DB.users.push({id:uid('u'),name:n,username:u,password:p,role:r,email:e,employeeId:eid});
+    toast('User added with Employee ID: '+eid);
+  }
   closeMo();pgUsers();
 }
 function delUser(id,caller){
