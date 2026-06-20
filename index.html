@@ -352,6 +352,17 @@ tbody tr:hover{background:var(--bg)}
 }
 .print-rpt{display:none}
 .screen-only{display:block}
+@media print{
+  body.printing-admin-rpt .sb,body.printing-admin-rpt .topbar,body.printing-admin-rpt .no-print{display:none!important}
+  body.printing-admin-rpt #app{display:block!important;height:auto!important;overflow:visible!important}
+  body.printing-admin-rpt .main{height:auto!important;overflow:visible!important}
+  body.printing-admin-rpt .content{overflow:visible!important;padding:0!important}
+  body.printing-admin-rpt .print-only-header{display:block!important}
+  body.printing-admin-rpt .kpis{grid-template-columns:repeat(3,1fr)!important}
+  body.printing-admin-rpt .dg{grid-template-columns:1fr 1fr!important}
+  body.printing-admin-rpt .card{box-shadow:none!important;border:1px solid #ccc!important}
+  body.printing-admin-rpt{background:#fff;font-size:10pt;color:#000}
+}
 @media(max-width:840px){.dg{grid-template-columns:1fr}.fgrid{grid-template-columns:1fr}}
 @media(max-width:640px){
   .sb{width:46px;min-width:46px}.sblt,.ni span,.nbl,.sbusr .sbnm,.sbusr .sbrl,.sblg span{display:none}
@@ -736,6 +747,8 @@ notifications:[
 ],
 /* Stock alert settings — manager-configurable rule for what counts as "low stock" */
 settings:{lowStockThreshold:10,categories:['Business','Computer Science','Economics','Engineering','History','Literature','Mathematics','Science'],disabledCategories:[]},
+/* Backup history — admin backup snapshots taken during this session */
+backupHistory:[],
 };
 
 const CATS=['Business','Computer Science','Economics','Engineering','History','Literature','Mathematics','Science'];
@@ -797,6 +810,9 @@ const NAVDEF=[
   {id:'stock-receive',lbl:'Supplier Proposals',icon:'inbox',roles:['Manager'],badge:'rdel'},
   {id:'staff',lbl:'Manage Staff',icon:'users',roles:['Manager']},
   {id:'users',lbl:'User Mgmt',icon:'shield',roles:['Admin']},
+  {sec:'System'},
+  {id:'backup',lbl:'Backup',icon:'database',roles:['Admin']},
+  {id:'admin-report',lbl:'System Report',icon:'clipboard',roles:['Admin']},
   {sec:'Analytics'},{id:'reports',lbl:'Sales Report',icon:'bar-chart-2',roles:['Manager']},
   {sec:'Returns'},
   {id:'returns',lbl:'Returns',icon:'undo-2',roles:['Manager'],badge:'cret'},
@@ -822,6 +838,8 @@ const PMETA={
   'stock-receive':['Supplier Proposals','New book and genre proposals from suppliers'],
   staff:['Manage Staff','Staff accounts'],
   users:['User Management','System accounts'],
+  backup:['Backup','Download a snapshot of all system data'],
+  'admin-report':['System Report','System-wide overview for administrators'],
   reports:['Sales Report','Analytics & reports'],
   returns:['Returns Management','Customer returns & restocking decisions'],
   defective:['Defective Items','Items flagged as defective — cannot be restocked'],
@@ -900,6 +918,7 @@ function nav(page){
   const pages={dashboard:pgDash,books:pgBooks,missing:pgMissing,'missing-rfid':pgMissingRFID,'missing-threshold':pgMissingThreshold,'missing-reports':pgMissingReports,'report-missing':pgReportMissing,returns:pgReturns,defective:pgDefective,'returns-supplier':pgReturnsSupplier,'sup-returns':pgSupReturns,
     history:pgHistory,suppliers:pgSup,'stock-order':pgStockOrder,'stock-receive':pgStockReceive,
     staff:pgStaff,users:pgUsers,reports:pgReports,
+    backup:pgBackup,'admin-report':pgAdminReport,
     'sup-dash':pgSupDash,'sup-submit':pgSupSubmit,'sup-hist':pgSupHist};
   if(pages[page])pages[page]();
 }
@@ -945,27 +964,32 @@ isel('mo').addEventListener('click',function(e){if(e.target===this)closeMo();});
 isel('co').addEventListener('click',function(e){if(e.target===this)closeCo();});
 /* ===== PAGES ===== */
 
-/* DASHBOARD */
+/* DASHBOARD — role-specific: Admin / Manager / Staff each see a different view */
 function pgDash(){
-  const low=getLow(),tQ=DB.books.reduce((a,b)=>a+b.qty,0);
-  const td=new Date().toISOString().split('T')[0];
-  const todSale=DB.transactions.filter(t=>t.date===td).reduce((a,t)=>a+t.qty,0);
-  const moRev=DB.transactions.filter(t=>t.date.startsWith(td.slice(0,7))).reduce((a,t)=>a+t.qty*t.unitPrice,0);
-  const pend=getPend().length,pendMR=getPendMR().length;
-  const rfidAlerts=DB.rfidEvents.filter(e=>e.type==='unauthorized'&&!e.confirmed).length;
-  const recent=[...DB.transactions].reverse().slice(0,5);
-  const totalAlerts=low.length+rfidAlerts+pendMR;
-
-  /* Greeting + status pill */
+  if(CU.role==='Admin')return pgDashAdmin();
+  if(CU.role==='Staff')return pgDashStaff();
+  return pgDashManager();
+}
+function dGreet(){
   const dnow=new Date();
   const hr=dnow.getHours();
   const greet=hr<12?'Good morning':hr<18?'Good afternoon':'Good evening';
   const dateStr=dnow.toLocaleDateString('en-MY',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const pillH=totalAlerts>0
-    ?`<span class="dpill warn"><i data-lucide="alert-triangle"></i>${totalAlerts} item${totalAlerts>1?'s':''} need attention</span>`
+  return{greet,dateStr};
+}
+/* ---- MANAGER DASHBOARD ---- */
+function pgDashManager(){
+  const low=getLow(),tQ=DB.books.reduce((a,b)=>a+b.qty,0);
+  const td=new Date().toISOString().split('T')[0];
+  const moRev=DB.transactions.filter(t=>t.date.startsWith(td.slice(0,7))).reduce((a,t)=>a+t.qty*t.unitPrice,0);
+  const pendStock=getPend().length,pendMR=getPendMR().length,pendRet=getPendCustReturns().length,pendDef=getPendDefective().length;
+  const pendApprovals=pendStock+pendMR+pendRet+pendDef;
+  const recent=[...DB.transactions].reverse().slice(0,5);
+  const{greet,dateStr}=dGreet();
+  const pillH=pendApprovals>0
+    ?`<span class="dpill warn"><i data-lucide="alert-triangle"></i>${pendApprovals} item${pendApprovals>1?'s':''} need your approval</span>`
     :`<span class="dpill"><i data-lucide="check-circle"></i>Everything looks good</span>`;
 
-  /* Low stock — top 5, sorted worst first, with mini bar */
   const lowSorted=[...low].sort((a,b)=>(a.qty/Math.max(a.minStock,1))-(b.qty/Math.max(b.minStock,1)));
   const lowTop=lowSorted.slice(0,5);
   const lowR=lowTop.length?lowTop.map(b=>{
@@ -983,29 +1007,15 @@ function pgDash(){
     :`<div class="empty"><div class="eico"><i data-lucide="check-circle"></i></div><h3>All books well-stocked</h3><p>No items below their minimum threshold.</p></div>`;
   const lowMore=low.length>5?`<div style="text-align:center;padding-top:8px"><span class="dsec-lnk" onclick="nav('books')">+${low.length-5} more low stock item${low.length-5>1?'s':''}</span></div>`:'';
 
-  /* Recent activity */
   const actH=recent.length?recent.map(t=>`<div class="ait"><div class="adot sale"></div>
     <div class="atx"><b>${t.custId}</b> bought ${t.bookTitle} ×${t.qty}<br>
     <span style="font-size:.71rem;color:var(--tl)">${t.staffName} · ${fmtD(t.date)}</span></div>
     <div class="atm">${rmF(t.qty*t.unitPrice)}</div></div>`).join('')
     :`<div class="empty"><div class="eico"><i data-lucide="receipt"></i></div><h3>No sales yet</h3><p>Transactions will show up here.</p></div>`;
 
-  /* Category summary — progress bars instead of plain table */
-  const cm={};DB.books.forEach(b=>{if(!cm[b.category])cm[b.category]={t:0,q:0,low:0,val:0};cm[b.category].t++;cm[b.category].q+=b.qty;cm[b.category].val+=b.qty*b.price;if(b.qty<b.minStock)cm[b.category].low++;});
-  const catEntries=Object.entries(cm).sort((a,b)=>b[1].q-a[1].q);
-  const maxQ=Math.max(1,...catEntries.map(([,v])=>v.q));
-  const cR=catEntries.length?catEntries.map(([c,v])=>`<div class="catrow">
-    <div class="catrow-top">
-      <div class="catrow-l"><span class="badge bgr">${c}</span><span style="font-weight:500;color:var(--tl);font-size:.74rem">${v.t} title${v.t>1?'s':''}</span></div>
-      <div class="catrow-r">${v.q.toLocaleString()} units · ${rmF(v.val)}${v.low>0?` · <span style="color:var(--dg);font-weight:700">${v.low} low</span>`:''}</div>
-    </div>
-    <div class="catbar"><i style="width:${Math.round((v.q/maxQ)*100)}%"></i></div>
-  </div>`).join('')
-    :`<div class="empty"><div class="eico"><i data-lucide="layers"></i></div><h3>No categories yet</h3></div>`;
-
   setHTML(`<div class="dwrap">
   <div class="dgreet">
-    <div><h2>${greet}, ${CU.name||'Manager'}</h2><p>${dateStr}</p></div>
+    <div><h2>${greet}, ${CU.name}</h2><p>${dateStr}</p></div>
     ${pillH}
   </div>
 
@@ -1016,10 +1026,8 @@ function pgDash(){
       <div class="kpi-v">${tQ.toLocaleString()}</div><div class="kpi-l">Total Units in Stock</div></div>
     <div class="kpi"><div class="kpi-top"><div class="kpi-ic warn"><i data-lucide="package-x"></i></div>${low.length>0?`<span class="kpi-flag alert">Action</span>`:`<span class="kpi-flag ok">OK</span>`}</div>
       <div class="kpi-v">${low.length}</div><div class="kpi-l">Low / Out of Stock</div></div>
-    <div class="kpi"><div class="kpi-top"><div class="kpi-ic red"><i data-lucide="radio-tower"></i></div>${rfidAlerts>0?`<span class="kpi-flag alert">Alert</span>`:`<span class="kpi-flag ok">OK</span>`}</div>
-      <div class="kpi-v">${rfidAlerts}</div><div class="kpi-l">RFID Alerts</div></div>
-    <div class="kpi"><div class="kpi-top"><div class="kpi-ic ${pendMR>0?'warn':'slate'}"><i data-lucide="alert-triangle"></i></div></div>
-      <div class="kpi-v">${pendMR}</div><div class="kpi-l">Missing Reports</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic ${pendApprovals>0?'warn':'slate'}"><i data-lucide="clipboard-check"></i></div>${pendApprovals>0?`<span class="kpi-flag alert">Review</span>`:`<span class="kpi-flag ok">OK</span>`}</div>
+      <div class="kpi-v">${pendApprovals}</div><div class="kpi-l">Pending Approvals</div></div>
     <div class="kpi"><div class="kpi-top"><div class="kpi-ic green"><i data-lucide="trending-up"></i></div></div>
       <div class="kpi-v" style="font-size:1.25rem">${rmF(moRev)}</div><div class="kpi-l">Revenue This Month</div></div>
   </div>
@@ -1036,6 +1044,139 @@ function pgDash(){
   </div>
   </div>`);
 }
+/* ---- STAFF DASHBOARD ---- */
+function pgDashStaff(){
+  const low=getLow();
+  const td=new Date().toISOString().split('T')[0];
+  const myTxns=DB.transactions.filter(t=>t.staffId===CU.id);
+  const myToday=myTxns.filter(t=>t.date===td);
+  const myTodayUnits=myToday.reduce((a,t)=>a+t.qty,0);
+  const myRecent=[...myTxns].reverse().slice(0,5);
+  const lowTop=[...low].sort((a,b)=>(a.qty/Math.max(a.minStock,1))-(b.qty/Math.max(b.minStock,1))).slice(0,5);
+  const{greet,dateStr}=dGreet();
+
+  const lowR=lowTop.length?lowTop.map(b=>{
+    const isCrit=b.qty===0;
+    return`<div class="lsrow">
+      <div class="lsic ${isCrit?'crit':'low'}"><i data-lucide="${isCrit?'package-x':'package-minus'}"></i></div>
+      <div class="lsbody">
+        <div class="lstitle">${b.title}</div>
+        <div class="lssub">${b.category} · SKU ${b.sku}</div>
+      </div>
+      <div class="lsqty" style="color:${isCrit?'var(--dg)':'var(--wn)'}">${b.qty}/${b.minStock}</div>
+    </div>`;}).join('')
+    :`<div class="empty"><div class="eico"><i data-lucide="check-circle"></i></div><h3>All books well-stocked</h3></div>`;
+
+  const actH=myRecent.length?myRecent.map(t=>`<div class="ait"><div class="adot sale"></div>
+    <div class="atx"><b>${t.custId}</b> bought ${t.bookTitle} ×${t.qty}<br>
+    <span style="font-size:.71rem;color:var(--tl)">${fmtD(t.date)}</span></div>
+    <div class="atm">${rmF(t.qty*t.unitPrice)}</div></div>`).join('')
+    :`<div class="empty"><div class="eico"><i data-lucide="receipt"></i></div><h3>No sales recorded yet</h3><p>Your recorded transactions will show up here.</p></div>`;
+
+  setHTML(`<div class="dwrap">
+  <div class="dgreet">
+    <div><h2>${greet}, ${CU.name}</h2><p>${dateStr}</p></div>
+    <span class="dpill"><i data-lucide="check-circle"></i>Have a great shift</span>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic green"><i data-lucide="receipt"></i></div></div>
+      <div class="kpi-v">${myToday.length}</div><div class="kpi-l">Sales Recorded Today</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic blue"><i data-lucide="package"></i></div></div>
+      <div class="kpi-v">${myTodayUnits}</div><div class="kpi-l">Units Sold Today</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic ${low.length>0?'warn':'slate'}"><i data-lucide="package-x"></i></div></div>
+      <div class="kpi-v">${low.length}</div><div class="kpi-l">Low / Out of Stock</div></div>
+  </div>
+
+  <div class="ph" style="margin-top:4px"><div></div>
+    <div class="pha">
+      <button class="btn bnn" onclick="nav('history')"><i data-lucide="receipt"></i>Record Sale</button>
+      <button class="btn bno" onclick="nav('report-missing')"><i data-lucide="alert-triangle"></i>Report Missing Item</button>
+      <button class="btn bno" onclick="nav('books')"><i data-lucide="book-open"></i>View Books</button>
+    </div>
+  </div>
+
+  <div class="dg">
+    <div class="card">
+      <div class="ch"><div class="dsec"><h2>Low Stock Awareness</h2><span class="badge br2">${low.length} items</span></div></div>
+      <div class="cb" style="max-height:200px;overflow-y:auto">${lowR}</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dsec"><h2>My Recent Sales</h2><span class="dsec-lnk" onclick="nav('history')">View all<i data-lucide="arrow-right"></i></span></div></div>
+      <div class="cb" style="max-height:200px;overflow-y:auto">${actH}</div>
+    </div>
+  </div>
+  </div>`);
+}
+/* ---- ADMIN DASHBOARD ---- */
+function pgDashAdmin(){
+  const roleCounts={Admin:0,Manager:0,Staff:0,Supplier:0};
+  DB.users.forEach(u=>{if(roleCounts[u.role]!==undefined)roleCounts[u.role]++;});
+  const totalUsers=DB.users.length;
+  const totalBooks=DB.books.length;
+  const totalSuppliers=DB.suppliers.length;
+  const pendStock=DB.stockRequests.filter(r=>r.status==='pending').length;
+  const pendMissing=getPendMR().length;
+  const pendReturns=getPendCustReturns().length;
+  const pendDefective=getPendDefective().length;
+  const totalPending=pendStock+pendMissing+pendReturns+pendDefective;
+  const lastBackup=DB.backupHistory.length?DB.backupHistory[DB.backupHistory.length-1]:null;
+  const{greet,dateStr}=dGreet();
+  const pillH=lastBackup
+    ?`<span class="dpill"><i data-lucide="check-circle"></i>Last backup ${fmtDT(lastBackup.time)}</span>`
+    :`<span class="dpill warn"><i data-lucide="alert-triangle"></i>No backup taken yet</span>`;
+
+  const roleRows=Object.entries(roleCounts).map(([role,count])=>{
+    const rb={Admin:'bp',Manager:'bb',Staff:'bg2',Supplier:'bgr'};
+    return`<div class="catrow"><div class="catrow-top">
+      <div class="catrow-l"><span class="badge ${rb[role]}">${role}</span></div>
+      <div class="catrow-r">${count} account${count===1?'':'s'}</div>
+    </div></div>`;
+  }).join('');
+
+  setHTML(`<div class="dwrap">
+  <div class="dgreet">
+    <div><h2>${greet}, ${CU.name}</h2><p>${dateStr}</p></div>
+    ${pillH}
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic blue"><i data-lucide="users"></i></div></div>
+      <div class="kpi-v">${totalUsers}</div><div class="kpi-l">Total Accounts</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic green"><i data-lucide="book-open"></i></div></div>
+      <div class="kpi-v">${totalBooks}</div><div class="kpi-l">Book Titles in System</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic blue"><i data-lucide="truck"></i></div></div>
+      <div class="kpi-v">${totalSuppliers}</div><div class="kpi-l">Suppliers</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic ${totalPending>0?'warn':'slate'}"><i data-lucide="alert-triangle"></i></div></div>
+      <div class="kpi-v">${totalPending}</div><div class="kpi-l">Pending Items (System-wide)</div></div>
+  </div>
+
+  <div class="ph" style="margin-top:4px"><div></div>
+    <div class="pha">
+      <button class="btn bnn" onclick="nav('users')"><i data-lucide="shield"></i>User Management</button>
+      <button class="btn bno" onclick="nav('backup')"><i data-lucide="database"></i>Backup</button>
+      <button class="btn bno" onclick="nav('admin-report')"><i data-lucide="clipboard"></i>System Report</button>
+    </div>
+  </div>
+
+  <div class="dg">
+    <div class="card">
+      <div class="ch"><div class="dsec"><h2>Accounts by Role</h2></div></div>
+      <div class="cb">${roleRows}</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dsec"><h2>Data Protection</h2></div></div>
+      <div class="cb" style="display:flex;flex-direction:column;gap:10px;justify-content:center;height:100%">
+        <div style="font-size:.84rem;color:var(--tl)">
+          ${lastBackup?`Last backup: <b style="color:var(--tx)">${fmtDT(lastBackup.time)}</b> by ${lastBackup.by}<br>${DB.backupHistory.length} total backup${DB.backupHistory.length===1?'':'s'} this session`:'No backups have been taken yet. Take a backup to keep system data safe.'}
+        </div>
+        <button class="btn bno bsm" onclick="nav('backup')" style="align-self:flex-start"><i data-lucide="database"></i>Go to Backup</button>
+      </div>
+    </div>
+  </div>
+  </div>`);
+}
+
 
 /* BOOKS — with SKU, RFID, barcode */
 function pgBooks(s='',cf='',stf=''){
@@ -2410,7 +2551,175 @@ function delUser(id,caller){
   const u=DB.users.find(x=>x.id===id);
   openCo('Remove User',`Remove "${u.name}" (${u.role})?`,()=>{DB.users=DB.users.filter(x=>x.id!==id);toast('User removed.');caller==='staff'?pgStaff():pgUsers();});
 }
-/* ===== SUPPLIER PORTAL ===== */
+/* ===== BACKUP (Admin) ===== */
+function pgBackup(){
+  const hist=[...DB.backupHistory].reverse();
+  const rows=hist.length?hist.map(h=>`<tr>
+      <td style="font-weight:600">${fmtDT(h.time)}</td>
+      <td>${h.by}</td>
+      <td><span class="sku">${h.filename}</span></td>
+      <td style="color:var(--tl);font-size:.78rem">${h.size}</td>
+    </tr>`).join('')
+    :`<tr><td colspan="4"><div class="empty"><div class="eico"><i data-lucide="database"></i></div><h3>No backups yet</h3><p>Take your first backup to keep a safety copy of all system data.</p></div></td></tr>`;
+  setHTML(`<div class="ph"><div><h2>Backup</h2><p>Download a full snapshot of all system data</p></div>
+    <button class="btn bnn" onclick="doBackup()"><i data-lucide="database"></i>Backup Now</button></div>
+    <div class="card cb" style="margin-bottom:14px">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <i data-lucide="info" style="flex-shrink:0;margin-top:2px;color:var(--tl)"></i>
+        <div style="font-size:.82rem;color:var(--tl);line-height:1.55">
+          A backup saves every record currently in the system — books, users, suppliers, transactions, stock requests, RFID events, missing reports, returns and defective items — into one file on your device. Keep it somewhere safe in case data needs to be recovered.
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dsec"><h2>Backup History</h2><span class="badge bgr">${hist.length} backup${hist.length===1?'':'s'}</span></div></div>
+      <div class="tw"><table><thead><tr><th>Date &amp; Time</th><th>Taken By</th><th>File</th><th>Size</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    </div>`);
+}
+function doBackup(){
+  const snap={exportedAt:new Date().toISOString(),exportedBy:CU.name,data:DB};
+  const json=JSON.stringify(snap,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const ts=new Date().toISOString().replace(/[:.]/g,'-');
+  const filename=`booktrack-backup-${ts}.json`;
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  const sizeKb=(json.length/1024).toFixed(1)+' KB';
+  DB.backupHistory.push({id:uid('bk'),time:new Date().toISOString(),by:CU.name,filename,size:sizeKb});
+  toast('Backup downloaded: '+filename,'success');
+  pgBackup();
+}
+/* ===== SYSTEM REPORT (Admin) ===== */
+function pgAdminReport(){
+  const roleCounts={Admin:0,Manager:0,Staff:0,Supplier:0};
+  DB.users.forEach(u=>{if(roleCounts[u.role]!==undefined)roleCounts[u.role]++;});
+  const totalUsers=DB.users.length;
+  const totalBooks=DB.books.length;
+  const totalStockUnits=DB.books.reduce((a,b)=>a+b.qty,0);
+  const totalSuppliers=DB.suppliers.length;
+  const totalTxns=DB.transactions.length;
+  const totalRevenue=DB.transactions.reduce((a,t)=>a+t.qty*t.unitPrice,0);
+  const pendStock=DB.stockRequests.filter(r=>r.status==='pending').length;
+  const pendMissing=getPendMR().length;
+  const pendReturns=getPendCustReturns().length;
+  const pendDefective=getPendDefective().length;
+  const totalPending=pendStock+pendMissing+pendReturns+pendDefective;
+  const lastBackup=DB.backupHistory.length?DB.backupHistory[DB.backupHistory.length-1]:null;
+
+  const roleRows=Object.entries(roleCounts).map(([role,count])=>{
+    const rb={Admin:'bp',Manager:'bb',Staff:'bg2',Supplier:'bgr'};
+    return`<div class="catrow"><div class="catrow-top">
+      <div class="catrow-l"><span class="badge ${rb[role]}">${role}</span></div>
+      <div class="catrow-r">${count} account${count===1?'':'s'}</div>
+    </div></div>`;
+  }).join('');
+
+  window._adminRptData={totalUsers,totalBooks,totalStockUnits,totalSuppliers,totalRevenue,totalPending,roleCounts,pendStock,pendMissing,pendReturns,pendDefective,lastBackup,generatedAt:new Date().toISOString(),generatedBy:CU.name};
+
+  setHTML(`<div class="ph no-print"><div><h2>System Report</h2><p>System-wide overview across all roles and modules</p></div>
+    <div class="pha">
+      <button class="btn bno" onclick="exportAdminReportCSV()"><i data-lucide="sheet"></i>Export Excel</button>
+      <button class="btn bnn" onclick="printAdminReport()"><i data-lucide="printer"></i>Export PDF</button>
+    </div></div>
+  <div id="admin-rpt-print">
+  <div class="print-only-header" style="display:none">
+    <h2 style="margin:0 0 2px">BookTrack — System Report</h2>
+    <p style="margin:0;font-size:.8rem;color:#555">Generated ${fmtDT(new Date().toISOString())} by ${CU.name}</p>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic blue"><i data-lucide="users"></i></div></div>
+      <div class="kpi-v">${totalUsers}</div><div class="kpi-l">Total Accounts</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic green"><i data-lucide="book-open"></i></div></div>
+      <div class="kpi-v">${totalBooks}</div><div class="kpi-l">Book Titles</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic green"><i data-lucide="package"></i></div></div>
+      <div class="kpi-v">${totalStockUnits.toLocaleString()}</div><div class="kpi-l">Total Stock Units</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic blue"><i data-lucide="truck"></i></div></div>
+      <div class="kpi-v">${totalSuppliers}</div><div class="kpi-l">Suppliers</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic green"><i data-lucide="trending-up"></i></div></div>
+      <div class="kpi-v" style="font-size:1.2rem">${rmF(totalRevenue)}</div><div class="kpi-l">All-Time Revenue</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-ic ${totalPending>0?'warn':'slate'}"><i data-lucide="alert-triangle"></i></div></div>
+      <div class="kpi-v">${totalPending}</div><div class="kpi-l">Pending Items (System-wide)</div></div>
+  </div>
+
+  <div class="dg">
+    <div class="card">
+      <div class="ch"><div class="dsec"><h2>Accounts by Role</h2></div></div>
+      <div class="cb">${roleRows}</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dsec"><h2>Pending Items Breakdown</h2></div></div>
+      <div class="cb">
+        <div class="catrow"><div class="catrow-top"><div class="catrow-l">Stock Requests</div><div class="catrow-r">${pendStock}</div></div></div>
+        <div class="catrow"><div class="catrow-top"><div class="catrow-l">Missing Item Reports</div><div class="catrow-r">${pendMissing}</div></div></div>
+        <div class="catrow"><div class="catrow-top"><div class="catrow-l">Customer Returns</div><div class="catrow-r">${pendReturns}</div></div></div>
+        <div class="catrow"><div class="catrow-top"><div class="catrow-l">Defective Items</div><div class="catrow-r">${pendDefective}</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card no-print" style="margin-top:14px">
+    <div class="ch"><div class="dsec"><h2>Data Protection</h2></div></div>
+    <div class="cb" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="font-size:.84rem;color:var(--tl)">
+        ${lastBackup?`Last backup: <b style="color:var(--tx)">${fmtDT(lastBackup.time)}</b> by ${lastBackup.by} &nbsp;·&nbsp; ${DB.backupHistory.length} total backup${DB.backupHistory.length===1?'':'s'} this session`:'No backups have been taken yet.'}
+      </div>
+      <button class="btn bno bsm" onclick="nav('backup')"><i data-lucide="database"></i>Go to Backup</button>
+    </div>
+  </div>
+  </div>`);
+}
+function printAdminReport(){
+  if(!window._adminRptData){toast('Please open the System Report first.','error');return;}
+  document.body.classList.add('printing-admin-rpt');
+  window.print();
+  setTimeout(()=>document.body.classList.remove('printing-admin-rpt'),500);
+}
+function exportAdminReportCSV(){
+  if(!window._adminRptData){toast('Please open the System Report first.','error');return;}
+  const d=window._adminRptData;
+  const rows=[];
+  rows.push(['BookTrack — System Report']);
+  rows.push(['Generated',fmtDT(d.generatedAt)]);
+  rows.push(['Generated By',d.generatedBy]);
+  rows.push([]);
+  rows.push(['Summary']);
+  rows.push(['Total Accounts',d.totalUsers]);
+  rows.push(['Book Titles',d.totalBooks]);
+  rows.push(['Total Stock Units',d.totalStockUnits]);
+  rows.push(['Suppliers',d.totalSuppliers]);
+  rows.push(['All-Time Revenue (RM)',d.totalRevenue.toFixed(2)]);
+  rows.push(['Pending Items (System-wide)',d.totalPending]);
+  rows.push([]);
+  rows.push(['Accounts by Role']);
+  Object.entries(d.roleCounts).forEach(([role,count])=>rows.push([role,count]));
+  rows.push([]);
+  rows.push(['Pending Items Breakdown']);
+  rows.push(['Stock Requests',d.pendStock]);
+  rows.push(['Missing Item Reports',d.pendMissing]);
+  rows.push(['Customer Returns',d.pendReturns]);
+  rows.push(['Defective Items',d.pendDefective]);
+  rows.push([]);
+  rows.push(['Data Protection']);
+  rows.push(['Last Backup',d.lastBackup?fmtDT(d.lastBackup.time):'No backups taken yet']);
+  rows.push(['Last Backup By',d.lastBackup?d.lastBackup.by:'—']);
+  rows.push(['Total Backups This Session',DB.backupHistory.length]);
+
+  const esc=v=>{const s=String(v);return/[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+  const csv=rows.map(r=>r.map(esc).join(',')).join('\r\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const ts=new Date().toISOString().replace(/[:.]/g,'-');
+  const filename=`booktrack-system-report-${ts}.csv`;
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('Exported: '+filename,'success');
+}
+
 function getMySup(){return DB.suppliers.find(s=>s.userId===CU.id);}
 
 function pgSupDash(){
