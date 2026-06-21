@@ -187,7 +187,7 @@ tbody tr:hover{background:var(--bg)}
 .mx{width:24px;height:24px;border:none;background:var(--bg);border-radius:5px;cursor:pointer;font-size:.8rem;color:var(--tl);display:flex;align-items:center;justify-content:center}
 .mx:hover{background:var(--bd)}
 .mb2{padding:18px;overflow-y:auto}
-.mf{padding:11px 18px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:7px;flex-shrink:0}
+.mf{padding:11px 18px;border-top:1px solid var(--bd);display:flex;justify-content:center;flex-direction:row-reverse;gap:7px;flex-shrink:0}
 .cfb{text-align:center;padding:24px 18px}
 .cfic{width:50px;height:50px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
 .cfic.d{background:var(--dlt);color:var(--dg)}.cfic.w{background:var(--wlt);color:var(--wn)}
@@ -749,6 +749,34 @@ notifications:[
 settings:{lowStockThreshold:10,categories:['Business','Computer Science','Economics','Engineering','History','Literature','Mathematics','Science'],disabledCategories:[]},
 /* Backup history — admin backup snapshots taken during this session */
 backupHistory:[],
+/* Supplier registration requests — submitted externally, reviewed by manager */
+supplierRegistrations:[
+  {id:'sreg1',companyName:'EduBooks Trading',contactPerson:'Muhammad Hafiz',phone:'03-8899 1234',
+   email:'hafiz@edubooks.com.my',address:'No 12, Jalan Ilmu, Cheras, 56000 Kuala Lumpur',
+   categories:['Mathematics','Science'],
+   message:'We are a registered book distributor based in Cheras with over 10 years of experience supplying educational books to schools and bookstores across Klang Valley. We carry over 500 titles and offer competitive pricing with reliable delivery.',
+   submittedAt:'2026-06-18T09:30:00',status:'pending',
+   reviewedBy:null,reviewedAt:null,reviewNote:'',linkedSupplierId:null,
+   opacChecked:true,
+   bookList:[
+     {blId:'bl1',title:'Engineering Mathematics',author:'Stroud, K.A.',edition:'8th Ed. 2020',publisher:'Macmillan',isbn:'978-1-352-01027-1',cover:'Paperback',qty:10,unitPrice:95.00,type:'Textbook',libCopy:2,ebook:false,category:'Mathematics',added:false},
+     {blId:'bl2',title:'Calculus: Early Transcendentals',author:'Stewart, J.',edition:'9th Ed. 2020',publisher:'Cengage',isbn:'978-0-357-11352-1',cover:'Hardcover',qty:8,unitPrice:130.00,type:'Textbook',libCopy:2,ebook:true,category:'Mathematics',added:false},
+     {blId:'bl3',title:'Biology: The Science of Life',author:'Wallace, R.A.',edition:'5th Ed. 2019',publisher:'HarperCollins',isbn:'978-0-065-00555-2',cover:'Hardcover',qty:6,unitPrice:110.00,type:'Reference',libCopy:1,ebook:false,category:'Science',added:false},
+     {blId:'bl4',title:'Chemistry: The Central Science',author:'Brown, T.L.',edition:'14th Ed. 2021',publisher:'Pearson',isbn:'978-0-134-41428-2',cover:'Hardcover',qty:5,unitPrice:145.00,type:'Textbook',libCopy:1,ebook:true,category:'Science',added:false},
+   ]},
+  {id:'sreg2',companyName:'Ilmu Jaya Sdn Bhd',contactPerson:'Siti Rahimah',phone:'04-5566 7788',
+   email:'siti@ilmujaya.com',address:'88, Jalan Perak, Georgetown, 10050 Pulau Pinang',
+   categories:['History','Literature','Business'],
+   message:'Ilmu Jaya is a Penang-based publisher and distributor specialising in humanities and business titles. We have been operating since 2010 and currently supply to over 30 retail outlets in Northern Malaysia. We would like to expand our distribution partnership.',
+   submittedAt:'2026-06-20T14:15:00',status:'pending',
+   reviewedBy:null,reviewedAt:null,reviewNote:'',linkedSupplierId:null,
+   opacChecked:false,
+   bookList:[
+     {blId:'bl5',title:'A People\'s History of Malaysia',author:'Khoo, K.K.',edition:'2nd Ed. 2018',publisher:'Fajar Bakti',isbn:'978-983-195-245-6',cover:'Paperback',qty:12,unitPrice:45.00,type:'Reference',libCopy:3,ebook:false,category:'History',added:false},
+     {blId:'bl6',title:'Business Management Principles',author:'Griffin, R.W.',edition:'13th Ed. 2021',publisher:'Cengage',isbn:'978-0-357-03791-3',cover:'Hardcover',qty:10,unitPrice:115.00,type:'Textbook',libCopy:2,ebook:true,category:'Business',added:false},
+     {blId:'bl7',title:'Malaysian Literature Anthology',author:'Hassan, A.',edition:'1st Ed. 2017',publisher:'Dewan Bahasa',isbn:'978-983-62-9101-4',cover:'Paperback',qty:7,unitPrice:38.00,type:'Reference',libCopy:2,ebook:false,category:'Literature',added:false},
+   ]},
+],
 };
 
 const CATS=['Business','Computer Science','Economics','Engineering','History','Literature','Mathematics','Science'];
@@ -766,11 +794,12 @@ function fmtDT(d){return new Date(d).toLocaleString('en-MY',{day:'2-digit',month
 function fmtTime(d){return new Date(d).toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 function uid(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 const _dt={};function dbs(k,fn,...a){clearTimeout(_dt[k]);_dt[k]=setTimeout(()=>{fn(...a);const ni=isel('pc').querySelector('.sbox input');if(ni){const v=a[0]||'';ni.focus();try{ni.setSelectionRange(v.length,v.length);}catch(e){}}},220);}
+function getPendSupRegs(){return(DB.supplierRegistrations||(DB.supplierRegistrations=[])).filter(r=>r.status==='pending');}
 function getLow(){return DB.books.filter(b=>b.qty<b.minStock);}
 function getPend(){return DB.stockRequests.filter(r=>r.status==='pending'&&r.type==='restock');}
 function getPendMR(){return DB.missingReports.filter(r=>r.status==='pending');}
 function getPendCustReturns(){return DB.customerReturns.filter(r=>r.status==='pending');}
-function getDefectiveItems(){return DB.defectiveItems||(DB.defectiveItems=[]);}
+function getPendSupRegs(){return(DB.supplierRegistrations||[]).filter(r=>r.status==='pending');}function getDefectiveItems(){return DB.defectiveItems||(DB.defectiveItems=[]);}
 function getPendDefective(){return getDefectiveItems().filter(r=>r.status==='pending');}
 function cOpts(s=''){return getCats().filter(function(c){return!isCatDisabled(c)||c===s;}).map(c=>`<option value="${c}"${s===c?' selected':''}>${c}${isCatDisabled(c)?' (hidden)':''}</option>`).join('');}
 function isel(id){return document.getElementById(id);}
@@ -802,10 +831,10 @@ const NAVDEF=[
   {sec:'Inventory'},
   {id:'books',lbl:'Books',icon:'book-open',roles:['Manager','Staff']},
   {id:'missing',lbl:'Missing Stock',icon:'package-x',roles:['Manager','Staff']},
-  {id:'report-missing',lbl:'Report Missing Item',icon:'alert-triangle',roles:['Staff']},
+  {id:'report-missing',lbl:'Report Item',icon:'alert-triangle',roles:['Staff']},
   {id:'history',lbl:'Transactions',icon:'receipt',roles:['Manager','Staff']},
   {sec:'Management'},
-  {id:'suppliers',lbl:'Suppliers',icon:'truck',roles:['Manager']},
+  {id:'suppliers',lbl:'Suppliers',icon:'truck',roles:['Manager'],badge:'sreg'},
   {id:'stock-order',lbl:'Request New Stock',icon:'send',roles:['Manager'],badge:'req'},
   {id:'stock-receive',lbl:'Supplier Proposals',icon:'inbox',roles:['Manager'],badge:'rdel'},
   {id:'staff',lbl:'Manage Staff',icon:'users',roles:['Manager']},
@@ -829,9 +858,9 @@ const PMETA={
   books:['Books','Book catalogue with SKU & RFID'],
   missing:['Missing Stock','RFID gate events & below-threshold items'],
   'missing-rfid':['RFID Gate Monitor','Live RFID gate events and unauthorised exits'],
-  'missing-threshold':['Below Minimum Threshold','Books that are low or out of stock'],
+  'missing-analytics':['Loss Analytics','Confirmed losses by book — staff reports & RFID events'],
   'missing-reports':['Missing Item Reports','Reports submitted by staff for missing items'],
-  'report-missing':['Report Missing Item','Submit a missing item report to manager'],
+  'report-missing':['Report Item','Submit a missing item or defective book report to the manager'],
   history:['Transaction History','Customer purchase records'],
   suppliers:['Suppliers','Supplier directory'],
   'stock-order':['Request New Stock','Place orders to suppliers and track from order to delivery'],
@@ -844,7 +873,8 @@ const PMETA={
   returns:['Returns Management','Customer returns & restocking decisions'],
   defective:['Defective Items','Items flagged as defective — cannot be restocked'],
   'returns-supplier':['Supplier Return Requests','Track returns sent back to suppliers'],
-  'sup-dash':['Supplier Dashboard','Your portal'],
+  'sup-catalogue':['Supplier Catalogue','Books supplied by this supplier'],
+  'sup-registrations':['Supplier Registrations','New supplier registration requests'],
   'sup-submit':['Submit Request','Propose stock'],
   'sup-hist':['My Requests','Track requests'],
   'sup-returns':['Return Requests','Items being returned to your company'],
@@ -890,6 +920,7 @@ function buildNav(){
     if(item.badge==='deft') badge=getPendDefective().length>0?'<span class="nb2">'+getPendDefective().length+'</span>':''
     if(item.badge==='sret'){const sup=DB.suppliers.find(s=>s.userId===CU?.id);const c=sup?DB.supplierReturns.filter(r=>r.supplierId===sup.id&&r.status==='supplier-pending').length:0;badge=c>0?`<span class="nb2">${c}</span>`:'';};
     if(item.badge==='mr') badge=getPendMR().length>0?`<span class="nb2">${getPendMR().length}</span>`:'';
+    if(item.badge==='sreg'){const sc=getPendSupRegs().length;badge=sc>0?`<span class="nb2">${sc}</span>`:'';};
     d.innerHTML=`<i data-lucide="${item.icon}"></i><span>${item.lbl}</span>${badge}`;
     d.addEventListener('click',()=>nav(item.id));
     el.appendChild(d);
@@ -901,12 +932,12 @@ function refreshBadges(){
     const item=NAVDEF.find(n=>n.id===el.dataset.page);
     if(!item||!item.badge)return;
     const ex=el.querySelector('.nb2');
-    const c=item.badge==='req'?getPend().length:item.badge==='rdel'?DB.stockRequests.filter(r=>(r.type==='new_book'||r.type==='new_genre')&&r.status==='pending').length:item.badge==='deft'?getPendDefective().length:item.badge==='cret'?getPendCustReturns().length:item.badge==='sret'?(()=>{const sup=DB.suppliers.find(s=>s.userId===CU?.id);return sup?DB.supplierReturns.filter(r=>r.supplierId===sup.id&&r.status==='supplier-pending').length:0;})():getPendMR().length;
+    const c=item.badge==='req'?getPend().length:item.badge==='rdel'?DB.stockRequests.filter(r=>(r.type==='new_book'||r.type==='new_genre')&&r.status==='pending').length:item.badge==='deft'?getPendDefective().length:item.badge==='cret'?getPendCustReturns().length:item.badge==='sret'?(()=>{const sup=DB.suppliers.find(s=>s.userId===CU?.id);return sup?DB.supplierReturns.filter(r=>r.supplierId===sup.id&&r.status==='supplier-pending').length:0;})():item.badge==='sreg'?getPendSupRegs().length:getPendMR().length;
     if(c>0){if(ex)ex.textContent=c;else el.insertAdjacentHTML('beforeend',`<span class="nb2">${c}</span>`);}
     else if(ex)ex.remove();
   });
 }
-function setActive(page){const grp={'missing-rfid':'missing','missing-threshold':'missing','missing-reports':'missing'};const hp=grp[page]||page;document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',el.dataset.page===hp));}
+function setActive(page){const grp={'missing-rfid':'missing','missing-analytics':'missing','missing-reports':'missing','sup-catalogue':'suppliers','sup-registrations':'suppliers'};const hp=grp[page]||page;document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',el.dataset.page===hp));}
 function nav(page){
   if(page==='missing')page='missing-rfid'; /* sidebar shortcut → straight to RFID Gate Monitor */
   CP=page;setActive(page);
@@ -915,11 +946,12 @@ function nav(page){
   isel('tbt').textContent=m[0];isel('tbs').textContent=m[1];
   /* Dashboard = no scroll so it fits one screen */
   isel('pc').classList.toggle('noscroll',page==='dashboard');
-  const pages={dashboard:pgDash,books:pgBooks,missing:pgMissing,'missing-rfid':pgMissingRFID,'missing-threshold':pgMissingThreshold,'missing-reports':pgMissingReports,'report-missing':pgReportMissing,returns:pgReturns,defective:pgDefective,'returns-supplier':pgReturnsSupplier,'sup-returns':pgSupReturns,
-    history:pgHistory,suppliers:pgSup,'stock-order':pgStockOrder,'stock-receive':pgStockReceive,
+  const pages={dashboard:pgDash,books:pgBooks,missing:pgMissing,'missing-rfid':pgMissingRFID,'missing-analytics':pgMissingAnalytics,'missing-reports':pgMissingReports,'report-missing':pgReportMissing,returns:pgReturns,defective:pgDefective,'returns-supplier':pgReturnsSupplier,'sup-returns':pgSupReturns,
+    history:pgHistory,suppliers:pgSup,'sup-catalogue':pgSupCatalogue,'sup-registrations':pgSupRegistrations,'stock-order':pgStockOrder,'stock-receive':pgStockReceive,
     staff:pgStaff,users:pgUsers,reports:pgReports,
     backup:pgBackup,'admin-report':pgAdminReport,
     'sup-dash':pgSupDash,'sup-submit':pgSupSubmit,'sup-hist':pgSupHist};
+  if(page!=='books')_bkCats=[];
   if(pages[page])pages[page]();
 }
 function refreshDot(){
@@ -1091,7 +1123,7 @@ function pgDashStaff(){
   <div class="ph" style="margin-top:4px"><div></div>
     <div class="pha">
       <button class="btn bnn" onclick="nav('history')"><i data-lucide="receipt"></i>Record Sale</button>
-      <button class="btn bno" onclick="nav('report-missing')"><i data-lucide="alert-triangle"></i>Report Missing Item</button>
+      <button class="btn bno" onclick="nav('report-missing')"><i data-lucide="alert-triangle"></i>Report Item</button>
       <button class="btn bno" onclick="nav('books')"><i data-lucide="book-open"></i>View Books</button>
     </div>
   </div>
@@ -1179,12 +1211,15 @@ function pgDashAdmin(){
 
 
 /* BOOKS — with SKU, RFID, barcode */
-function pgBooks(s='',cf='',stf=''){
+/* selected categories for book catalogue filter — persists while on page */
+let _bkCats=[];
+
+function pgBooks(s='',stf=''){
   const ce=CU.role==='Manager';
   const bks=DB.books.filter(b=>{
     const q=s.toLowerCase();
     const matchQ=!q||b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)||b.isbn.includes(q)||b.sku.toLowerCase().includes(q)||b.rfid.toLowerCase().includes(q);
-    const matchCat=!cf||b.category===cf;
+    const matchCat=!_bkCats.length||_bkCats.includes(b.category);
     const st=sSt(b).label;
     const matchStat=!stf||st===stf;
     return matchQ&&matchCat&&matchStat&&!isCatDisabled(b.category);
@@ -1204,61 +1239,158 @@ function pgBooks(s='',cf='',stf=''){
       ${ce?`<button class="bic ed" onclick="editBook('${b.id}')"><i data-lucide="pencil"></i></button>
       <button class="bic dl" onclick="delBook('${b.id}')" style="margin-left:3px"><i data-lucide="trash-2"></i></button>`
       :''}</td></tr>`;}).join('')
-    :`<tr><td colspan="12"><div class="empty"><div class="eico"><i data-lucide="search-x"></i></div><h3>No books found</h3></div></td></tr>`;
+    :`<tr><td colspan="12"><div class="empty"><div class="eico"><i data-lucide="search-x"></i></div><h3>No books found</h3>${_bkCats.length?'<p>Try removing some category filters.</p>':''}</div></td></tr>`;
   const catBtn=ce?'<button class="btn bno" onclick="openManageCats()"><i data-lucide="tag"></i>Manage Categories</button>':'';
   const addBookBtn=ce?'<button class="btn bnn" onclick="editBook(null)"><i data-lucide="plus"></i>Add Book</button>':'';
   const statOpts=['In Stock','Low Stock','Out of Stock'].map(v=>`<option value="${v}"${stf===v?' selected':''}>${v}</option>`).join('');
   setHTML(`<div class="ph"><div><h2>Book Catalogue</h2><p>${DB.books.length} titles — each with unique SKU, RFID tag &amp; Barcode</p></div>
     <div class="pha">${catBtn}${addBookBtn}</div></div>
     <div class="card"><div class="ch"><div class="tb2">
-      <div class="sbox"><i data-lucide="search"></i><input id="bk-srch" type="text" placeholder="Search title, author, SKU, RFID…" value="${s}" oninput="dbs('bk',pgBooks,this.value,cf,stf)"/><button class="qr-scan-btn" type="button" title="Scan QR / Barcode" onclick="openQR(isel('bk-srch'))"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button></div>
-      <select class="flt" onchange="pgBooks(isel('bk-srch')?isel('bk-srch').value:'',cf,this.value)"><option value="">All Status</option>${statOpts}</select>
+      <div class="sbox"><i data-lucide="search"></i><input id="bk-srch" type="text" placeholder="Search title, author, SKU, RFID…" value="${s}" oninput="dbs('bk',pgBooks,this.value,document.querySelector('select.flt')?document.querySelector('select.flt').value:'')"/><button class="qr-scan-btn" type="button" title="Scan QR / Barcode" onclick="openQR(isel('bk-srch'))"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button></div>
+      <select class="flt" onchange="pgBooks(isel('bk-srch')?isel('bk-srch').value:'',this.value)"><option value="">All Status</option>${statOpts}</select>
       <div class="cbox" id="cat-cbox"></div>
     </div></div>
     <div class="tw"><table><thead><tr><th>Title / ISBN</th><th>SKU</th><th>RFID Tag</th><th>Barcode</th><th>Author</th><th>Category</th><th>Price</th><th>Qty</th><th>Min</th><th>Status</th><th>Supplier</th><th>Action</th></tr></thead>
     <tbody>${rows}</tbody></table></div></div>`);
-  initCatCombo(cf,stf);
+  initCatCombo(stf);
 }
-/* Type-ahead category combobox — used in Book Catalogue toolbar.
-   Built as a custom widget (not <select>) since category lists can be long. */
-function initCatCombo(cf,stf){
+
+/* Toggle a category in/out of the multi-select filter */
+function bkCatToggle(cat){
+  const idx=_bkCats.indexOf(cat);
+  if(idx>=0)_bkCats.splice(idx,1);else _bkCats.push(cat);
+  const s=isel('bk-srch')?isel('bk-srch').value:'';
+  const stf=document.querySelector('select.flt')?document.querySelector('select.flt').value:'';
+  pgBooks(s,stf);
+}
+/* Remove one chip by name */
+function bkCatRemove(cat){
+  _bkCats=_bkCats.filter(c=>c!==cat);
+  const s=isel('bk-srch')?isel('bk-srch').value:'';
+  const stf=document.querySelector('select.flt')?document.querySelector('select.flt').value:'';
+  pgBooks(s,stf);
+}
+
+/* Multi-select category combobox with chip tags */
+function initCatCombo(stf){
   const wrap=isel('cat-cbox');if(!wrap)return;
   const cats=getActiveCats();
   const bookCounts={};DB.books.forEach(b=>{bookCounts[b.category]=(bookCounts[b.category]||0)+1;});
   let hl=-1,filtered=cats.slice();
-  wrap.innerHTML=`<div class="cbox-in" id="cc-in">
-      <i data-lucide="tag"></i>
-      <input id="cc-input" type="text" placeholder="Filter by category…" autocomplete="off" value="${cf||''}"/>
-      ${cf?'<span class="cbox-clr" id="cc-clear" title="Clear"><i data-lucide="x"></i></span>':''}
+  const hasChips=_bkCats.length>0;
+
+  /* Chips HTML */
+  const chipsHtml=_bkCats.map(c=>`<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 4px 2px 8px;background:var(--alt);color:var(--ac);border-radius:20px;font-size:.69rem;font-weight:700;white-space:nowrap;line-height:1.4">${c}<span onclick="bkCatRemove('${c}')" title="Remove" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:rgba(37,99,235,.15);margin-left:1px;font-size:.8rem;line-height:1">&times;</span></span>`).join('');
+
+  wrap.innerHTML=`<div class="cbox-in" id="cc-in" style="${hasChips?'height:auto;min-height:32px;flex-wrap:wrap;padding:4px 8px;align-items:center;':''}">
+      ${chipsHtml}
+      <i data-lucide="tag" style="flex-shrink:0;font-size:.78rem;color:var(--tl)"></i>
+      <input id="cc-input" type="text" placeholder="${hasChips?'Add more…':'Filter by category…'}" autocomplete="off" style="min-width:90px;flex:1"/>
+      ${hasChips?`<span class="cbox-clr" id="cc-clear-all" title="Clear all filters" style="flex-shrink:0"><i data-lucide="x"></i></span>`:''}
     </div>
     <div class="cbox-dd" id="cc-dd"></div>`;
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
-  const inp=isel('cc-input'),dd=isel('cc-dd'),clr=isel('cc-clear');
+
+  const inp=isel('cc-input'),dd=isel('cc-dd'),clearAll=isel('cc-clear-all');
+
   function renderDD(){
     if(!filtered.length){dd.innerHTML='<div class="cbox-empty">No matching categories</div>';return;}
-    dd.innerHTML=filtered.map((c,i)=>`<div class="cbox-opt${c===cf?' sel':''}${i===hl?' hl':''}" data-cat="${c}">${c}<small>${bookCounts[c]||0}</small></div>`).join('');
+    dd.innerHTML=filtered.map((c,i)=>{
+      const sel=_bkCats.includes(c);
+      return`<div class="cbox-opt${i===hl?' hl':''}" data-cat="${c}" style="display:flex;align-items:center;gap:8px">
+        <span style="width:15px;height:15px;border-radius:3px;border:1.5px solid ${sel?'var(--ac)':'var(--bdm)'};background:${sel?'var(--ac)':'transparent'};display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .1s">
+          ${sel?`<svg width="9" height="9" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+        </span>
+        <span style="${sel?'font-weight:700;color:var(--ac)':''}">${c}</span>
+        <small style="margin-left:auto">${bookCounts[c]||0}</small>
+      </div>`;
+    }).join('');
   }
   function openDD(){filtered=cats.filter(c=>c.toLowerCase().includes(inp.value.toLowerCase()));hl=-1;renderDD();dd.classList.add('open');}
   function closeDD(){dd.classList.remove('open');}
+
   inp.addEventListener('focus',openDD);
   inp.addEventListener('input',openDD);
   inp.addEventListener('keydown',e=>{
     if(!dd.classList.contains('open'))return;
     if(e.key==='ArrowDown'){e.preventDefault();hl=Math.min(hl+1,filtered.length-1);renderDD();}
     else if(e.key==='ArrowUp'){e.preventDefault();hl=Math.max(hl-1,0);renderDD();}
-    else if(e.key==='Enter'){e.preventDefault();if(hl>=0&&filtered[hl]){pgBooks(isel('bk-srch')?isel('bk-srch').value:'',filtered[hl],stf);}else if(filtered.length===1){pgBooks(isel('bk-srch')?isel('bk-srch').value:'',filtered[0],stf);}}
+    else if(e.key==='Enter'){
+      e.preventDefault();
+      const cat=hl>=0&&filtered[hl]?filtered[hl]:filtered.length===1?filtered[0]:null;
+      if(cat)bkCatToggle(cat);
+    }
     else if(e.key==='Escape'){closeDD();inp.blur();}
   });
   dd.addEventListener('mousedown',e=>{
     const opt=e.target.closest('.cbox-opt');if(!opt)return;
     e.preventDefault();
-    pgBooks(isel('bk-srch')?isel('bk-srch').value:'',opt.dataset.cat,stf);
+    bkCatToggle(opt.dataset.cat);
   });
-  if(clr)clr.addEventListener('mousedown',e=>{e.preventDefault();pgBooks(isel('bk-srch')?isel('bk-srch').value:'','',stf);});
+  if(clearAll)clearAll.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    _bkCats=[];
+    pgBooks(isel('bk-srch')?isel('bk-srch').value:'',document.querySelector('select.flt')?document.querySelector('select.flt').value:'');
+  });
   document.addEventListener('click',function outside(e){
     if(!wrap.contains(e.target)){closeDD();document.removeEventListener('click',outside);}
   });
 }
+/* ===== SINGLE-SELECT CATEGORY COMBOBOX FOR MODAL FORMS (type-ahead, no chips) ===== */
+function initModalCatCombo(wrapId,hiddenId,initial){
+  const wrap=isel(wrapId);if(!wrap)return;
+  const cats=getActiveCats();
+  let sel=initial||'';
+  let filtered=cats.slice();
+  let hl=-1;
+
+  function render(){
+    wrap.innerHTML=`<div class="cbox-in" id="${wrapId}-in">
+        <i data-lucide="tag" style="font-size:.78rem;color:var(--tl);flex-shrink:0"></i>
+        <input id="${wrapId}-inp" type="text" placeholder="Type to search category…" autocomplete="off" value="${sel}" style="min-width:0;flex:1"/>
+        ${sel?`<span class="cbox-clr" id="${wrapId}-clr" title="Clear" style="flex-shrink:0"><i data-lucide="x"></i></span>`:''}
+      </div>
+      <div class="cbox-dd" id="${wrapId}-dd"></div>`;
+    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+    bind();
+  }
+  function renderDD(){
+    const dd=isel(wrapId+'-dd');if(!dd)return;
+    if(!filtered.length){dd.innerHTML='<div class="cbox-empty">No matching categories</div>';return;}
+    dd.innerHTML=filtered.map((c,i)=>`<div class="cbox-opt${c===sel?' sel':''}${i===hl?' hl':''}" data-cat="${c}">${c}</div>`).join('');
+  }
+  function openDD(){
+    const inp=isel(wrapId+'-inp');if(!inp)return;
+    filtered=cats.filter(c=>c.toLowerCase().includes(inp.value.toLowerCase()));
+    hl=-1;renderDD();
+    const dd=isel(wrapId+'-dd');if(dd)dd.classList.add('open');
+  }
+  function closeDD(){const dd=isel(wrapId+'-dd');if(dd)dd.classList.remove('open');}
+  function pick(cat){
+    sel=cat;
+    const hidden=isel(hiddenId);if(hidden)hidden.value=cat;
+    closeDD();render();
+  }
+  function bind(){
+    const inp=isel(wrapId+'-inp'),dd=isel(wrapId+'-dd'),clr=isel(wrapId+'-clr');
+    if(inp){
+      inp.addEventListener('focus',openDD);
+      inp.addEventListener('input',openDD);
+      inp.addEventListener('keydown',e=>{
+        if(!dd||!dd.classList.contains('open'))return;
+        if(e.key==='ArrowDown'){e.preventDefault();hl=Math.min(hl+1,filtered.length-1);renderDD();}
+        else if(e.key==='ArrowUp'){e.preventDefault();hl=Math.max(hl-1,0);renderDD();}
+        else if(e.key==='Enter'){e.preventDefault();const cat=hl>=0&&filtered[hl]?filtered[hl]:filtered.length===1?filtered[0]:null;if(cat)pick(cat);}
+        else if(e.key==='Escape'){closeDD();inp.blur();}
+      });
+    }
+    if(dd){dd.addEventListener('mousedown',e=>{const opt=e.target.closest('.cbox-opt');if(!opt)return;e.preventDefault();pick(opt.dataset.cat);});}
+    if(clr){clr.addEventListener('mousedown',e=>{e.preventDefault();sel='';const hidden=isel(hiddenId);if(hidden)hidden.value='';render();});}
+    document.addEventListener('click',function outside(e){if(!wrap.contains(e.target)){closeDD();document.removeEventListener('click',outside);}});
+  }
+  render();
+}
+
 function printBookQR(id){
   var b=DB.books.find(function(x){return x.id===id;});
   if(!b){toast('Book not found.','error');return;}
@@ -1313,7 +1445,7 @@ function editBook(id){
       <div class="fg full"><label>Book Title *</label><input id="ft" value="${b.title}" placeholder="Full title"/></div>
       <div class="fg"><label>Author *</label><input id="fa" value="${b.author}"/></div>
       <div class="fg"><label>ISBN *</label><input id="fi" value="${b.isbn}" placeholder="978-x-xxx"/></div>
-      <div class="fg"><label>Category *</label><select id="fc"><option value="">Select…</option>${cOpts(b.category)}</select></div>
+      <div class="fg"><label>Category *</label><div id="fc-cbox" class="cbox"></div><input type="hidden" id="fc" value="${b.category}"/></div>
       <div class="fg"><label>Price (RM) *</label><input id="fp" type="number" min="0" step="0.01" value="${b.price}"/></div>
       <div class="fg"><label>Min Stock</label><input id="fm" type="number" min="0" value="${b.minStock}"/></div>
       <div class="fg"><label>Supplier</label><select id="fs"><option value="">Select supplier…</option>${sO}</select></div>
@@ -1325,6 +1457,7 @@ function editBook(id){
       <div class="fg"><label>Current Qty (read-only)</label><input readonly value="${b.qty} units"/></div>`:''}
     </div>`,`<button class="btn bno" onclick="closeMo()">Cancel</button>
      <button class="btn bnn" onclick="saveBook('${id||''}')"><i data-lucide="save"></i>Save</button>`,true);
+  initModalCatCombo('fc-cbox','fc',b.category);
 }
 function saveBook(id){
   const t=isel('ft').value.trim(),a=isel('fa').value.trim(),i=isel('fi').value.trim();
@@ -1425,10 +1558,18 @@ function pgMissing(){
 /* Shared switcher — 3 aligned boxes shown atop every Missing Stock sub-page.
    Tapping a box swaps to that page without leaving the section. */
 function missingTabs(active){
-  const all=DB.books.filter(b=>b.qty<b.minStock);
-  const outOf=all.filter(b=>b.qty===0),lw=all.filter(b=>b.qty>0&&b.qty<b.minStock);
   const unconfRFID=DB.rfidEvents.filter(e=>e.type==='unauthorized'&&!e.confirmed);
   const pendMR=getPendMR();
+  const totalLost=(()=>{
+    let n=0;
+    DB.missingReports.forEach(r=>{if(r.status==='confirmed')n++;});
+    DB.rfidEvents.forEach(e=>{if(e.type==='unauthorized'&&e.deducted)n++;});
+    return n;
+  })();
+  const affectedBooks=new Set([
+    ...DB.missingReports.map(r=>r.bookId),
+    ...DB.rfidEvents.filter(e=>e.type==='unauthorized').map(e=>e.bookId)
+  ]).size;
   const tab=(id,icon,title,statHtml,accent)=>`
     <div class="hubcard${id===active?' on':''}" ${id===active?'':`onclick="nav('${id}')"`}>
       <div class="hubcard-top">
@@ -1440,13 +1581,21 @@ function missingTabs(active){
         <div class="hubcard-stats">${statHtml}</div>
       </div>
     </div>`;
+  /* Staff can only see the RFID Gate Monitor */
+  if(CU.role==='Staff'){
+    return `<div class="hubgrid" style="grid-template-columns:1fr">
+      ${tab('missing-rfid','radio-tower','RFID Gate Monitor',
+        `<span class="badge ${unconfRFID.length>0?'br2':'bg2'}">${unconfRFID.length} unconfirmed</span><span class="badge bgr">${DB.rfidEvents.length} events</span>`,
+        {bg:'var(--plt)',fg:'var(--pu)'})}
+    </div>`;
+  }
   return `<div class="hubgrid">
     ${tab('missing-rfid','radio-tower','RFID Gate Monitor',
       `<span class="badge ${unconfRFID.length>0?'br2':'bg2'}">${unconfRFID.length} unconfirmed</span><span class="badge bgr">${DB.rfidEvents.length} events</span>`,
       {bg:'var(--plt)',fg:'var(--pu)'})}
-    ${tab('missing-threshold','package-x','Below Min. Threshold',
-      `<span class="badge br2">${outOf.length} out</span><span class="badge by">${lw.length} low</span>`,
-      {bg:'var(--wlt)',fg:'var(--wn)'})}
+    ${tab('missing-analytics','bar-chart-2','Loss Analytics',
+      `<span class="badge br2">${totalLost} lost units</span><span class="badge bgr">${affectedBooks} book${affectedBooks!==1?'s':''}</span>`,
+      {bg:'var(--dlt)',fg:'var(--dg)'})}
     ${tab('missing-reports','clipboard-list','Missing Item Reports',
       `<span class="badge ${pendMR.length>0?'by':'bg2'}">${pendMR.length} pending</span><span class="badge bgr">${DB.missingReports.length} total</span>`,
       {bg:'var(--alt)',fg:'var(--ac)'})}
@@ -1494,92 +1643,299 @@ function pgMissingRFID(){
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
-/* ===== SUB-PAGE 2: BELOW MINIMUM THRESHOLD ===== */
-function pgMissingThreshold(s='',cf=''){
-  const all=DB.books.filter(b=>{const q=s.toLowerCase();
-    return b.qty<b.minStock&&(!q||b.title.toLowerCase().includes(q)||b.sku.toLowerCase().includes(q)||b.category.toLowerCase().includes(q))&&(!cf||b.category===cf);});
-  const outOf=all.filter(b=>b.qty===0),lw=all.filter(b=>b.qty>0&&b.qty<b.minStock);
-  const def=all.reduce((a,b)=>a+(b.minStock-b.qty),0);
+/* ===== SUB-PAGE 2: LOSS ANALYTICS ===== */
+function pgMissingAnalytics(){
+  if(CU.role==='Staff'){pgMissingRFID();return;}
+  /* Build per-book aggregation from missing reports + RFID unauthorized events */
+  const bookMap={};
 
-  const card=b=>{const d=b.minStock-b.qty;const pct=Math.round(b.qty/b.minStock*100);const out=b.qty===0;
-    return`<div class="msc ${out?'crit':'low'}">
-      <div class="msi">
-        <h4>${b.title}</h4>
-        <p>${b.category} · <span class="sku">${b.sku}</span> · <span class="rfidtag">${b.rfid}</span></p>
-        <p style="margin-top:3px">${b.author} · ${rmF(b.price)}</p>
-        <div style="margin-top:7px;display:flex;align-items:center;gap:7px">
-          <div style="flex:1;background:var(--bgm);border-radius:4px;height:5px;overflow:hidden">
-            <div style="width:${pct}%;background:${out?'var(--dg)':'var(--wn)'};height:100%;border-radius:4px"></div></div>
-          <span style="font-size:.7rem;color:var(--tl);white-space:nowrap">${pct}% stocked</span></div></div>
-      <div class="msn">
-        <div class="msnn"><div class="v" style="color:${out?'var(--dg)':'var(--wn)'}">${b.qty}</div><div class="l">Current</div></div>
-        <div class="msnn"><div class="v" style="color:var(--tl)">${b.minStock}</div><div class="l">Alert Level</div></div>
-        <div class="msnn"><div class="v" style="color:var(--navy)">${d}</div><div class="l">Deficit</div></div>
-      </div></div>`;};
+  DB.missingReports.forEach(mr=>{
+    if(!bookMap[mr.bookId]){
+      const b=DB.books.find(x=>x.id===mr.bookId);
+      bookMap[mr.bookId]={bookId:mr.bookId,bookTitle:mr.bookTitle,sku:mr.sku,rfid:mr.rfid,
+        price:b?b.price:0,category:b?b.category:'—',
+        staffReports:0,confirmedReports:0,dismissedReports:0,pendingReports:0,foundReports:0,
+        rfidEvents:0,rfidDeducted:0,totalLost:0};
+    }
+    const e=bookMap[mr.bookId];
+    e.staffReports++;
+    if(mr.status==='confirmed'){e.confirmedReports++;e.totalLost++;}
+    else if(mr.status==='dismissed')e.dismissedReports++;
+    else if(mr.status==='found')e.foundReports++;
+    else e.pendingReports++;
+  });
 
-  setHTML(`<div class="ph"><div><h2>Missing Stock</h2><p>RFID gate events, low-stock items, and missing item reports</p></div></div>
-  ${missingTabs('missing-threshold')}
+  DB.rfidEvents.filter(ev=>ev.type==='unauthorized').forEach(ev=>{
+    if(!bookMap[ev.bookId]){
+      const b=DB.books.find(x=>x.id===ev.bookId);
+      bookMap[ev.bookId]={bookId:ev.bookId,bookTitle:ev.bookTitle,sku:ev.sku,rfid:ev.rfid,
+        price:b?b.price:0,category:b?b.category:'—',
+        staffReports:0,confirmedReports:0,dismissedReports:0,pendingReports:0,
+        rfidEvents:0,rfidDeducted:0,totalLost:0};
+    }
+    const e=bookMap[ev.bookId];
+    e.rfidEvents++;
+    if(ev.deducted){e.rfidDeducted++;e.totalLost++;}
+  });
 
-  <div class="ph" style="margin-top:15px">
-    <div><h2>Below Minimum Threshold</h2><p>Books that need restocking</p></div>
-    <div class="pha">
-      <div class="sbox" style="min-width:200px"><i data-lucide="search"></i><input type="text" placeholder="Search SKU, title…" value="${s}" oninput="dbs('ms',pgMissingThreshold,this.value,cf)"/></div>
-    </div>
+  const entries=Object.values(bookMap).sort((a,b)=>b.totalLost-a.totalLost||b.staffReports+b.rfidEvents-(a.staffReports+a.rfidEvents));
+
+  /* Summary totals */
+  const totalReports=DB.missingReports.length;
+  const confirmedReports=DB.missingReports.filter(r=>r.status==='confirmed').length;
+  const foundReports=DB.missingReports.filter(r=>r.status==='found').length;
+  const totalRFIDAlerts=DB.rfidEvents.filter(e=>e.type==='unauthorized').length;
+  const totalLost=entries.reduce((a,e)=>a+e.totalLost,0);
+  const totalLossRM=entries.reduce((a,e)=>a+e.totalLost*e.price,0);
+
+  const rows=entries.length?entries.map(e=>{
+    const loss=e.totalLost*e.price;
+    const srcBadges=[
+      e.staffReports>0?`<span class="badge bb" title="Staff missing reports">${e.staffReports} staff</span>`:'',
+      e.rfidEvents>0?`<span class="badge bp" title="RFID gate alerts">${e.rfidEvents} RFID</span>`:'',
+    ].filter(Boolean).join(' ');
+    const statBadges=[
+      e.pendingReports>0?`<span class="badge by">${e.pendingReports} pending</span>`:'',
+      e.confirmedReports>0?`<span class="badge br2">${e.confirmedReports} confirmed</span>`:'',
+      e.rfidDeducted>0?`<span class="badge bp">${e.rfidDeducted} RFID deducted</span>`:'',
+      e.foundReports>0?`<span class="badge bg2">${e.foundReports} found</span>`:'',
+      e.dismissedReports>0?`<span class="badge bgr">${e.dismissedReports} dismissed</span>`:'',
+    ].filter(Boolean).join(' ');
+    return`<tr>
+      <td>
+        <div style="font-weight:600;color:var(--navy)">${e.bookTitle}</div>
+        <div style="font-size:.7rem;color:var(--tl);margin-top:2px"><span class="sku">${e.sku}</span> · <span class="rfidtag">${e.rfid}</span></div>
+      </td>
+      <td><span class="badge bgr">${e.category}</span></td>
+      <td style="text-align:center">${srcBadges||'<span style="color:var(--tl);font-size:.75rem">—</span>'}</td>
+      <td style="text-align:center">${e.staffReports>0?`<span style="font-weight:700;color:var(--ac)">${e.staffReports}</span>`:'<span style="color:var(--tl)">0</span>'}</td>
+      <td style="text-align:center">${e.rfidEvents>0?`<span style="font-weight:700;color:var(--pu)">${e.rfidEvents}</span>`:'<span style="color:var(--tl)">0</span>'}</td>
+      <td style="text-align:center">${e.totalLost>0?`<b style="color:var(--dg);font-size:.9rem">${e.totalLost}</b>`:'<span style="color:var(--tl)">0</span>'}</td>
+      <td style="text-align:right;font-weight:700;color:${loss>0?'var(--dg)':'var(--tl)'}">${loss>0?rmF(loss):'—'}</td>
+      <td style="font-size:.73rem">${statBadges||'<span style="color:var(--tl)">—</span>'}</td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="8"><div class="empty"><div class="eico"><i data-lucide="bar-chart-2"></i></div><h3>No missing records yet</h3><p>Staff reports and RFID gate events will appear here once submitted.</p></div></td></tr>`;
+
+  setHTML(`<div class="ph"><div><h2>Missing Stock</h2><p>RFID gate events, loss analytics, and missing item reports</p></div></div>
+  ${missingTabs('missing-analytics')}
+
+  <div class="sg" style="grid-template-columns:repeat(4,1fr);margin-top:15px">
+    <div class="sc"><div class="si blue"><i data-lucide="clipboard-list"></i></div><div><div class="sv">${totalReports}</div><div class="sl">Staff Reports Total</div></div></div>
+    <div class="sc"><div class="si purple"><i data-lucide="radio-tower"></i></div><div><div class="sv">${totalRFIDAlerts}</div><div class="sl">RFID Gate Alerts</div></div></div>
+    <div class="sc"><div class="si red"><i data-lucide="package-x"></i></div><div><div class="sv">${totalLost}</div><div class="sl">Confirmed Lost Units</div></div></div>
+    <div class="sc"><div class="si warn"><i data-lucide="trending-down"></i></div><div><div class="sv" style="font-size:1.05rem">${rmF(totalLossRM)}</div><div class="sl">Estimated Total Loss</div></div></div>
   </div>
 
-  <div class="sg" style="grid-template-columns:repeat(3,1fr)">
-    <div class="sc"><div class="si warn"><i data-lucide="package-x"></i></div><div><div class="sv">${all.length}</div><div class="sl">Below Min</div></div></div>
-    <div class="sc"><div class="si red"><i data-lucide="x-circle"></i></div><div><div class="sv">${outOf.length}</div><div class="sl">Out of Stock</div></div></div>
-    <div class="sc"><div class="si blue"><i data-lucide="minus-circle"></i></div><div><div class="sv">${def}</div><div class="sl">Units Needed</div></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px">
+    <div class="card"><div class="ch"><h2>Reports Breakdown</h2></div><div class="cb" style="display:flex;flex-direction:column;gap:8px">
+      ${[['Pending review',DB.missingReports.filter(r=>r.status==='pending').length,'by','alert-triangle'],
+         ['Confirmed & deducted',confirmedReports,'br2','check-circle'],
+         ['Found & restored',foundReports,'bg2','package-check'],
+         ['Dismissed',DB.missingReports.filter(r=>r.status==='dismissed').length,'bgr','x-circle']
+        ].map(([lbl,cnt,cls,ico])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 6px;border-radius:var(--r);background:var(--bg)">
+          <div style="display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--tm)"><i data-lucide="${ico}" style="font-size:.8rem"></i>${lbl}</div>
+          <span class="badge ${cls}">${cnt}</span></div>`).join('')}
+    </div></div>
+    <div class="card"><div class="ch"><h2>RFID Alerts Breakdown</h2></div><div class="cb" style="display:flex;flex-direction:column;gap:8px">
+      ${[['Unconfirmed alerts',DB.rfidEvents.filter(e=>e.type==='unauthorized'&&!e.confirmed).length,'br2','alert-triangle'],
+         ['Confirmed & deducted',DB.rfidEvents.filter(e=>e.type==='unauthorized'&&e.deducted).length,'bg2','check-circle'],
+         ['Authorised exits',DB.rfidEvents.filter(e=>e.type==='authorized').length,'bgr','log-in']
+        ].map(([lbl,cnt,cls,ico])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 6px;border-radius:var(--r);background:var(--bg)">
+          <div style="display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--tm)"><i data-lucide="${ico}" style="font-size:.8rem"></i>${lbl}</div>
+          <span class="badge ${cls}">${cnt}</span></div>`).join('')}
+    </div></div>
   </div>
 
-  ${outOf.length?`<div class="card" style="margin-bottom:13px"><div class="ch"><h2>Out of Stock</h2><span class="badge br2">${outOf.length}</span></div>
-    <div class="cb" style="display:flex;flex-direction:column;gap:9px">${outOf.map(card).join('')}</div></div>`:''}
-  ${lw.length?`<div class="card" style="margin-bottom:16px"><div class="ch"><h2>Low Stock</h2><span class="badge by">${lw.length}</span></div>
-    <div class="cb" style="display:flex;flex-direction:column;gap:9px">${lw.map(card).join('')}</div></div>`:''}
-  ${!all.length?`<div class="card cb" style="margin-bottom:16px"><div class="empty"><div class="eico"><i data-lucide="check-circle"></i></div><h3>All good!</h3><p>No books below minimum threshold.</p></div></div>`:''}`);
+  <div class="ph">
+    <div><h2>Loss by Book</h2><p>${entries.length} book${entries.length!==1?'s':''} with missing reports or RFID records — sorted by confirmed losses</p></div>
+  </div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr>
+      <th>Book Title / ID</th><th>Category</th><th>Source</th>
+      <th style="text-align:center">Staff<br>Reports</th>
+      <th style="text-align:center">RFID<br>Alerts</th>
+      <th style="text-align:center">Confirmed<br>Lost</th>
+      <th style="text-align:right">Est. Loss</th>
+      <th>Status Breakdown</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div></div>`);
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
 /* ===== SUB-PAGE 3: MISSING ITEM REPORTS ===== */
 function pgMissingReports(){
-  const pendMR=getPendMR();
-  const mrRows=DB.missingReports.slice().reverse().map(mr=>{
-    const stMap={pending:'by',confirmed:'br2',dismissed:'bgr'};
-    return`<tr>
-      <td><span class="txr">${mr.reportId}</span></td>
-      <td>${fmtDT(mr.submittedAt)}</td>
-      <td style="font-weight:600">${mr.bookTitle}</td>
-      <td><span class="sku">${mr.sku}</span></td>
-      <td><span class="rfidtag">${mr.rfid}</span></td>
-      <td style="font-size:.77rem">${mr.staffName}</td>
-      <td style="font-size:.76rem;color:var(--tl);max-width:160px">${mr.note}</td>
-      <td><span class="badge ${stMap[mr.status]}">${mr.status}</span></td>
-      <td>${mr.status==='pending'&&CU.role==='Manager'?`
-        <button class="btn bns bsm" onclick="confirmMR('${mr.id}')"><i data-lucide="check"></i>Confirm</button>
-        <button class="btn bno bsm" onclick="dismissMR('${mr.id}')" style="margin-left:3px"><i data-lucide="x"></i>Dismiss</button>`
-        :mr.status==='confirmed'?`<span style="font-size:.73rem;color:var(--tl)">Deducted by ${mr.confirmedBy}</span>`:
-        mr.status==='dismissed'?`<span style="font-size:.73rem;color:var(--tl)">Dismissed</span>`:''}</td>
-    </tr>`;}).join('');
+  if(CU.role==='Staff'){pgMissingRFID();return;}
+  const pending=DB.missingReports.filter(r=>r.status==='pending');
+  const confirmed=DB.missingReports.filter(r=>r.status==='confirmed').slice().reverse();
+  const found=DB.missingReports.filter(r=>r.status==='found').slice().reverse();
+  const dismissed=DB.missingReports.filter(r=>r.status==='dismissed').slice().reverse();
 
-  setHTML(`<div class="ph"><div><h2>Missing Stock</h2><p>RFID gate events, low-stock items, and missing item reports</p></div></div>
+  const stMap={pending:'by',confirmed:'br2',dismissed:'bgr',found:'bg2'};
+  const stLabel={pending:'Pending',confirmed:'Confirmed',dismissed:'Dismissed',found:'Found'};
+
+  /* Pending rows — with action buttons for manager */
+  const pendingRows=pending.length?pending.slice().reverse().map(mr=>`<tr>
+    <td><span class="txr">${mr.reportId}</span></td>
+    <td>${fmtDT(mr.submittedAt)}</td>
+    <td style="font-weight:600">${mr.bookTitle}</td>
+    <td><span class="sku">${mr.sku}</span></td>
+    <td style="font-size:.77rem">${mr.staffName}</td>
+    <td style="font-size:.76rem;color:var(--tl);max-width:160px">${mr.note}</td>
+    <td><span class="badge by">Pending</span></td>
+    <td style="white-space:nowrap">${CU.role==='Manager'?`
+      <button class="btn bns bsm" onclick="confirmMR('${mr.id}')"><i data-lucide="check"></i>Confirm</button>
+      <button class="btn bno bsm" onclick="dismissMR('${mr.id}')" style="margin-left:3px"><i data-lucide="x"></i>Dismiss</button>`:
+      '<span style="font-size:.73rem;color:var(--tl)">Awaiting manager</span>'}</td>
+  </tr>`).join('')
+  :`<tr><td colspan="8"><div class="empty" style="padding:20px 16px"><div class="eico"><i data-lucide="check-circle"></i></div><h3>No pending reports</h3><p>All reports have been reviewed.</p></div></td></tr>`;
+
+  /* Confirmed history rows — with Undo button */
+  const confirmedRows=confirmed.length?confirmed.map(mr=>{
+    const b=DB.books.find(x=>x.id===mr.bookId);
+    return`<tr>
+      <td>
+        <div style="font-weight:600">${mr.bookTitle}</div>
+        <div style="font-size:.7rem;color:var(--tl);margin-top:2px"><span class="txr">${mr.reportId}</span></div>
+      </td>
+      <td><span class="sku">${mr.sku}</span></td>
+      <td style="font-size:.77rem">${mr.staffName}</td>
+      <td style="font-size:.76rem;color:var(--tl)">${fmtDT(mr.submittedAt)}</td>
+      <td style="font-size:.76rem;color:var(--tl)">${mr.confirmedAt?fmtDT(mr.confirmedAt):'—'}</td>
+      <td style="font-size:.77rem;color:var(--tm)">${mr.confirmedBy||'—'}</td>
+      <td style="font-size:.76rem;color:var(--tl);max-width:140px">${mr.confirmNote||mr.note}</td>
+      <td style="text-align:right;font-weight:700;color:var(--dg)">${b?rmF(b.price):'—'}</td>
+      <td>${mr.photos&&mr.photos.length?`<div style="display:flex;gap:4px;flex-wrap:wrap">${mr.photos.map(url=>`<img src="${url}" onclick="viewPhoto('${url.replace(/'/g,"\\'")}','${mr.bookTitle.replace(/'/g,"\\'")}')}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;border:1px solid var(--bd);cursor:pointer" title="Click to enlarge"/>`).join('')}</div>`:'<span style="color:var(--tl);font-size:.75rem">—</span>'}</td>
+      <td style="white-space:nowrap">${CU.role==='Manager'?`
+        <button class="btn bnw bsm" onclick="undoMR('${mr.id}')" title="Book was found — restore inventory"><i data-lucide="undo-2"></i>Book Found</button>`:
+        '<span class="badge br2">Deducted</span>'}</td>
+    </tr>`;}).join('')
+  :`<tr><td colspan="9"><div class="empty" style="padding:20px 16px"><div class="eico"><i data-lucide="archive"></i></div><h3>No confirmed reports yet</h3><p>Confirmed missing items will appear here.</p></div></td></tr>`;
+
+  /* Found/Undone rows */
+  const foundRows=found.length?found.map(mr=>`<tr>
+    <td><span class="txr">${mr.reportId}</span></td>
+    <td style="font-weight:600;font-size:.8rem">${mr.bookTitle}</td>
+    <td><span class="sku">${mr.sku}</span></td>
+    <td style="font-size:.76rem;color:var(--tl)">${mr.staffName}</td>
+    <td style="font-size:.76rem;color:var(--tl)">${mr.undoneAt?fmtDT(mr.undoneAt):'—'}</td>
+    <td style="font-size:.76rem;color:var(--tm)">${mr.undoneBy||'—'}</td>
+    <td style="font-size:.75rem;color:var(--tl);max-width:160px">${mr.undoneNote||'—'}</td>
+    <td><span class="badge bg2"><i data-lucide="check-circle" style="font-size:.65rem"></i> Found</span></td>
+  </tr>`).join(''):null;
+
+  /* Dismissed rows (compact) */
+  const dismissedRows=dismissed.length?dismissed.map(mr=>`<tr>
+    <td><span class="txr">${mr.reportId}</span></td>
+    <td style="font-size:.8rem;font-weight:600">${mr.bookTitle}</td>
+    <td><span class="sku">${mr.sku}</span></td>
+    <td style="font-size:.76rem">${mr.staffName}</td>
+    <td style="font-size:.76rem;color:var(--tl)">${fmtDT(mr.submittedAt)}</td>
+    <td style="font-size:.75rem;color:var(--tl)">${mr.note}</td>
+    <td><span class="badge bgr">Dismissed</span></td>
+  </tr>`).join(''):null;
+
+  setHTML(`<div class="ph"><div><h2>Missing Stock</h2><p>RFID gate events, loss analytics, and missing item reports</p></div></div>
   ${missingTabs('missing-reports')}
 
+  <!-- SUMMARY PILLS -->
+  <div class="sg" style="grid-template-columns:repeat(4,1fr);margin-top:15px">
+    <div class="sc"><div class="si warn"><i data-lucide="clock"></i></div><div><div class="sv">${pending.length}</div><div class="sl">Pending Review</div></div></div>
+    <div class="sc"><div class="si red"><i data-lucide="package-x"></i></div><div><div class="sv">${confirmed.length}</div><div class="sl">Confirmed Missing</div></div></div>
+    <div class="sc"><div class="si green"><i data-lucide="package-check"></i></div><div><div class="sv">${found.length}</div><div class="sl">Found &amp; Restored</div></div></div>
+    <div class="sc"><div class="si slate"><i data-lucide="x-circle"></i></div><div><div class="sv">${dismissed.length}</div><div class="sl">Dismissed</div></div></div>
+  </div>
+
+  <!-- SECTION 1: PENDING REPORTS -->
   <div class="ph" style="margin-top:15px">
-    <div><h2>Missing Item Reports</h2><p>Reports submitted by staff for items that can't be found</p></div>
+    <div><h2>Pending Reports</h2><p>Awaiting manager review — confirm to deduct inventory, dismiss to close</p></div>
     <div class="pha">
-      <span class="badge by">${pendMR.length} pending</span>
+      <span class="badge by">${pending.length} pending</span>
       ${CU.role==='Staff'?`<button class="btn bna bsm" onclick="nav('report-missing')"><i data-lucide="plus"></i>Report Missing Item</button>`:''}
     </div>
   </div>
+  <div class="card" style="margin-bottom:16px"><div class="tw"><table>
+    <thead><tr><th>Report ID</th><th>Date/Time</th><th>Book Title</th><th>SKU</th><th>Reported By</th><th>Note</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${pendingRows}</tbody>
+  </table></div></div>
+
+  <!-- SECTION 2: CONFIRMED HISTORY -->
+  <div class="ph">
+    <div>
+      <h2>Confirmed Missing — History</h2>
+      <p>Items confirmed lost &amp; deducted from inventory. If a book is found, click <b>Book Found</b> to restore stock and recalculate losses.</p>
+    </div>
+    <div class="pha"><span class="badge br2">${confirmed.length} confirmed</span></div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    ${confirmed.length?`<div class="finfo" style="margin:10px 14px 0;border-radius:var(--r)"><i data-lucide="info"></i>
+      Clicking <b>Book Found</b> will restore 1 unit to inventory and remove this record from the Loss Analytics total.
+    </div>`:''}
+    <div class="tw"><table>
+      <thead><tr><th>Book Title</th><th>SKU</th><th>Reported By</th><th>Reported At</th><th>Confirmed At</th><th>Confirmed By</th><th>Note</th><th style="text-align:right">Value Lost</th><th>Photos</th><th>Action</th></tr></thead>
+      <tbody>${confirmedRows}</tbody>
+    </table></div>
+  </div>
+
+  ${foundRows?`<!-- SECTION 3: FOUND / RESTORED -->
+  <div class="ph">
+    <div><h2>Found &amp; Restored</h2><p>Books that were confirmed missing but later recovered — inventory has been restored.</p></div>
+    <div class="pha"><span class="badge bg2">${found.length} restored</span></div>
+  </div>
+  <div class="card" style="margin-bottom:16px"><div class="tw"><table>
+    <thead><tr><th>Report ID</th><th>Book Title</th><th>SKU</th><th>Reported By</th><th>Restored At</th><th>Restored By</th><th>Note</th><th>Status</th></tr></thead>
+    <tbody>${foundRows}</tbody>
+  </table></div></div>`:''}
+
+  ${dismissedRows?`<!-- SECTION 4: DISMISSED -->
+  <div class="ph">
+    <div><h2>Dismissed Reports</h2><p>Reports closed without any inventory change.</p></div>
+    <div class="pha"><span class="badge bgr">${dismissed.length} dismissed</span></div>
+  </div>
   <div class="card"><div class="tw"><table>
-    <thead><tr><th>Report ID</th><th>Date/Time</th><th>Book Title</th><th>SKU</th><th>RFID</th><th>Reported By</th><th>Note</th><th>Status</th><th>Action</th></tr></thead>
-    <tbody>${mrRows||`<tr><td colspan="9"><div class="empty"><div class="eico"><i data-lucide="clipboard"></i></div><h3>No reports submitted</h3></div></td></tr>`}</tbody>
-  </table></div></div>`);
+    <thead><tr><th>Report ID</th><th>Book Title</th><th>SKU</th><th>Reported By</th><th>Date</th><th>Note</th><th>Status</th></tr></thead>
+    <tbody>${dismissedRows}</tbody>
+  </table></div></div>`:''}
+  `);
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
-/* Simulate a random RFID gate event (Manager demo) */
+/* ===== UNDO CONFIRMED REPORT — book was found, restore inventory ===== */
+function undoMR(id){
+  const mr=DB.missingReports.find(x=>x.id===id);
+  if(!mr||mr.status!=='confirmed'){toast('This report cannot be undone.','error');return;}
+  openMo('Book Found — Restore Inventory',`
+    <div class="finfo" style="background:var(--olt);color:var(--ok);border-color:rgba(5,150,105,.2)"><i data-lucide="package-check"></i>
+      Undoing <b>${mr.reportId}</b> will restore 1 unit of <b>${mr.bookTitle}</b> back to inventory and remove it from the confirmed loss total.
+    </div>
+    <div class="fg" style="margin-top:10px"><label>Reason / Note *</label>
+      <textarea id="undo-note" rows="2" placeholder="e.g. Book found on wrong shelf in Aisle 3. Returned to stock."></textarea></div>`,
+    `<button class="btn bno" onclick="closeMo()">Cancel</button>
+     <button class="btn bns" onclick="doUndoMR('${id}')"><i data-lucide="undo-2"></i>Confirm Book Found</button>`);
+}
+
+function doUndoMR(id){
+  const note=isel('undo-note')?.value.trim()||'';
+  if(!note){toast('Please enter a reason for restoring this item.','error');return;}
+  const mr=DB.missingReports.find(x=>x.id===id);
+  const now=new Date().toISOString();
+  /* Restore inventory */
+  const b=DB.books.find(x=>x.id===mr.bookId);
+  if(b) b.qty+=1;
+  /* Undo linked RFID deduction if any */
+  const ev=DB.rfidEvents.find(e=>e.rfid===mr.rfid&&e.deducted&&e.confirmed);
+  if(ev){ev.deducted=false;ev.confirmed=false;}
+  /* Update report status */
+  mr.status='found';mr.deducted=false;
+  mr.undoneBy=CU.name;mr.undoneAt=now;mr.undoneNote=note;
+  /* Notify staff */
+  DB.notifications.push({id:uid('n'),title:`Missing report reversed: ${mr.reportId}`,
+    sub:`${mr.bookTitle} marked as found — inventory restored by ${CU.name}`,
+    time:now,read:false,targetRole:'Staff',link:'missing-reports'});
+  refreshDot();refreshBadges();
+  toast(`"${mr.bookTitle}" marked as found — 1 unit restored to inventory.`,'success');
+  closeMo();pgMissingReports();
+}
 function simRFID(){
   const randomBooks=['b13','b51','b20','b60','b67'];
   const bId=randomBooks[Math.floor(Math.random()*randomBooks.length)];
@@ -1603,8 +1959,8 @@ function simRFID(){
 /* Manager confirms a missing report → deducts inventory */
 function confirmMR(id){
   openMo('Confirm Missing Item',`
-    <div class="finfo"><i data-lucide="alert-triangle"></i>Confirming this report will deduct 1 unit from inventory. This cannot be undone.</div>
-    <div class="fg"><label>Confirmation Note (optional)</label>
+    <div class="finfo"><i data-lucide="alert-triangle"></i>Confirming will deduct 1 unit from inventory. You can undo this later if the book is found.</div>
+    <div class="fg" style="margin-top:10px"><label>Confirmation Note (optional)</label>
       <textarea id="cr-note" rows="2" placeholder="e.g. CCTV reviewed, item confirmed missing."></textarea></div>`,
     `<button class="btn bno" onclick="closeMo()">Cancel</button>
      <button class="btn bnd" onclick="doConfirmMR('${id}')"><i data-lucide="check"></i>Confirm & Deduct</button>`);
@@ -1612,7 +1968,7 @@ function confirmMR(id){
 function doConfirmMR(id){
   const mr=DB.missingReports.find(x=>x.id===id);
   const note=isel('cr-note')?.value.trim()||'';
-  mr.status='confirmed';mr.confirmedBy=CU.name;mr.confirmedAt=new Date().toISOString();mr.deducted=true;
+  mr.status='confirmed';mr.confirmedBy=CU.name;mr.confirmedAt=new Date().toISOString();mr.deducted=true;mr.confirmNote=note;
   /* Deduct from inventory */
   const b=DB.books.find(x=>x.id===mr.bookId);
   if(b&&b.qty>0) b.qty=Math.max(0,b.qty-1);
@@ -1634,12 +1990,40 @@ function dismissMR(id){
   });
 }
 
-/* ===== STAFF: REPORT MISSING ITEM ===== */
+/* ===== STAFF: REPORT ITEM (missing or defective) ===== */
+let _riType='missing';
+let _riPhotos=[];   /* [{name,dataUrl}] — max 3 */
+
 function pgReportMissing(){
-  setHTML(`<div class="ph"><div><h2>Report Missing Item</h2><p>Enter the book's SKU or RFID tag to report it missing to the manager</p></div></div>
-    <div class="card" style="max-width:620px"><div class="ch"><h2>Missing Item Report Form</h2></div><div class="cb">
-      <div class="finfo"><i data-lucide="info"></i>You can find the SKU and RFID on the book's price tag or shelf label. The manager will review and confirm.</div>
-      <div class="fgrid">
+  _riType='missing';_riPhotos=[];
+  setHTML(`
+  <div class="ph"><div><h2>Report Item</h2><p>Submit a missing item or defective book report to the manager</p></div></div>
+
+  <!-- TYPE SELECTOR -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;max-width:640px">
+    <div id="ri-type-missing" onclick="riSetType('missing')" style="cursor:pointer;border:2px solid var(--ac);border-radius:var(--rl);padding:14px 16px;background:var(--alt);transition:all .15s">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div style="width:32px;height:32px;border-radius:7px;background:var(--ac);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0"><i data-lucide="package-x" style="font-size:.85rem"></i></div>
+        <span style="font-weight:700;color:var(--navy);font-size:.88rem">Missing Item</span>
+      </div>
+      <p style="font-size:.75rem;color:var(--tm);margin:0;line-height:1.4">Book cannot be found on shelf or in stock</p>
+    </div>
+    <div id="ri-type-defect" onclick="riSetType('defect')" style="cursor:pointer;border:2px solid var(--bd);border-radius:var(--rl);padding:14px 16px;background:var(--wh);transition:all .15s">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div style="width:32px;height:32px;border-radius:7px;background:var(--bgm);display:flex;align-items:center;justify-content:center;color:var(--tl);flex-shrink:0"><i data-lucide="shield-x" style="font-size:.85rem"></i></div>
+        <span style="font-weight:700;color:var(--navy);font-size:.88rem">Defective Book</span>
+      </div>
+      <p style="font-size:.75rem;color:var(--tm);margin:0;line-height:1.4">Book is damaged, torn, has print errors or is unsellable</p>
+    </div>
+  </div>
+
+  <!-- REPORT FORM -->
+  <div class="card" style="max-width:640px">
+    <div class="ch"><h2 id="ri-form-title">Missing Item Report</h2></div>
+    <div class="cb">
+
+      <!-- BOOK LOOKUP (shared) -->
+      <div class="fgrid" style="margin-bottom:4px">
         <div class="fg"><label>Book SKU / RFID / Barcode *</label>
           <div style="display:flex;gap:6px;align-items:center">
             <input id="rm-sku" placeholder="e.g. BT-CS-001 — or scan QR" oninput="rmLookup()" style="flex:1;min-width:0;font-family:monospace;font-size:.88rem;letter-spacing:.5px;text-transform:uppercase"/>
@@ -1650,12 +2034,74 @@ function pgReportMissing(){
           <input id="rm-rfid" placeholder="e.g. RFID-0001" oninput="rmLookupRFID()" style="font-family:monospace;font-size:.88rem;letter-spacing:.5px;text-transform:uppercase"/>
         </div>
       </div>
-      <div id="rm-lookup-result" style="margin:10px 0 12px"></div>
-      <div class="fgrid">
-        <div class="fg full"><label>Description of finding *</label>
-          <textarea id="rm-note" rows="3" placeholder="e.g. Found empty shelf at location B3. Price tag on floor. No sales record found."></textarea></div>
+      <div id="rm-lookup-result" style="margin:8px 0 12px"></div>
+
+      <!-- PHOTO UPLOAD (shared) -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:.69rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Attach Photos <span style="font-weight:400;color:var(--tl)">(optional · max 3)</span></div>
+        <div id="ri-photo-grid" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>
+        <label for="ri-photo-inp" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:7px 14px;border:1.5px dashed var(--bdm);border-radius:var(--r);font-size:.79rem;color:var(--tl);background:var(--bg);transition:all .15s" onmouseover="this.style.borderColor='var(--ac)';this.style.color='var(--ac)'" onmouseout="this.style.borderColor='var(--bdm)';this.style.color='var(--tl)'">
+          <i data-lucide="camera" style="font-size:.85rem"></i> Add Photo
+        </label>
+        <input type="file" id="ri-photo-inp" accept="image/*" multiple style="display:none" onchange="riAddPhoto(this)"/>
+        <div style="font-size:.69rem;color:var(--tl);margin-top:5px">JPG, PNG, WEBP supported. Photos help manager assess the situation.</div>
       </div>
-      <div style="margin-bottom:12px">
+
+      <!-- MISSING-SPECIFIC FIELDS -->
+      <div id="ri-missing-fields">
+        <div class="fg" style="margin-bottom:12px"><label>Description of Finding *</label>
+          <textarea id="rm-note" rows="3" placeholder="e.g. Found empty shelf at location B3. Price tag on floor. Last seen during morning stock count."></textarea>
+        </div>
+      </div>
+
+      <!-- DEFECT-SPECIFIC FIELDS -->
+      <div id="ri-defect-fields" style="display:none">
+        <div class="fgrid" style="margin-bottom:10px">
+          <div class="fg"><label>Defect Type *</label>
+            <select id="ri-defect-type">
+              <option value="">Select defect type…</option>
+              <option value="Torn / damaged pages">Torn / Damaged Pages</option>
+              <option value="Water damage">Water Damage</option>
+              <option value="Cover damage">Cover Damage</option>
+              <option value="Print error / missing pages">Print Error / Missing Pages</option>
+              <option value="Duplicate / blank pages">Duplicate / Blank Pages</option>
+              <option value="Binding broken">Binding Broken</option>
+              <option value="Wrong book delivered">Wrong Book Delivered</option>
+              <option value="Other defect">Other</option>
+            </select>
+          </div>
+          <div class="fg"><label>Qty Defective *</label>
+            <input id="ri-defect-qty" type="number" min="1" value="1"/>
+          </div>
+          <div class="fg full"><label>Defect Description *</label>
+            <textarea id="ri-defect-note" rows="3" placeholder="e.g. Pages 44–68 missing. Cover spine completely detached. Found in Aisle 4 shelf B."></textarea>
+          </div>
+        </div>
+        <!-- MANUAL ENTRY TOGGLE -->
+        <div style="padding:10px 12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--bd);margin-bottom:10px">
+          <label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--tm)">
+            <input type="checkbox" id="ri-manual-mode" onchange="riToggleManual()" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"/>
+            Book not in system? Enter details manually
+          </label>
+          <div style="font-size:.72rem;color:var(--tl);margin-top:4px;margin-left:24px">Use this if the book has no SKU or is not yet registered in the system.</div>
+        </div>
+        <!-- MANUAL ENTRY FIELDS (hidden until toggled) -->
+        <div id="ri-manual-fields" style="display:none">
+          <div class="fgrid" style="margin-bottom:4px">
+            <div class="fg"><label>Book Title *</label>
+              <input id="ri-manual-title" placeholder="Full book title"/></div>
+            <div class="fg"><label>Author (optional)</label>
+              <input id="ri-manual-author" placeholder="Author name"/></div>
+            <div class="fg full"><label>Category *</label>
+              <div id="ri-def-cat-cbox" class="cbox"></div>
+              <input type="hidden" id="ri-def-cat"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK BOOK LOOKUP -->
+      <div style="margin-bottom:14px">
         <div style="font-size:.72rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Quick lookup — click to auto-fill SKU:</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px">
           ${DB.books.slice(0,12).map(b=>`<button class="btn bno bsm" onclick="rmQuickFill('${b.sku}','${b.rfid}')" style="font-family:monospace;font-size:.7rem">${b.sku}</button>`).join('')}
@@ -1671,12 +2117,93 @@ function pgReportMissing(){
           <td><span class="badge bgr">${b.category}</span></td>
         </tr>`).join('')}</tbody></table></div>
       </div>
+
       <div class="fa">
-        <button class="btn bno" onclick="pgReportMissing()">Clear</button>
-        <button class="btn bna" onclick="submitMissingReport()"><i data-lucide="send"></i>Submit Report</button>
+        <button class="btn bno" onclick="pgReportMissing()"><i data-lucide="rotate-ccw"></i>Clear</button>
+        <button class="btn bna" onclick="submitReport()"><i data-lucide="send"></i>Submit Report</button>
       </div>
-    </div></div>`);
-  if(window.lucide&&lucide.createIcons)try{if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){};}catch(e){}
+    </div>
+  </div>`);
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+}
+
+/* Switch between missing / defect type */
+function riSetType(type){
+  _riType=type;
+  const types=['missing','defect'];
+  types.forEach(t=>{
+    const card=isel('ri-type-'+t);if(!card)return;
+    const active=t===type;
+    card.style.borderColor=active?'var(--ac)':'var(--bd)';
+    card.style.background=active?'var(--alt)':'var(--wh)';
+    const ico=card.querySelector('div>div');
+    if(ico){ico.style.background=active?'var(--ac)':'var(--bgm)';ico.style.color=active?'#fff':'var(--tl)';}
+  });
+  const mf=isel('ri-missing-fields'),df=isel('ri-defect-fields'),ft=isel('ri-form-title');
+  if(mf)mf.style.display=type==='missing'?'':'none';
+  if(df)df.style.display=type==='defect'?'':'none';
+  if(ft)ft.textContent=type==='missing'?'Missing Item Report':'Defective Book Report';
+  /* Reset manual mode when switching type */
+  if(type==='missing'){const cb=isel('ri-manual-mode');if(cb)cb.checked=false;const mfld=isel('ri-manual-fields');if(mfld)mfld.style.display='none';}
+}
+
+/* Toggle manual book entry for defect reports */
+function riToggleManual(){
+  const manual=isel('ri-manual-mode')?.checked;
+  const mf=isel('ri-manual-fields');
+  if(mf)mf.style.display=manual?'':'none';
+  if(manual){
+    /* Clear the SKU lookup area so it's not confusing */
+    if(isel('rm-lookup-result'))isel('rm-lookup-result').innerHTML='';
+    /* Init the category combobox */
+    initModalCatCombo('ri-def-cat-cbox','ri-def-cat','');
+  }
+}
+
+/* Photo upload handler */
+function riAddPhoto(input){
+  const files=Array.from(input.files);
+  const remaining=3-_riPhotos.length;
+  if(remaining<=0){toast('Maximum 3 photos allowed.','warn');input.value='';return;}
+  const toAdd=files.slice(0,remaining);
+  if(files.length>remaining)toast(`Only ${remaining} more photo(s) allowed — extra files ignored.`,'warn');
+  let loaded=0;
+  toAdd.forEach(file=>{
+    if(!file.type.startsWith('image/')){toast(`${file.name} is not an image.`,'error');loaded++;if(loaded===toAdd.length)riRenderPhotos();return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      _riPhotos.push({name:file.name,dataUrl:e.target.result});
+      loaded++;
+      if(loaded===toAdd.length)riRenderPhotos();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value='';
+}
+
+/* Remove one photo by index */
+function riRemovePhoto(idx){
+  _riPhotos.splice(idx,1);
+  riRenderPhotos();
+}
+
+/* Re-render the photo thumbnail grid */
+function riRenderPhotos(){
+  const grid=isel('ri-photo-grid');if(!grid)return;
+  grid.innerHTML=_riPhotos.map((p,i)=>`
+    <div style="position:relative;width:80px;height:80px;flex-shrink:0">
+      <img src="${p.dataUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:var(--r);border:1.5px solid var(--bd);display:block"/>
+      <button onclick="riRemovePhoto(${i})" title="Remove" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--dg);color:#fff;border:none;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;padding:0;line-height:1">×</button>
+    </div>`).join('');
+  /* Show/hide add button based on count */
+  const lbl=document.querySelector('label[for="ri-photo-inp"]');
+  if(lbl)lbl.style.display=_riPhotos.length>=3?'none':'inline-flex';
+}
+
+/* Unified submit dispatcher */
+function submitReport(){
+  if(_riType==='defect')submitDefectReportStaff();
+  else submitMissingReport();
 }
 
 function rmShowAll(){
@@ -1695,7 +2222,7 @@ function rmLookup(){
   const sku=isel('rm-sku').value.trim().toUpperCase();
   const el=isel('rm-lookup-result');
   if(!sku){el.innerHTML='';return;}
-  const b=bookBySKU(sku);
+  const b=bookBySKU(sku)||findBookByCode(sku);
   if(b){
     const st=sSt(b);
     el.innerHTML=`<div style="background:var(--olt);border-radius:var(--r);padding:10px 13px;border:1px solid rgba(5,150,105,.2)">
@@ -1708,11 +2235,11 @@ function rmLookup(){
         <div><span style="color:var(--tl);font-size:.68rem;text-transform:uppercase">Current Stock</span><br><b>${b.qty} units</b></div>
         <div><span style="color:var(--tl);font-size:.68rem;text-transform:uppercase">Status</span><br><span class="badge ${st.cls}">${st.label}</span></div>
       </div></div>`;
-    if(!isel('rm-rfid').value) isel('rm-rfid').value=b.rfid;
-    if(window.lucide&&lucide.createIcons)try{if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){};}catch(e){}
+    if(!isel('rm-rfid').value)isel('rm-rfid').value=b.rfid;
+    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
   } else {
     el.innerHTML=`<div style="background:var(--dlt);border-radius:var(--r);padding:9px 13px;font-size:.8rem;color:var(--dg)"><i data-lucide="x-circle"></i>&nbsp;No book found with SKU: <b>${sku}</b></div>`;
-    if(window.lucide&&lucide.createIcons)try{if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){};}catch(e){}
+    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
   }
 }
 
@@ -1720,35 +2247,95 @@ function rmLookupRFID(){
   const rfid=isel('rm-rfid').value.trim().toUpperCase();
   if(!rfid)return;
   const b=bookByRFID(rfid);
-  if(b&&!isel('rm-sku').value){
-    isel('rm-sku').value=b.sku;
-    rmLookup();
-  }
+  if(b&&!isel('rm-sku').value){isel('rm-sku').value=b.sku;rmLookup();}
 }
 
+/* Submit: Missing Item */
 function submitMissingReport(){
   const sku=isel('rm-sku').value.trim().toUpperCase();
   const rfid=isel('rm-rfid').value.trim().toUpperCase();
-  const note=isel('rm-note').value.trim();
+  const note=isel('rm-note')?.value.trim();
   if(!sku){toast('Please enter a book SKU.','error');return;}
   if(!note){toast('Please describe what you found.','error');return;}
-  const b=bookBySKU(sku);
+  const b=bookBySKU(sku)||findBookByCode(sku);
   if(!b){toast('SKU not recognised. Please check and try again.','error');return;}
-  /* Check for duplicate pending */
   if(DB.missingReports.find(r=>r.bookId===b.id&&r.status==='pending')){
     toast('A pending report already exists for this book.','warn');return;}
   const reportId='MR-'+new Date().toISOString().slice(2,10).replace(/-/g,'')+'-'+String(DB.missingReports.length+1).padStart(3,'0');
+  const photos=_riPhotos.map(p=>p.dataUrl);
   DB.missingReports.push({
     id:uid('mr'),reportId,bookId:b.id,bookTitle:b.title,
     sku:b.sku,rfid:rfid||b.rfid,
-    staffId:CU.id,staffName:CU.name,note,
+    staffId:CU.id,staffName:CU.name,note,photos,
     submittedAt:new Date().toISOString(),
     status:'pending',confirmedBy:null,confirmedAt:null,deducted:false,
   });
-  DB.notifications.push({id:uid('n'),title:`Missing item report from ${CU.name}`,sub:`${b.title} — ${reportId}`,time:new Date().toISOString(),read:false,targetRole:'Manager',link:'missing'});
+  DB.notifications.push({id:uid('n'),title:`Missing item report from ${CU.name}`,sub:`${b.title} — ${reportId}${photos.length?' ('+photos.length+' photo'+( photos.length>1?'s':'')+')'  :''}`,time:new Date().toISOString(),read:false,targetRole:'Manager',link:'missing'});
+  _riPhotos=[];
   refreshDot();refreshBadges();
-  toast(`Report ${reportId} submitted. Manager will review shortly.`,'success');
+  toast(`Report ${reportId} submitted.${photos.length?' '+photos.length+' photo(s) attached.':''}`,'success');
   nav('missing-reports');
+}
+
+/* Submit: Defective Book */
+function submitDefectReportStaff(){
+  const isManual=isel('ri-manual-mode')?.checked;
+  const defType=isel('ri-defect-type')?.value;
+  const qty=parseInt(isel('ri-defect-qty')?.value)||0;
+  const note=isel('ri-defect-note')?.value.trim();
+  if(!defType){toast('Please select a defect type.','error');return;}
+  if(qty<=0){toast('Qty defective must be at least 1.','error');return;}
+  if(!note){toast('Please describe the defect.','error');return;}
+
+  let bookId=null,bookTitle='',bookSku='—',bookRfid='—';
+
+  if(isManual){
+    /* Manual entry — book not in system */
+    bookTitle=isel('ri-manual-title')?.value.trim();
+    const manCat=isel('ri-def-cat')?.value;
+    const manAuthor=isel('ri-manual-author')?.value.trim()||'';
+    if(!bookTitle){toast('Please enter the book title.','error');return;}
+    if(!manCat){toast('Please select a category for the book.','error');return;}
+    /* Store manual info in the defect record */
+    const photos=_riPhotos.map(p=>p.dataUrl);
+    const reason=defType+(note?' — '+note:'');
+    getDefectiveItems().push({
+      id:uid('df'),bookId:null,bookTitle,sku:bookSku,rfid:bookRfid,qty,
+      reason,defectType:defType,source:'manual_staff_report',sourceRef:'',
+      manualEntry:true,manualCategory:manCat,manualAuthor:manAuthor,photos,
+      reportedBy:CU.name,reportedAt:new Date().toISOString(),
+      status:'pending',confirmedBy:null,confirmedAt:null,confirmedNote:'',linkedSupReturnId:null,
+      disposalNote:'',disposedBy:null,disposedAt:null
+    });
+    DB.notifications.push({id:uid('n'),title:`Defective item report from ${CU.name}`,
+      sub:`${bookTitle} (manual entry) — ${defType}${photos.length?' ('+photos.length+' photo'+(photos.length>1?'s':'')+')'  :''}`,
+      time:new Date().toISOString(),read:false,targetRole:'Manager',link:'defective'});
+    _riPhotos=[];refreshDot();refreshBadges();
+    toast(`Defective report submitted for "${bookTitle}" (manual entry).${photos.length?' '+photos.length+' photo(s) attached.':''}`,'warn');
+    nav('dashboard');
+    return;
+  }
+
+  /* SKU lookup mode */
+  const sku=isel('rm-sku').value.trim().toUpperCase();
+  if(!sku){toast('Please enter a book SKU, or tick "Enter manually" below.','error');return;}
+  const b=bookBySKU(sku)||findBookByCode(sku);
+  if(!b){toast('SKU not recognised. Tick "Enter manually" below if book is not in the system.','error');return;}
+  const photos=_riPhotos.map(p=>p.dataUrl);
+  const reason=defType+(note?' — '+note:'');
+  getDefectiveItems().push({
+    id:uid('df'),bookId:b.id,bookTitle:b.title,sku:b.sku,rfid:b.rfid,qty,
+    reason,defectType:defType,source:'staff_report',sourceRef:'',manualEntry:false,photos,
+    reportedBy:CU.name,reportedAt:new Date().toISOString(),
+    status:'pending',
+    confirmedBy:null,confirmedAt:null,confirmedNote:'',linkedSupReturnId:null,
+    disposalNote:'',disposedBy:null,disposedAt:null
+  });
+  DB.notifications.push({id:uid('n'),title:`Defective item report from ${CU.name}`,sub:`${b.title} — ${defType}${photos.length?' ('+photos.length+' photo'+(photos.length>1?'s':'')+')'  :''}`,time:new Date().toISOString(),read:false,targetRole:'Manager',link:'defective'});
+  _riPhotos=[];
+  refreshDot();refreshBadges();
+  toast(`Defective report submitted for "${b.title}".${photos.length?' '+photos.length+' photo(s) attached.':''}`,'warn');
+  nav('dashboard');
 }
 /* ===== TRANSACTION HISTORY ===== */
 /* Generates a handful of realistic demo transactions inside a date range if none exist yet,
@@ -2014,22 +2601,360 @@ function printTxnReceipt(id){
   w.document.close();w.focus();setTimeout(function(){w.print();},400);
 }
 
+/* ===== SUPPLIER SECTION HUB TABS ===== */
+function supTabs(active){
+  const pendRegs=getPendSupRegs().length;
+  const total=(DB.supplierRegistrations||[]).length;
+  const tab=(id,icon,title,statHtml,accent)=>`
+    <div class="hubcard${id===active?' on':''}" ${id===active?'':`onclick="nav('${id}')"`}>
+      <div class="hubcard-top">
+        <div class="hubcard-ic" style="background:${accent.bg};color:${accent.fg}"><i data-lucide="${icon}"></i></div>
+        ${id===active?'<span class="hubcard-tag">Viewing</span>':'<i data-lucide="chevron-right" class="hubcard-arrow"></i>'}
+      </div>
+      <div class="hubcard-body"><h3>${title}</h3><div class="hubcard-stats">${statHtml}</div></div>
+    </div>`;
+  return`<div class="hubgrid">
+    ${tab('suppliers','truck','Supplier Directory',
+      `<span class="badge bgr">${DB.suppliers.length} supplier${DB.suppliers.length!==1?'s':''}</span>`,
+      {bg:'var(--alt)',fg:'var(--ac)'})}
+    ${tab('sup-registrations','user-plus','Registration Requests',
+      `<span class="badge ${pendRegs>0?'by':'bg2'}">${pendRegs} pending</span><span class="badge bgr">${total} total</span>`,
+      {bg:'var(--wlt)',fg:'var(--wn)'})}
+  </div>`;
+}
+
 /* ===== SUPPLIERS ===== */
 function pgSup(s=''){
   const list=DB.suppliers.filter(x=>!s||x.name.toLowerCase().includes(s.toLowerCase())||x.contact.toLowerCase().includes(s));
-  const rows=list.length?list.map(s=>`<tr>
-    <td style="font-weight:600">${s.name}</td><td>${s.contact}</td><td>${s.phone}</td>
-    <td><a href="mailto:${s.email}" style="color:var(--ac)">${s.email}</a></td>
-    <td style="font-size:.75rem;color:var(--tl)">${s.address}</td>
-    <td><button class="bic ed" onclick="editSup('${s.id}')"><i data-lucide="pencil"></i></button>
-      <button class="bic dl" onclick="delSup('${s.id}')" style="margin-left:3px"><i data-lucide="trash-2"></i></button></td>
-  </tr>`).join(''):`<tr><td colspan="6"><div class="empty"><div class="eico"><i data-lucide="truck"></i></div><h3>No suppliers</h3></div></td></tr>`;
+  const rows=list.length?list.map(sup=>{
+    const bookCount=DB.books.filter(b=>b.supplierId===sup.id).length;
+    return`<tr>
+      <td>
+        <div style="font-weight:600">${sup.name}</div>
+        <div style="font-size:.71rem;color:var(--tl);margin-top:2px">${bookCount} book${bookCount!==1?'s':''} supplied</div>
+      </td>
+      <td>${sup.contact}</td><td>${sup.phone}</td>
+      <td><a href="mailto:${sup.email}" style="color:var(--ac)">${sup.email}</a></td>
+      <td style="font-size:.75rem;color:var(--tl)">${sup.address}</td>
+      <td style="white-space:nowrap">
+        <button class="btn bno bsm" onclick="navSupCat('${sup.id}')" style="margin-right:4px"><i data-lucide="book-open"></i>Books</button>
+        <button class="bic ed" onclick="editSup('${sup.id}')"><i data-lucide="pencil"></i></button>
+        <button class="bic dl" onclick="delSup('${sup.id}')" style="margin-left:3px"><i data-lucide="trash-2"></i></button>
+      </td>
+    </tr>`;}).join(''):`<tr><td colspan="6"><div class="empty"><div class="eico"><i data-lucide="truck"></i></div><h3>No suppliers</h3></div></td></tr>`;
   setHTML(`<div class="ph"><div><h2>Supplier Directory</h2><p>${DB.suppliers.length} suppliers</p></div>
     <button class="btn bnn" onclick="editSup(null)"><i data-lucide="plus"></i>Add Supplier</button></div>
-    <div class="card"><div class="ch"><div class="sbox" style="max-width:290px"><i data-lucide="search"></i>
+    ${supTabs('suppliers')}
+    <div class="card" style="margin-top:13px"><div class="ch"><div class="sbox" style="max-width:290px"><i data-lucide="search"></i>
       <input type="text" placeholder="Search…" value="${s}" oninput="dbs('sp',pgSup,this.value)"/></div></div>
     <div class="tw"><table><thead><tr><th>Name</th><th>Contact</th><th>Phone</th><th>Email</th><th>Address</th><th>Action</th></tr></thead>
     <tbody>${rows}</tbody></table></div></div>`);
+}
+
+/* ===== SUPPLIER REGISTRATION REQUESTS ===== */
+function pgSupRegistrations(tab='pending'){
+  const all=DB.supplierRegistrations||[];
+  const pending=all.filter(r=>r.status==='pending');
+  const approved=all.filter(r=>r.status==='approved');
+  const rejected=all.filter(r=>r.status==='rejected');
+  const shown=tab==='pending'?pending:tab==='approved'?approved:rejected;
+
+  const tabH=[
+    {id:'pending',lbl:'Pending',count:pending.length,cls:'by'},
+    {id:'approved',lbl:'Approved',count:approved.length,cls:'bg2'},
+    {id:'rejected',lbl:'Rejected',count:rejected.length,cls:'bgr'},
+  ].map(t=>`<button class="btn bsm ${tab===t.id?'bnn':'bno'}" onclick="pgSupRegistrations('${t.id}')">
+    ${t.lbl} <span class="badge ${t.cls}" style="margin-left:4px">${t.count}</span>
+  </button>`).join('');
+
+  const cards=shown.length?shown.slice().reverse().map(r=>{
+    const catBadges=(r.categories||[]).map(c=>`<span class="badge bgr">${c}</span>`).join(' ');
+    const borderCol=r.status==='pending'?'var(--wn)':r.status==='approved'?'var(--ok)':'var(--dg)';
+    const stBadge=r.status==='pending'?'<span class="badge by">Pending</span>':r.status==='approved'?'<span class="badge bg2">Approved</span>':'<span class="badge br2">Rejected</span>';
+
+    /* Email draft links */
+    const approveMailto=`mailto:${r.email}?subject=${encodeURIComponent('Supplier Registration Approved — BookTrack IMS')}&body=${encodeURIComponent(`Dear ${r.contactPerson},\n\nWe are pleased to inform you that ${r.companyName}'s supplier registration has been approved.\n\nYou are now listed as an approved supplier in our system. Our manager will be in touch regarding upcoming stock orders.\n\nThank you for your interest in partnering with us.\n\nRegards,\nBookTrack IMS Management`)}`;
+    const rejectMailto=`mailto:${r.email}?subject=${encodeURIComponent('Supplier Registration Update — BookTrack IMS')}&body=${encodeURIComponent(`Dear ${r.contactPerson},\n\nThank you for submitting your supplier registration for ${r.companyName}.\n\nAfter careful review, we are unable to proceed with your application at this time.\n\nThank you for your interest.\n\nRegards,\nBookTrack IMS Management`)}`;
+
+    return`<div style="border:1px solid var(--bd);border-left:4px solid ${borderCol};border-radius:var(--rl);padding:16px 18px;background:var(--wh);box-shadow:var(--sh);margin-bottom:12px">
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px">
+        <div>
+          <div style="font-size:.92rem;font-weight:800;color:var(--navy)">${r.companyName}</div>
+          <div style="font-size:.74rem;color:var(--tl);margin-top:3px">Registered ${fmtDT(r.submittedAt)}</div>
+        </div>
+        ${stBadge}
+      </div>
+      <!-- Details grid -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:.8rem;margin-bottom:12px">
+        <div><span style="font-size:.66rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:3px">Contact Person</span><b>${r.contactPerson}</b></div>
+        <div><span style="font-size:.66rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:3px">Phone</span>${r.phone}</div>
+        <div><span style="font-size:.66rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:3px">Email</span><a href="mailto:${r.email}" style="color:var(--ac)">${r.email}</a></div>
+        <div style="grid-column:1/-1"><span style="font-size:.66rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:3px">Address</span>${r.address}</div>
+      </div>
+      <!-- Categories -->
+      <div style="margin-bottom:10px">
+        <span style="font-size:.66rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;margin-right:7px">Supplies</span>${catBadges}
+      </div>
+      <!-- Message -->
+      <div style="font-size:.8rem;color:var(--tm);background:var(--bg);border-radius:var(--r);padding:9px 12px;margin-bottom:12px;line-height:1.55;border-left:3px solid var(--bdm)">
+        <span style="font-size:.67rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Introduction</span>
+        ${r.message}
+      </div>
+      ${r.reviewedBy?`<div style="font-size:.76rem;color:var(--tl);margin-bottom:10px;padding:7px 10px;background:${r.status==='approved'?'var(--olt)':'var(--dlt)'};border-radius:var(--r)">
+        <b>${r.status==='approved'?'Approved':'Rejected'}</b> by ${r.reviewedBy} on ${fmtDT(r.reviewedAt)}${r.reviewNote?' — '+r.reviewNote:''}
+      </div>`:''}
+      <!-- Actions -->
+      <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+        <a href="${approveMailto}" class="btn bno bsm"><i data-lucide="mail"></i>Reply by Email</a>
+        ${r.bookList&&r.bookList.length?`<button class="btn bno bsm" onclick="viewSupRegBookList('${r.id}')"><i data-lucide="clipboard-list"></i>View Book List <span class="badge bgr" style="margin-left:3px">${r.bookList.length}</span>${r.bookList.filter(b=>b.added).length>0?`<span class="badge bg2" style="margin-left:2px">${r.bookList.filter(b=>b.added).length} added</span>`:''}</button>`:''}
+        ${r.status==='pending'?`
+          <button class="btn bnd bsm" onclick="rejectSupReg('${r.id}')"><i data-lucide="x-circle"></i>Reject</button>
+          <button class="btn bns bsm" onclick="confirmSupReg('${r.id}')"><i data-lucide="check-circle"></i>Confirm &amp; Add Supplier${r.bookList&&r.bookList.length?` / ${r.bookList.length} Book${r.bookList.length>1?'s':''}}`:''}</button>
+        `:''}
+      </div>
+    </div>`;
+  }).join(''):`<div class="card cb"><div class="empty"><div class="eico"><i data-lucide="user-plus"></i></div>
+    <h3>No ${tab} registrations</h3>
+    <p>${tab==='pending'?'New supplier registration requests will appear here.':'Nothing here yet.'}</p>
+  </div></div>`;
+
+  setHTML(`<div class="ph"><div><h2>Supplier Registrations</h2><p>Review and respond to new supplier applications</p></div></div>
+  ${supTabs('sup-registrations')}
+  <div style="display:flex;gap:6px;margin:14px 0 12px;flex-wrap:wrap">${tabH}</div>
+  ${cards}`);
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+}
+
+/* Confirm registration → add to DB.suppliers + auto-add all books */
+function confirmSupReg(id){
+  const r=(DB.supplierRegistrations||[]).find(x=>x.id===id);
+  if(!r)return;
+  const bookPreview=r.bookList&&r.bookList.length
+    ?`<div style="margin:10px 0 0;border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
+        <div style="padding:7px 11px;background:var(--bg);font-size:.7rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--bd)">${r.bookList.length} book${r.bookList.length>1?'s':''} will be added to the catalogue</div>
+        ${r.bookList.map(b=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 11px;border-bottom:1px solid var(--bd);font-size:.78rem">
+          <div><b>${b.title}</b> <span style="color:var(--tl);font-size:.72rem">— ${b.author}</span></div>
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+            <span class="badge bgr">${b.category||'Uncategorised'}</span>
+            <span style="color:var(--tl);font-size:.72rem">×${b.qty} · ${rmF(b.unitPrice)}</span>
+          </div>
+        </div>`).join('')}
+      </div>`
+    :'';
+  openMo('Confirm Supplier — '+r.companyName,`
+    <div class="finfo"><i data-lucide="check-circle"></i>Confirming will add <b>${r.companyName}</b> to the Supplier Directory${r.bookList&&r.bookList.length?` and add <b>${r.bookList.length} book${r.bookList.length>1?'s':''}</b> to the catalogue automatically`:''}.</div>
+    <div style="margin:10px 0;padding:10px 13px;background:var(--bg);border-radius:var(--r);font-size:.8rem">
+      <b>${r.companyName}</b><br>
+      <span style="color:var(--tl)">${r.contactPerson} &nbsp;·&nbsp; ${r.phone} &nbsp;·&nbsp; ${r.email}</span>
+    </div>
+    ${bookPreview}
+    <div class="fg" style="margin-top:12px"><label>Approval Note (optional)</label>
+      <textarea id="sreg-note" rows="2" placeholder="e.g. Categories approved. Delivery terms to be agreed separately."></textarea>
+    </div>`,
+    `<button class="btn bno" onclick="closeMo()">Cancel</button>
+     <button class="btn bns" onclick="doConfirmSupReg('${id}')"><i data-lucide="check-circle"></i>Confirm &amp; Add${r.bookList&&r.bookList.length?' All':''}</button>`,true);
+}
+function doConfirmSupReg(id){
+  const r=(DB.supplierRegistrations||[]).find(x=>x.id===id);
+  if(!r)return;
+  const note=isel('sreg-note')?.value.trim()||'';
+  const now=new Date().toISOString();
+  /* Add to supplier directory */
+  const newSup={id:uid('sp'),name:r.companyName,contact:r.contactPerson,phone:r.phone,email:r.email,address:r.address,userId:null};
+  DB.suppliers.push(newSup);
+  /* Update registration record */
+  r.status='approved';r.reviewedBy=CU.name;r.reviewedAt=now;r.reviewNote=note;r.linkedSupplierId=newSup.id;
+
+  /* Auto-add all books from the book list */
+  let booksAdded=0;
+  if(r.bookList&&r.bookList.length){
+    r.bookList.forEach(bl=>{
+      if(bl.added)return;
+      const cat=bl.category||r.categories[0]||'General';
+      const catMap={'Computer Science':'CS','Mathematics':'MA','Science':'SC','Business':'BU','History':'HI','Economics':'EC','Engineering':'EN','Literature':'LI'};
+      const prefix=catMap[cat]||cat.substring(0,2).toUpperCase();
+      const existNums=DB.books.filter(b=>b.sku.startsWith('BT-'+prefix+'-')).map(b=>{const m=b.sku.match(/(\d+)$/);return m?parseInt(m[1]):0;});
+      const skuN=(existNums.length?Math.max(...existNums):0)+1;
+      const rfidNums=DB.books.map(b=>{const m=b.rfid.match(/(\d+)$/);return m?parseInt(m[1]):0;});
+      const rfidN=(rfidNums.length?Math.max(...rfidNums):0)+1;
+      DB.books.push({
+        id:uid('b'),title:bl.title,author:bl.author,isbn:bl.isbn,category:cat,
+        price:bl.unitPrice,qty:bl.qty,minStock:5,supplierId:newSup.id,
+        sku:'BT-'+prefix+'-'+String(skuN).padStart(3,'0'),
+        rfid:'RFID-'+String(rfidN).padStart(4,'0'),
+        barcode:'978013'+String(DB.books.length+101).padStart(7,'0'),
+      });
+      if(DB.settings.categories.indexOf(cat)<0){DB.settings.categories.push(cat);DB.settings.categories.sort();}
+      bl.added=true;
+      booksAdded++;
+    });
+  }
+
+  DB.notifications.push({id:uid('n'),title:`Supplier approved: ${r.companyName}`,
+    sub:`Added to directory${booksAdded?` + ${booksAdded} book${booksAdded>1?'s':''} added to catalogue`:''}`,
+    time:now,read:false,targetRole:'Manager',link:'suppliers'});
+  refreshDot();refreshBadges();
+  toast(`${r.companyName} approved.${booksAdded?' '+booksAdded+' book'+(booksAdded>1?'s':'')+' added to catalogue.':''}`,'success');
+  closeMo();pgSupRegistrations('approved');
+}
+
+/* ===== VIEW BOOK REQUISITION LIST ===== */
+function viewSupRegBookList(regId){
+  const r=(DB.supplierRegistrations||[]).find(x=>x.id===regId);
+  if(!r){toast('Registration not found.','error');return;}
+  const cats=getCats();
+  const catOpts=cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  const isApproved=r.status==='approved';
+  const totalAdded=r.bookList.filter(b=>b.added).length;
+  const totalPending=r.bookList.filter(b=>!b.added).length;
+
+  const rows=r.bookList.map((b,i)=>`
+    <tr>
+      <td style="text-align:center;padding:6px 4px">
+        ${b.added
+          ?'<span class="badge bg2" style="font-size:.65rem">✓ Added</span>'
+          :'<span class="badge by" style="font-size:.65rem">Pending</span>'}
+      </td>
+      <td style="font-size:.79rem;font-weight:600;min-width:140px">${b.title}</td>
+      <td style="font-size:.76rem;min-width:100px">${b.author}</td>
+      <td style="font-size:.74rem;color:var(--tl);white-space:nowrap">${b.edition||'—'}</td>
+      <td style="font-size:.73rem;color:var(--tl)">${b.publisher||'—'}</td>
+      <td style="font-family:monospace;font-size:.71rem;color:var(--tl);white-space:nowrap">${b.isbn}</td>
+      <td style="font-size:.74rem;text-align:center">${b.cover||'—'}</td>
+      <td style="text-align:center;font-weight:700">${b.qty}</td>
+      <td style="text-align:right;font-size:.79rem">${rmF(b.unitPrice)}</td>
+      <td style="font-size:.74rem;text-align:center">${b.type||'—'}</td>
+      <td style="font-size:.74rem;text-align:center">${b.libCopy||'—'}</td>
+      <td style="text-align:center;font-size:.72rem">${b.ebook?'<span class="badge bb">Yes</span>':'<span class="badge bgr">No</span>'}</td>
+      <td><span class="badge bgr" style="font-size:.68rem">${b.category||'—'}</span></td>
+    </tr>`).join('');
+
+  const supplyInfo=isApproved
+    ?`<div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--olt);border-radius:var(--r);font-size:.76rem;color:var(--ok);font-weight:600"><i data-lucide="check-circle" style="font-size:.76rem"></i>Supplier approved — ${totalAdded} of ${r.bookList.length} book${r.bookList.length>1?'s':''} added to catalogue</div>`
+    :`<div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--wlt);border-radius:var(--r);font-size:.76rem;color:var(--wn);font-weight:600"><i data-lucide="alert-triangle" style="font-size:.76rem"></i>Pending — books will be added automatically when supplier is confirmed</div>`;
+
+  const opacLine=r.opacChecked!==undefined
+    ?`<div style="font-size:.74rem;color:var(--tl);margin-bottom:8px">OPAC checked: <b style="color:${r.opacChecked?'var(--ok)':'var(--dg)'}">${r.opacChecked?'Yes':'No'}</b></div>`:'';
+
+  const body=`
+    <div style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      ${supplyInfo}
+      <div style="font-size:.76rem;color:var(--tl)">${totalAdded} of ${r.bookList.length} added${totalAdded?` · ${totalPending} remaining`:''}</div>
+    </div>
+    ${opacLine}
+    <div style="overflow-x:auto;border:1px solid var(--bd);border-radius:var(--r)">
+      <table style="width:100%;border-collapse:collapse;font-size:.78rem;min-width:860px">
+        <thead style="background:var(--bg)">
+          <tr>
+            <th style="padding:7px 6px;text-align:center;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd);white-space:nowrap">Add</th>
+            <th style="padding:7px 6px;text-align:left;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd)">Title</th>
+            <th style="padding:7px 6px;text-align:left;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd)">Author</th>
+            <th style="padding:7px 6px;text-align:left;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd);white-space:nowrap">Ed/Yr</th>
+            <th style="padding:7px 6px;text-align:left;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd)">Publisher</th>
+            <th style="padding:7px 6px;text-align:left;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd)">ISBN</th>
+            <th style="padding:7px 6px;text-align:center;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd)">Cover</th>
+            <th style="padding:7px 6px;text-align:center;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd)">Qty</th>
+            <th style="padding:7px 6px;text-align:right;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd);white-space:nowrap">Unit Price</th>
+            <th style="padding:7px 6px;text-align:center;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd)">Type</th>
+            <th style="padding:7px 6px;text-align:center;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd);white-space:nowrap">Lib. Copy</th>
+            <th style="padding:7px 6px;text-align:center;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd)">Ebook</th>
+            <th style="padding:7px 6px;text-align:left;font-size:.64rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd)">Category</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    ${isApproved&&totalPending>0?`<div style="margin-top:10px;font-size:.75rem;color:var(--tl)">These books will be added when you confirm the supplier.</div>`:''}`;
+
+  const foot=`<button class="btn bno" onclick="closeMo()">Close</button>`;
+
+  openMo(`📋 Book Requisition — ${r.companyName}`,body,foot,true);
+  isel('mbox').style.maxWidth='920px';
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+}
+
+/* Add selected books from requisition list into DB.books */
+function doAddBooksFromReg(regId){
+  const r=(DB.supplierRegistrations||[]).find(x=>x.id===regId);
+  if(!r||!r.linkedSupplierId){toast('Supplier must be confirmed before adding books.','error');return;}
+
+  const checkboxes=document.querySelectorAll('[id^="blck-"]');
+  const selected=[];
+  checkboxes.forEach((cb,i)=>{
+    if(cb.checked){
+      const blId=cb.value;
+      const catEl=document.getElementById('blcat-'+i);
+      const cat=catEl?catEl.value:'';
+      selected.push({blId,cat});
+    }
+  });
+  if(!selected.length){toast('Please select at least one book to add.','error');return;}
+
+  const missing=selected.filter(s=>!s.cat);
+  if(missing.length){toast('Please select a category for all checked books.','error');return;}
+
+  let added=0;
+  selected.forEach(sel=>{
+    const bl=r.bookList.find(b=>b.blId===sel.blId);
+    if(!bl||bl.added)return;
+    const cat=sel.cat;
+    /* Auto-generate SKU / RFID / Barcode */
+    const catMap={'Computer Science':'CS','Mathematics':'MA','Science':'SC','Business':'BU','History':'HI','Economics':'EC','Engineering':'EN','Literature':'LI'};
+    const prefix=catMap[cat]||cat.substring(0,2).toUpperCase();
+    const existNums=DB.books.filter(b=>b.sku.startsWith('BT-'+prefix+'-')).map(b=>{const m=b.sku.match(/(\d+)$/);return m?parseInt(m[1]):0;});
+    const skuN=(existNums.length?Math.max(...existNums):0)+1;
+    const rfidNums=DB.books.map(b=>{const m=b.rfid.match(/(\d+)$/);return m?parseInt(m[1]):0;});
+    const rfidN=(rfidNums.length?Math.max(...rfidNums):0)+1;
+    const newBook={
+      id:uid('b'),
+      title:bl.title,author:bl.author,isbn:bl.isbn,category:cat,
+      price:bl.unitPrice,qty:bl.qty,minStock:5,
+      supplierId:r.linkedSupplierId,
+      sku:'BT-'+prefix+'-'+String(skuN).padStart(3,'0'),
+      rfid:'RFID-'+String(rfidN).padStart(4,'0'),
+      barcode:'978013'+String(DB.books.length+101).padStart(7,'0'),
+    };
+    DB.books.push(newBook);
+    bl.added=true;
+    if(DB.settings.categories.indexOf(cat)<0){DB.settings.categories.push(cat);DB.settings.categories.sort();}
+    added++;
+  });
+
+  if(added>0){
+    toast(`${added} book${added>1?'s':''} added to the catalogue.`,'success');
+    closeMo();
+    /* Re-open the list so manager can see updated state */
+    const stillPending=r.bookList.filter(b=>!b.added).length;
+    if(stillPending>0){
+      setTimeout(()=>viewSupRegBookList(regId),200);
+    } else {
+      pgSupRegistrations('approved');
+    }
+  }
+}
+
+/* Reject registration */
+function rejectSupReg(id){
+  const r=(DB.supplierRegistrations||[]).find(x=>x.id===id);
+  if(!r)return;
+  openMo('Reject Registration — '+r.companyName,`
+    <div class="finfo" style="background:var(--dlt);color:var(--dg);border-color:rgba(220,38,38,.2)"><i data-lucide="x-circle"></i>This will mark the application as rejected. You can still email them using the reply button.</div>
+    <div class="fg" style="margin-top:10px"><label>Rejection Reason *</label>
+      <textarea id="sreg-reject-note" rows="2" placeholder="e.g. Categories not currently needed. May reapply in 6 months."></textarea>
+    </div>`,
+    `<button class="btn bno" onclick="closeMo()">Cancel</button>
+     <button class="btn bnd" onclick="doRejectSupReg('${id}')"><i data-lucide="x-circle"></i>Reject Application</button>`);
+}
+function doRejectSupReg(id){
+  const note=isel('sreg-reject-note')?.value.trim()||'';
+  if(!note){toast('Please enter a rejection reason.','error');return;}
+  const r=(DB.supplierRegistrations||[]).find(x=>x.id===id);
+  const now=new Date().toISOString();
+  r.status='rejected';r.reviewedBy=CU.name;r.reviewedAt=now;r.reviewNote=note;
+  refreshBadges();
+  toast(`Registration from ${r.companyName} rejected.`,'info');
+  closeMo();pgSupRegistrations('rejected');
 }
 function editSup(id){
   const s=id?DB.suppliers.find(x=>x.id===id):{name:'',contact:'',phone:'',email:'',address:''};
@@ -2052,6 +2977,310 @@ function saveSup(id){
 function delSup(id){
   const s=DB.suppliers.find(x=>x.id===id);
   openCo('Remove Supplier',`Remove "${s.name}"?`,()=>{DB.suppliers=DB.suppliers.filter(x=>x.id!==id);toast('Removed.');pgSup();});
+}
+
+/* ===== NAVIGATE TO SUPPLIER CATALOGUE ===== */
+let _supCatId=null;
+let _scCats=[];  /* selected categories in supplier catalogue filter */
+function navSupCat(supId){
+  if(supId!==_supCatId)_scCats=[];
+  _supCatId=supId;
+  CP='sup-catalogue';
+  setActive('sup-catalogue');
+  const m=PMETA['sup-catalogue']||['Supplier Catalogue',''];
+  isel('tbt').textContent=m[0];isel('tbs').textContent=m[1];
+  isel('npanel').style.display='none';
+  isel('pc').classList.remove('noscroll');
+  pgSupCatalogue(supId);
+}
+
+/* ===== SUPPLIER CATALOGUE SUB-PAGE ===== */
+function pgSupCatalogue(supId,s='',stf=''){
+  if(!supId)supId=_supCatId;
+  if(!supId){pgSup();return;}
+  _supCatId=supId;
+  const sup=DB.suppliers.find(x=>x.id===supId);
+  if(!sup){toast('Supplier not found.','error');pgSup();return;}
+
+  const allBooks=DB.books.filter(b=>b.supplierId===supId);
+  const books=allBooks.filter(b=>{
+    const q=s.toLowerCase();
+    const matchQ=!q||b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)||b.sku.toLowerCase().includes(q)||b.isbn.includes(q);
+    const st=sSt(b).label;
+    const matchSt=!stf||st===stf;
+    const matchCat=!_scCats.length||_scCats.includes(b.category);
+    return matchQ&&matchSt&&matchCat;
+  });
+
+  /* Stats */
+  const totalUnits=allBooks.reduce((a,b)=>a+b.qty,0);
+  const totalValue=allBooks.reduce((a,b)=>a+b.qty*b.price,0);
+  const lowCount=allBooks.filter(b=>b.qty<b.minStock).length;
+  const pendOrders=DB.stockRequests.filter(r=>r.supplierId===supId&&r.status==='pending'&&r.type==='restock').length;
+
+  const statOpts=['In Stock','Low Stock','Out of Stock'].map(v=>`<option value="${v}"${stf===v?' selected':''}>${v}</option>`).join('');
+
+  const rows=books.length?books.map(b=>{
+    const st=sSt(b);
+    const totalSold=DB.transactions.filter(t=>t.bookId===b.id).reduce((a,t)=>a+t.qty,0);
+    return`<tr>
+      <td>
+        <div style="font-weight:600;color:var(--navy)">${b.title}</div>
+        <div style="font-size:.7rem;color:var(--tl);margin-top:2px">${b.author} · ISBN: ${b.isbn}</div>
+      </td>
+      <td><span class="sku">${b.sku}</span></td>
+      <td><span class="rfidtag">${b.rfid}</span></td>
+      <td><span class="badge bgr">${b.category}</span></td>
+      <td style="text-align:right;font-weight:600">${rmF(b.price)}</td>
+      <td style="text-align:center"><b>${b.qty}</b></td>
+      <td style="text-align:center;color:var(--tl)">${b.minStock}</td>
+      <td style="text-align:center;color:var(--ac);font-weight:600">${totalSold}</td>
+      <td><span class="badge ${st.cls}">${st.label}</span></td>
+      <td style="white-space:nowrap">
+        <button class="bic ed" onclick="editBookFromSupCat('${b.id}')" title="Edit book"><i data-lucide="pencil"></i></button>
+        <button class="bic dl" onclick="unassignBookFromSup('${b.id}')" title="Remove from this supplier" style="margin-left:3px"><i data-lucide="unlink"></i></button>
+      </td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="10"><div class="empty"><div class="eico"><i data-lucide="book-open"></i></div>
+    <h3>No books found</h3><p>${s||stf?'Try clearing the filters.':'No books are assigned to this supplier yet.'}</p>
+  </div></td></tr>`;
+
+  /* Unassigned books — for the assign-book picker */
+  const unassigned=DB.books.filter(b=>!b.supplierId||b.supplierId==='');
+
+  setHTML(`
+  <!-- BACK + PAGE HEADER -->
+  <div class="ph">
+    <div>
+      <button class="btn bno bsm" onclick="pgSup()" style="margin-bottom:8px"><i data-lucide="arrow-left"></i>Back to Suppliers</button>
+      <h2>${sup.name} — Book Catalogue</h2>
+      <p>${sup.contact} &nbsp;·&nbsp; ${sup.phone} &nbsp;·&nbsp; <a href="mailto:${sup.email}" style="color:var(--ac)">${sup.email}</a></p>
+    </div>
+    <div class="pha">
+      <button class="btn bno bsm" onclick="editSup('${sup.id}')"><i data-lucide="pencil"></i>Edit Supplier</button>
+      <button class="btn bnn bsm" onclick="openAssignBook('${sup.id}')"><i data-lucide="plus"></i>Assign Book</button>
+    </div>
+  </div>
+
+  <!-- SUPPLIER INFO CARD -->
+  <div class="card" style="margin-bottom:13px">
+    <div class="ch"><h2>Supplier Details</h2></div>
+    <div class="cb">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:.82rem">
+        <div><span style="font-size:.67rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px">Contact Person</span><div style="margin-top:3px;font-weight:600">${sup.contact}</div></div>
+        <div><span style="font-size:.67rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px">Phone</span><div style="margin-top:3px">${sup.phone}</div></div>
+        <div><span style="font-size:.67rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px">Email</span><div style="margin-top:3px"><a href="mailto:${sup.email}" style="color:var(--ac)">${sup.email}</a></div></div>
+        <div style="grid-column:1/-1"><span style="font-size:.67rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px">Address</span><div style="margin-top:3px;color:var(--tm)">${sup.address||'—'}</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI STATS -->
+  <div class="sg" style="grid-template-columns:repeat(4,1fr);margin-bottom:13px">
+    <div class="sc"><div class="si blue"><i data-lucide="book-open"></i></div><div><div class="sv">${allBooks.length}</div><div class="sl">Book Titles</div></div></div>
+    <div class="sc"><div class="si green"><i data-lucide="package"></i></div><div><div class="sv">${totalUnits}</div><div class="sl">Units in Stock</div></div></div>
+    <div class="sc"><div class="si ${lowCount>0?'warn':'slate'}"><i data-lucide="package-x"></i></div><div><div class="sv">${lowCount}</div><div class="sl">Low / Out of Stock</div></div></div>
+    <div class="sc"><div class="si green"><i data-lucide="trending-up"></i></div><div><div class="sv" style="font-size:1rem">${rmF(totalValue)}</div><div class="sl">Stock Value</div></div></div>
+  </div>
+
+  <!-- BOOK TABLE -->
+  <div class="card">
+    <div class="ch">
+      <h2>Books from ${sup.name}</h2>
+      <div class="tb2">
+        <div class="sbox"><i data-lucide="search"></i>
+          <input id="scat-srch" type="text" placeholder="Search title, author, SKU…" value="${s}"
+            oninput="pgSupCatalogue('${supId}',this.value,document.querySelector('#scat-stf')?document.querySelector('#scat-stf').value:'')"/>
+        </div>
+        <select id="scat-stf" class="flt"
+          onchange="pgSupCatalogue('${supId}',isel('scat-srch')?isel('scat-srch').value:'',this.value)">
+          <option value="">All Status</option>${statOpts}
+        </select>
+        <div class="cbox" id="sc-cbox"></div>
+        <span class="badge bgr">${allBooks.length} total</span>
+      </div>
+    </div>
+    <div class="tw"><table>
+      <thead><tr>
+        <th>Title / Author</th><th>SKU</th><th>RFID</th><th>Category</th>
+        <th style="text-align:right">Price</th>
+        <th style="text-align:center">Qty</th>
+        <th style="text-align:center">Min</th>
+        <th style="text-align:center">Units Sold</th>
+        <th>Status</th><th>Action</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </div>`);
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+  initScCatCombo(stf,supId);
+}
+
+/* Toggle a category chip in supplier catalogue */
+function scCatToggle(cat){
+  const idx=_scCats.indexOf(cat);
+  if(idx>=0)_scCats.splice(idx,1);else _scCats.push(cat);
+  const s=isel('scat-srch')?isel('scat-srch').value:'';
+  const stf=isel('scat-stf')?isel('scat-stf').value:'';
+  pgSupCatalogue(_supCatId,s,stf);
+}
+function scCatRemove(cat){
+  _scCats=_scCats.filter(c=>c!==cat);
+  const s=isel('scat-srch')?isel('scat-srch').value:'';
+  const stf=isel('scat-stf')?isel('scat-stf').value:'';
+  pgSupCatalogue(_supCatId,s,stf);
+}
+
+/* Multi-select category combobox for Supplier Catalogue */
+function initScCatCombo(stf,supId){
+  const wrap=isel('sc-cbox');if(!wrap)return;
+  const supBooks=DB.books.filter(b=>b.supplierId===supId);
+  const catSet=new Set(supBooks.map(b=>b.category));
+  const cats=[...catSet].sort();
+  if(!cats.length){wrap.style.display='none';return;}
+  const bookCounts={};supBooks.forEach(b=>{bookCounts[b.category]=(bookCounts[b.category]||0)+1;});
+  let hl=-1,filtered=cats.slice();
+  const hasChips=_scCats.length>0;
+  const chipsHtml=_scCats.map(c=>`<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 4px 2px 8px;background:var(--alt);color:var(--ac);border-radius:20px;font-size:.69rem;font-weight:700;white-space:nowrap;line-height:1.4">${c}<span onclick="scCatRemove(\'${c}\')" title="Remove" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:rgba(37,99,235,.15);margin-left:1px;font-size:.8rem;line-height:1">&times;</span></span>`).join('');
+  wrap.innerHTML=`<div class="cbox-in" id="sc-in" style="${hasChips?'height:auto;min-height:32px;flex-wrap:wrap;padding:4px 8px;align-items:center;':''}">
+      ${chipsHtml}
+      <i data-lucide="tag" style="flex-shrink:0;font-size:.78rem;color:var(--tl)"></i>
+      <input id="sc-input" type="text" placeholder="${hasChips?'Add more…':'Filter by category…'}" autocomplete="off" style="min-width:90px;flex:1"/>
+      ${hasChips?`<span class="cbox-clr" id="sc-clear-all" title="Clear all" style="flex-shrink:0"><i data-lucide="x"></i></span>`:''}
+    </div>
+    <div class="cbox-dd" id="sc-dd"></div>`;
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+  const inp=isel('sc-input'),dd=isel('sc-dd'),clearAll=isel('sc-clear-all');
+  function renderDD(){
+    if(!filtered.length){dd.innerHTML='<div class="cbox-empty">No matching categories</div>';return;}
+    dd.innerHTML=filtered.map((c,i)=>{
+      const sel=_scCats.includes(c);
+      return`<div class="cbox-opt${i===hl?' hl':''}" data-cat="${c}" style="display:flex;align-items:center;gap:8px">
+        <span style="width:15px;height:15px;border-radius:3px;border:1.5px solid ${sel?'var(--ac)':'var(--bdm)'};background:${sel?'var(--ac)':'transparent'};display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .1s">
+          ${sel?'<svg width=\"9\" height=\"9\" viewBox=\"0 0 10 10\"><polyline points=\"1.5,5 4,7.5 8.5,2.5\" stroke=\"#fff\" stroke-width=\"1.8\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>':''}
+        </span>
+        <span style="${sel?'font-weight:700;color:var(--ac)':''}">${c}</span>
+        <small style="margin-left:auto">${bookCounts[c]||0}</small>
+      </div>`;
+    }).join('');
+  }
+  function openDD(){filtered=cats.filter(c=>c.toLowerCase().includes(inp.value.toLowerCase()));hl=-1;renderDD();dd.classList.add('open');}
+  function closeDD(){dd.classList.remove('open');}
+  inp.addEventListener('focus',openDD);
+  inp.addEventListener('input',openDD);
+  inp.addEventListener('keydown',e=>{
+    if(!dd.classList.contains('open'))return;
+    if(e.key==='ArrowDown'){e.preventDefault();hl=Math.min(hl+1,filtered.length-1);renderDD();}
+    else if(e.key==='ArrowUp'){e.preventDefault();hl=Math.max(hl-1,0);renderDD();}
+    else if(e.key==='Enter'){
+      e.preventDefault();
+      const cat=hl>=0&&filtered[hl]?filtered[hl]:filtered.length===1?filtered[0]:null;
+      if(cat)scCatToggle(cat);
+    }
+    else if(e.key==='Escape'){closeDD();inp.blur();}
+  });
+  dd.addEventListener('mousedown',e=>{
+    const opt=e.target.closest('.cbox-opt');if(!opt)return;
+    e.preventDefault();scCatToggle(opt.dataset.cat);
+  });
+  if(clearAll)clearAll.addEventListener('mousedown',e=>{
+    e.preventDefault();_scCats=[];
+    pgSupCatalogue(_supCatId,isel('scat-srch')?isel('scat-srch').value:'',isel('scat-stf')?isel('scat-stf').value:'');
+  });
+  document.addEventListener('click',function outside(e){
+    if(!wrap.contains(e.target)){closeDD();document.removeEventListener('click',outside);}
+  });
+}
+
+/* ===== EDIT BOOK FROM SUPPLIER CATALOGUE ===== */
+function editBookFromSupCat(bookId){
+  const b=DB.books.find(x=>x.id===bookId);
+  if(!b){toast('Book not found.','error');return;}
+  const sO=DB.suppliers.map(s=>`<option value="${s.id}"${b.supplierId===s.id?' selected':''}>${s.name}</option>`).join('');
+  openMo('Edit Book',`
+    <div class="fgrid">
+      <div class="fg full"><label>Book Title *</label><input id="ft" value="${b.title}" placeholder="Full title"/></div>
+      <div class="fg"><label>Author *</label><input id="fa" value="${b.author}"/></div>
+      <div class="fg"><label>ISBN *</label><input id="fi" value="${b.isbn}" placeholder="978-x-xxx"/></div>
+      <div class="fg"><label>Category *</label><div id="fc-cbox" class="cbox"></div><input type="hidden" id="fc" value="${b.category}"/></div>
+      <div class="fg"><label>Price (RM) *</label><input id="fp" type="number" min="0" step="0.01" value="${b.price}"/></div>
+      <div class="fg"><label>Min Stock</label><input id="fm" type="number" min="0" value="${b.minStock}"/></div>
+      <div class="fg"><label>Supplier</label><select id="fs"><option value="">No supplier</option>${sO}</select></div>
+      <div class="fg"><label>SKU (read-only)</label><input readonly value="${b.sku}"/></div>
+      <div class="fg"><label>RFID Tag (read-only)</label><input readonly value="${b.rfid}"/></div>
+      <div class="fg"><label>Barcode (read-only)</label><input readonly value="${b.barcode}"/></div>
+      <div class="fg"><label>Current Qty (read-only)</label><input readonly value="${b.qty} units"/></div>
+    </div>`,
+    `<button class="btn bno" onclick="closeMo()">Cancel</button>
+     <button class="btn bnn" onclick="saveBookFromSupCat('${bookId}')"><i data-lucide="save"></i>Save & Sync</button>`,true);
+  initModalCatCombo('fc-cbox','fc',b.category);
+}
+
+/* Save book edits from supplier catalogue — syncs title/category across all system tables */
+function saveBookFromSupCat(bookId){
+  const b=DB.books.find(x=>x.id===bookId);
+  if(!b){toast('Book not found.','error');return;}
+  const t=isel('ft').value.trim(),a=isel('fa').value.trim(),i=isel('fi').value.trim();
+  const c=isel('fc').value,p=parseFloat(isel('fp').value)||0,m=parseInt(isel('fm').value)||0;
+  const sp=isel('fs').value;
+  if(!t||!a||!i||!c){toast('Fill all required fields.','error');return;}
+
+  const oldTitle=b.title,oldCat=b.category;
+  const titleChanged=oldTitle!==t,catChanged=oldCat!==c;
+
+  /* 1. Update the book record */
+  Object.assign(b,{title:t,author:a,isbn:i,category:c,price:p,minStock:m,supplierId:sp});
+
+  /* 2. Sync denormalised title / category across the whole system */
+  if(titleChanged||catChanged){
+    DB.transactions.forEach(tx=>{if(tx.bookId===bookId){if(titleChanged)tx.bookTitle=t;}});
+    DB.missingReports.forEach(r=>{if(r.bookId===bookId){if(titleChanged)r.bookTitle=t;}});
+    DB.rfidEvents.forEach(ev=>{if(ev.bookId===bookId){if(titleChanged)ev.bookTitle=t;}});
+    DB.stockRequests.forEach(sr=>{if(sr.bookId===bookId){if(titleChanged)sr.bookTitle=t;if(catChanged)sr.category=c;}});
+    if(DB.customerReturns)DB.customerReturns.forEach(cr=>{if(cr.bookId===bookId){if(titleChanged)cr.bookTitle=t;}});
+    if(DB.defectiveItems)DB.defectiveItems.forEach(di=>{if(di.bookId===bookId){if(titleChanged)di.bookTitle=t;}});
+    if(DB.supplierReturns)DB.supplierReturns.forEach(sr=>{if(sr.bookId===bookId){if(titleChanged)sr.bookTitle=t;}});
+  }
+
+  /* 3. If supplier changed, return to the new supplier's catalogue */
+  const returnSupId=sp||_supCatId;
+
+  toast(`"${t}" updated and synced across system.`,'success');
+  closeMo();
+  pgSupCatalogue(returnSupId);
+}
+
+/* Unassign a book from this supplier (sets supplierId to empty) */
+function unassignBookFromSup(bookId){
+  const b=DB.books.find(x=>x.id===bookId);
+  if(!b)return;
+  openCo('Remove from Supplier',
+    `Remove "${b.title}" from this supplier? The book will stay in the catalogue but won't be linked to any supplier.`,
+    ()=>{b.supplierId='';toast(`"${b.title}" unassigned from supplier.`,'info');pgSupCatalogue(_supCatId);});
+}
+
+/* Assign an existing book to this supplier */
+function openAssignBook(supId){
+  const unassigned=DB.books.filter(b=>!b.supplierId||b.supplierId==='');
+  if(!unassigned.length){
+    toast('All books already have a supplier assigned. Edit a book to change its supplier.','info');return;
+  }
+  const opts=unassigned.map(b=>`<option value="${b.id}">${b.title} (${b.sku})</option>`).join('');
+  openMo('Assign Book to Supplier',`
+    <div class="finfo"><i data-lucide="info"></i>Select an unassigned book to link it to this supplier.</div>
+    <div class="fg" style="margin-top:10px"><label>Book *</label>
+      <select id="assign-bk"><option value="">Select book…</option>${opts}</select>
+    </div>`,
+    `<button class="btn bno" onclick="closeMo()">Cancel</button>
+     <button class="btn bnn" onclick="doAssignBook('${supId}')"><i data-lucide="link"></i>Assign</button>`);
+}
+function doAssignBook(supId){
+  const bId=isel('assign-bk').value;
+  if(!bId){toast('Please select a book.','error');return;}
+  const b=DB.books.find(x=>x.id===bId);
+  b.supplierId=supId;
+  toast(`"${b.title}" assigned to supplier.`,'success');
+  closeMo();pgSupCatalogue(supId);
 }
 
 /* ===== STOCK REQUESTS ===== */
@@ -3248,6 +4477,12 @@ function printRpt(){
    - Lists all defective items from customer returns or staff reports
    - Manager can mark as disposed / send to supplier / write off
 ===================================================== */
+/* View attached photo full-size */
+function viewPhoto(url,title){
+  openMo('📷 '+title,`<div style="text-align:center"><img src="${url}" style="max-width:100%;max-height:65vh;border-radius:var(--r);object-fit:contain"/></div>`,
+    '<button class="btn bno" onclick="closeMo()">Close</button>');
+}
+
 function pgDefective(tab='pending'){
   const all=getDefectiveItems();
   const pending=all.filter(d=>d.status==='pending');
@@ -3277,9 +4512,11 @@ function pgDefective(tab='pending'){
           +'<div class="ret-title">'+d.bookTitle+'</div>'
           +'<div class="ret-meta">'
             +'<span class="sku">'+d.sku+'</span>'
-            +(d.rfid?' &nbsp;·&nbsp; <span class="rfidtag">'+d.rfid+'</span>':'')
+            +(d.rfid&&d.rfid!=='—'?' &nbsp;·&nbsp; <span class="rfidtag">'+d.rfid+'</span>':'')
             +' &nbsp;·&nbsp; Reported by <b>'+d.reportedBy+'</b>'
             +(d.reportedAt?' on '+fmtDT(d.reportedAt):'')
+            +(d.manualEntry?' &nbsp;·&nbsp; <span class="badge by" style="font-size:.62rem">Manual Entry</span>':'')
+            +(d.manualCategory?' &nbsp;·&nbsp; <span class="badge bgr" style="font-size:.62rem">'+d.manualCategory+'</span>':'')
           +'</div>'
         +'</div>'
         +'<span class="badge '+(stBadge[d.status]||'bgr')+'">'+(stLbl[d.status]||d.status)+'</span>'
@@ -3293,6 +4530,13 @@ function pgDefective(tab='pending'){
       +'<div style="font-size:.79rem;color:var(--tm);padding:7px 10px;background:var(--bg);border-radius:var(--r);margin-bottom:8px">'
         +'<b>Defect description:</b> '+d.reason
       +'</div>'
+      +(d.photos&&d.photos.length?
+        '<div style="margin-bottom:8px">'
+          +'<div style="font-size:.68rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Attached Photos ('+d.photos.length+')</div>'
+          +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+          +d.photos.map(function(url){return '<img src="'+url+'" onclick="viewPhoto(\''+url.replace(/'/g,"\\'")+'\',' +'\''+d.bookTitle.replace(/'/g,"\\'")+'\''+')" style="width:72px;height:72px;object-fit:cover;border-radius:6px;border:1.5px solid var(--bd);cursor:pointer" title="Click to enlarge"/>';}).join('')
+          +'</div></div>'
+      :'')
       +(d.confirmedAt?'<div style="padding:7px 10px;background:var(--alt);border-radius:var(--r);font-size:.78rem;color:var(--ac);margin-bottom:8px">'
         +'<b>Confirmed</b> by '+d.confirmedBy+' on '+fmtDT(d.confirmedAt)
         +(linkedSR?' &nbsp;·&nbsp; Supplier return: <span class="txr" style="cursor:pointer" onclick="nav(\'returns-supplier\')">'+linkedSR.returnId+'</span>':'')
@@ -3377,24 +4621,70 @@ function doConfirmDefective(id){
 
 
 function reportDefectManual(){
-  openMo('Report Defective Item',
+  var body=
     '<div class="fgrid">'
-      +'<div class="fg full"><label>Scan Book Code *</label>'
+      +'<div class="fg full" id="df-scan-section"><label>Scan / Type Book Code</label>'
         +'<div style="display:flex;gap:6px;align-items:center">'
           +'<input id="df-scan" type="text" placeholder="Scan QR or type barcode, SKU, RFID\u2026" autocomplete="off" oninput="dfScanLookup()" style="flex:1;min-width:0;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)"/>'
           +'<button class="qr-scan-btn" type="button" title="Scan QR / Barcode" onclick="openQR(isel(\'df-scan\'))" style="flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button>'
         +'</div>'
-        +'<div style="font-size:.71rem;color:var(--tl);margin-top:3px">Scan the book\'s QR or type barcode / SKU / RFID manually.</div>'
         +'<div id="df-book-info" style="margin-top:6px"></div>'
       +'</div>'
       +'<div class="fg"><label>Qty Defective *</label><input id="df-qty" type="number" min="1" value="1"/></div>'
+      +'<div class="fg"><label>Defect Type *</label>'
+        +'<select id="df-defect-type">'
+          +'<option value="">Select defect type\u2026</option>'
+          +'<option value="Torn / damaged pages">Torn / Damaged Pages</option>'
+          +'<option value="Water damage">Water Damage</option>'
+          +'<option value="Cover damage">Cover Damage</option>'
+          +'<option value="Print error / missing pages">Print Error / Missing Pages</option>'
+          +'<option value="Duplicate / blank pages">Duplicate / Blank Pages</option>'
+          +'<option value="Binding broken">Binding Broken</option>'
+          +'<option value="Wrong book delivered">Wrong Book Delivered</option>'
+          +'<option value="Other defect">Other</option>'
+        +'</select>'
+      +'</div>'
       +'<div class="fg full"><label>Defect Description *</label>'
         +'<textarea id="df-reason" rows="2" placeholder="e.g. torn cover, missing pages, water damage\u2026"></textarea>'
       +'</div>'
-    +'</div>',
+      /* Manual entry toggle */
+      +'<div class="fg full" style="padding:10px 12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--bd)">'
+        +'<label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--tm)">'
+          +'<input type="checkbox" id="df-manual-mode" onchange="dfToggleManual()" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"/>'
+          +'Book not in system? Enter details manually'
+        +'</label>'
+        +'<div style="font-size:.72rem;color:var(--tl);margin-top:4px;margin-left:24px">Use this if the book has no SKU or is not registered in the catalogue.</div>'
+      +'</div>'
+      /* Manual fields (hidden by default) */
+      +'<div id="df-manual-fields" class="fg full" style="display:none">'
+        +'<div class="fgrid">'
+          +'<div class="fg"><label>Book Title *</label><input id="df-manual-title" placeholder="Full book title"/></div>'
+          +'<div class="fg"><label>Author (optional)</label><input id="df-manual-author" placeholder="Author name"/></div>'
+          +'<div class="fg full"><label>Category *</label>'
+            +'<div id="df-cat-cbox" class="cbox"></div>'
+            +'<input type="hidden" id="df-manual-cat"/>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+
+  openMo('Report Defective Item',body,
     '<button class="btn bno" onclick="closeMo()">Cancel</button>'
     +'<button class="btn bnd" onclick="saveDefectReport()"><i data-lucide="shield-x"></i>Flag as Defective</button>'
   );
+}
+
+function dfToggleManual(){
+  var manual=isel('df-manual-mode')&&isel('df-manual-mode').checked;
+  var mf=isel('df-manual-fields');
+  var sc=isel('df-scan-section');
+  if(mf)mf.style.display=manual?'block':'none';
+  /* Dim (but keep) scan section so manager can still see it */
+  if(sc)sc.style.opacity=manual?'0.4':'1';
+  if(manual){
+    if(isel('df-book-info'))isel('df-book-info').innerHTML='';
+    initModalCatCombo('df-cat-cbox','df-manual-cat','');
+  }
 }
 
 function dfScanLookup(){
@@ -3403,23 +4693,52 @@ function dfScanLookup(){
   if(!code.trim()){infoEl.innerHTML='';return;}
   var b=findBookByCode(code);
   if(b){
-    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0"><i data-lucide="check-circle"></i>'+b.title+' \u2014 <span class="sku">'+b.sku+'</span> \u00b7 '+b.category+' \u00b7 Qty in stock: '+b.qty+'</div>';
+    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0"><i data-lucide="check-circle"></i>'+b.title+' \u2014 <span class="sku">'+b.sku+'</span> \u00b7 '+b.category+' \u00b7 Qty: '+b.qty+'</div>';
+    /* Auto-uncheck manual mode if scan found something */
+    var cb=isel('df-manual-mode');if(cb)cb.checked=false;
+    dfToggleManual();
   } else {
-    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0;background:var(--dlt);color:var(--dg)"><i data-lucide="alert-circle"></i>No book found for this code.</div>';
+    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0;background:var(--dlt);color:var(--dg)"><i data-lucide="alert-circle"></i>No book found \u2014 tick "Enter manually" below.</div>';
   }
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
 function saveDefectReport(){
+  var isManual=isel('df-manual-mode')&&isel('df-manual-mode').checked;
+  var qty=parseInt(isel('df-qty')?isel('df-qty').value:0)||0;
+  var defType=isel('df-defect-type')?isel('df-defect-type').value:'';
+  var reason=isel('df-reason')?isel('df-reason').value.trim():'';
+  if(!defType){toast('Please select a defect type.','error');return;}
+  if(qty<=0||!reason){toast('Please fill all required fields.','error');return;}
+
+  if(isManual){
+    var title=isel('df-manual-title')?isel('df-manual-title').value.trim():'';
+    var author=isel('df-manual-author')?isel('df-manual-author').value.trim():'';
+    var cat=isel('df-manual-cat')?isel('df-manual-cat').value:'';
+    if(!title){toast('Please enter the book title.','error');return;}
+    if(!cat){toast('Please select a category.','error');return;}
+    getDefectiveItems().push({
+      id:uid('df'),bookId:null,bookTitle:title,sku:'—',rfid:'—',qty:qty,
+      reason:defType+(reason?' \u2014 '+reason:''),defectType:defType,
+      source:'manager_manual',sourceRef:'',
+      manualEntry:true,manualCategory:cat,manualAuthor:author,photos:[],
+      reportedBy:CU.name,reportedAt:new Date().toISOString(),
+      status:'pending',confirmedBy:null,confirmedAt:null,confirmedNote:'',
+      linkedSupReturnId:null,disposalNote:'',disposedBy:null,disposedAt:null
+    });
+    refreshBadges();
+    toast('"'+title+'" flagged as defective (manual entry, '+qty+' unit[s]).','warn');
+    closeMo();pgDefective('pending');
+    return;
+  }
+
   var code=isel('df-scan')?isel('df-scan').value:'';
   var b=findBookByCode(code);
-  var qty=parseInt(isel('df-qty')?isel('df-qty').value:0)||0;
-  var reason=isel('df-reason')?isel('df-reason').value.trim():'';
-  if(!b){toast('Scan or enter a valid book code first.','error');return;}
-  if(qty<=0||!reason){toast('Please fill all required fields.','error');return;}
+  if(!b){toast('No book found for that code. Use "Enter manually" if it\'s not in the system.','error');return;}
   getDefectiveItems().push({
     id:uid('df'),bookId:b.id,bookTitle:b.title,sku:b.sku,rfid:b.rfid,qty:qty,
-    reason:reason,source:'staff_report',sourceRef:'',
+    reason:defType+(reason?' \u2014 '+reason:''),defectType:defType,
+    source:'manager_report',sourceRef:'',manualEntry:false,photos:[],
     reportedBy:CU.name,reportedAt:new Date().toISOString(),
     status:'pending',
     confirmedBy:null,confirmedAt:null,confirmedNote:'',linkedSupReturnId:null,
