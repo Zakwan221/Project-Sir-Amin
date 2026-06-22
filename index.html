@@ -2083,27 +2083,6 @@ function pgReportMissing(){
             <textarea id="ri-defect-note" rows="3" placeholder="e.g. Pages 44–68 missing. Cover spine completely detached. Found in Aisle 4 shelf B."></textarea>
           </div>
         </div>
-        <!-- MANUAL ENTRY TOGGLE -->
-        <div style="padding:10px 12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--bd);margin-bottom:10px">
-          <label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--tm)">
-            <input type="checkbox" id="ri-manual-mode" onchange="riToggleManual()" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"/>
-            Book not in system? Enter details manually
-          </label>
-          <div style="font-size:.72rem;color:var(--tl);margin-top:4px;margin-left:24px">Use this if the book has no SKU or is not yet registered in the system.</div>
-        </div>
-        <!-- MANUAL ENTRY FIELDS (hidden until toggled) -->
-        <div id="ri-manual-fields" style="display:none">
-          <div class="fgrid" style="margin-bottom:4px">
-            <div class="fg"><label>Book Title *</label>
-              <input id="ri-manual-title" placeholder="Full book title"/></div>
-            <div class="fg"><label>Author (optional)</label>
-              <input id="ri-manual-author" placeholder="Author name"/></div>
-            <div class="fg full"><label>Category *</label>
-              <div id="ri-def-cat-cbox" class="cbox"></div>
-              <input type="hidden" id="ri-def-cat"/>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- QUICK BOOK LOOKUP -->
@@ -2324,9 +2303,9 @@ function submitDefectReportStaff(){
 
   /* SKU lookup mode */
   const sku=isel('rm-sku').value.trim().toUpperCase();
-  if(!sku){toast('Please enter a book SKU, or tick "Enter manually" below.','error');return;}
+  if(!sku){toast('Please enter a book SKU.','error');return;}
   const b=bookBySKU(sku)||findBookByCode(sku);
-  if(!b){toast('SKU not recognised. Tick "Enter manually" below if book is not in the system.','error');return;}
+  if(!b){toast('SKU not recognised. Please check and try again.','error');return;}
   const photos=_riPhotos.map(p=>p.dataUrl);
   const reason=defType+(note?' — '+note:'');
   getDefectiveItems().push({
@@ -3539,7 +3518,7 @@ function initNoBookCombo(books){
   var filtered=books.slice(),hl=-1;
   wrap.innerHTML='<div class="cbox-in" id="no-cin">'
     +'<i data-lucide="book-open" style="font-size:.78rem;color:var(--tl);flex-shrink:0"></i>'
-    +'<input id="no-book-inp" type="text" placeholder="Type SKU or title\u2026" autocomplete="off" style="min-width:0;flex:1"/>'
+    +'<input id="no-book-inp" type="text" placeholder="Search by SKU or title\u2026" autocomplete="off" style="min-width:0;flex:1"/>'
     +'</div>'
     +'<div class="cbox-dd" id="no-book-dd" style="position:fixed;z-index:9999"></div>';
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
@@ -3572,7 +3551,8 @@ function initNoBookCombo(books){
   }
   function openDD(){
     var q=inp.value.toLowerCase();
-    filtered=books.filter(function(b){return !q||b.title.toLowerCase().includes(q)||b.sku.toLowerCase().includes(q)||(b.author&&b.author.toLowerCase().includes(q));});
+    if(!q){closeDD();return;}
+    filtered=books.filter(function(b){return b.title.toLowerCase().includes(q)||b.sku.toLowerCase().includes(q)||(b.author&&b.author.toLowerCase().includes(q));});
     hl=-1;renderDD();dd.classList.add('open');positionDD();
   }
   function closeDD(){
@@ -5012,25 +4992,7 @@ function reportDefectManual(){
       +'<div class="fg full"><label>Defect Description *</label>'
         +'<textarea id="df-reason" rows="2" placeholder="e.g. torn cover, missing pages, water damage\u2026"></textarea>'
       +'</div>'
-      /* Manual entry toggle */
-      +'<div class="fg full" style="padding:10px 12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--bd)">'
-        +'<label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--tm)">'
-          +'<input type="checkbox" id="df-manual-mode" onchange="dfToggleManual()" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"/>'
-          +'Book not in system? Enter details manually'
-        +'</label>'
-        +'<div style="font-size:.72rem;color:var(--tl);margin-top:4px;margin-left:24px">Use this if the book has no SKU or is not registered in the catalogue.</div>'
-      +'</div>'
-      /* Manual fields (hidden by default) */
-      +'<div id="df-manual-fields" class="fg full" style="display:none">'
-        +'<div class="fgrid">'
-          +'<div class="fg"><label>Book Title *</label><input id="df-manual-title" placeholder="Full book title"/></div>'
-          +'<div class="fg"><label>Author (optional)</label><input id="df-manual-author" placeholder="Author name"/></div>'
-          +'<div class="fg full"><label>Category *</label>'
-            +'<div id="df-cat-cbox" class="cbox"></div>'
-            +'<input type="hidden" id="df-manual-cat"/>'
-          +'</div>'
-        +'</div>'
-      +'</div>'
+
     +'</div>';
 
   openMo('Report Defective Item',body,
