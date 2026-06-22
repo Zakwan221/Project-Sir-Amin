@@ -672,8 +672,8 @@ customerReturns:[
    reason:'wrong_item',reasonDetail:'Received wrong title, ordered different book.',
    condition:'good',refundType:'full',refundAmount:50.00,
    staffId:'u4',staffName:'Nurul Huda',receivedAt:'2026-05-20T09:15:00',
-   status:'approved',managerNote:'Wrong item confirmed. Full refund approved.',
-   processedBy:'Zakwan Syahmir',processedAt:'2026-05-20T11:00:00',addedBack:true},
+   status:'pending',managerNote:'',
+   processedBy:null,processedAt:null,addedBack:false},
   {id:'cr3',returnId:'RET-CUST-003',txnRef:'TXN-2606-002',custId:'CUST-13308',custName:'Raj Suresh',
    bookId:'b63',bookTitle:'Thermodynamics',sku:'BT-EN-003',qty:1,unitPrice:78.00,
    reason:'defective',reasonDetail:'Missing chapters 5-8, printing error from manufacturer.',
@@ -2030,14 +2030,32 @@ function pgReportMissing(){
 
       <!-- BOOK LOOKUP (shared) -->
       <div class="fgrid" style="margin-bottom:4px">
-        <div class="fg"><label>Book SKU / RFID / Barcode *</label>
+        <div class="fg full"><label>Book SKU / RFID / Barcode *</label>
           <div style="display:flex;gap:6px;align-items:center">
             <input id="rm-sku" placeholder="e.g. BT-CS-001 — or scan QR" oninput="rmLookup()" style="flex:1;min-width:0;font-family:monospace;font-size:.88rem;letter-spacing:.5px;text-transform:uppercase"/>
             <button class="qr-scan-btn" type="button" title="Scan QR / Barcode" onclick="openQR(isel('rm-sku'))"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button>
           </div>
         </div>
-        <div class="fg"><label>RFID Tag (optional)</label>
-          <input id="rm-rfid" placeholder="e.g. RFID-0001" oninput="rmLookupRFID()" style="font-family:monospace;font-size:.88rem;letter-spacing:.5px;text-transform:uppercase"/>
+        <div class="fg full">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--bgm);border-radius:var(--r);cursor:pointer" onclick="var cb=isel('rm-manual-mode');cb.checked=!cb.checked;rmToggleManual()">
+            <input type="checkbox" id="rm-manual-mode" onchange="rmToggleManual()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--ac);flex-shrink:0" onclick="event.stopPropagation()"/>
+            <span style="font-size:.8rem;font-weight:600;color:var(--tm)">Enter book details manually</span>
+            <span style="font-size:.72rem;color:var(--tl);margin-left:2px">(optional — e.g. barcode sticker missing or peeled off)</span>
+          </div>
+        </div>
+        <div id="rm-manual-fields" style="display:none;grid-column:1/-1">
+          <div class="fgrid">
+            <div class="fg full"><label>Book Title *</label>
+              <input id="rm-manual-title" placeholder="Full book title e.g. Business Management"/>
+            </div>
+            <div class="fg"><label>Author <span style="font-weight:400;text-transform:none">(optional)</span></label>
+              <input id="rm-manual-author" placeholder="e.g. Robert Griffin"/>
+            </div>
+            <div class="fg"><label>Category *</label>
+              <div id="rm-cat-cbox" class="cbox"></div>
+              <input type="hidden" id="rm-manual-cat"/>
+            </div>
+          </div>
         </div>
       </div>
       <div id="rm-lookup-result" style="margin:8px 0 12px"></div>
@@ -2112,6 +2130,22 @@ function pgReportMissing(){
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
+function rmToggleManual(){
+  const manual=isel('rm-manual-mode')?.checked;
+  const mf=isel('rm-manual-fields');
+  const scanSec=isel('rm-sku')?.closest('.fg');
+  if(mf){
+    mf.style.display=manual?'block':'none';
+    if(scanSec)scanSec.style.opacity=manual?'0.45':'1';
+    if(manual){
+      if(isel('rm-lookup-result'))isel('rm-lookup-result').innerHTML='';
+      if(!isel('rm-cat-cbox').querySelector('input'))
+        initModalCatCombo('rm-cat-cbox','rm-manual-cat','');
+    }
+    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+  }
+}
+
 /* Switch between missing / defect type */
 function riSetType(type){
   _riType=type;
@@ -2129,21 +2163,9 @@ function riSetType(type){
   if(df)df.style.display=type==='defect'?'':'none';
   if(ft)ft.textContent=type==='missing'?'Missing Item Report':'Defective Book Report';
   /* Reset manual mode when switching type */
-  if(type==='missing'){const cb=isel('ri-manual-mode');if(cb)cb.checked=false;const mfld=isel('ri-manual-fields');if(mfld)mfld.style.display='none';}
+  if(type==='missing'){const cb=isel('rm-manual-mode');if(cb)cb.checked=false;const mfld=isel('rm-manual-fields');if(mfld)mfld.style.display='none';}
 }
 
-/* Toggle manual book entry for defect reports */
-function riToggleManual(){
-  const manual=isel('ri-manual-mode')?.checked;
-  const mf=isel('ri-manual-fields');
-  if(mf)mf.style.display=manual?'':'none';
-  if(manual){
-    /* Clear the SKU lookup area so it's not confusing */
-    if(isel('rm-lookup-result'))isel('rm-lookup-result').innerHTML='';
-    /* Init the category combobox */
-    initModalCatCombo('ri-def-cat-cbox','ri-def-cat','');
-  }
-}
 
 /* Photo upload handler */
 function riAddPhoto(input){
@@ -2198,7 +2220,6 @@ function rmShowAll(){
 
 function rmQuickFill(sku,rfid){
   isel('rm-sku').value=sku.toUpperCase();
-  isel('rm-rfid').value=rfid.toUpperCase();
   rmLookup();
   const allEl=isel('rm-all-books');if(allEl)allEl.style.display='none';
 }
@@ -2220,7 +2241,6 @@ function rmLookup(){
         <div><span style="color:var(--tl);font-size:.68rem;text-transform:uppercase">Current Stock</span><br><b>${b.qty} units</b></div>
         <div><span style="color:var(--tl);font-size:.68rem;text-transform:uppercase">Status</span><br><span class="badge ${st.cls}">${st.label}</span></div>
       </div></div>`;
-    if(!isel('rm-rfid').value)isel('rm-rfid').value=b.rfid;
     if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
   } else {
     el.innerHTML=`<div style="background:var(--dlt);border-radius:var(--r);padding:9px 13px;font-size:.8rem;color:var(--dg)"><i data-lucide="x-circle"></i>&nbsp;No book found with SKU: <b>${sku}</b></div>`;
@@ -2228,17 +2248,11 @@ function rmLookup(){
   }
 }
 
-function rmLookupRFID(){
-  const rfid=isel('rm-rfid').value.trim().toUpperCase();
-  if(!rfid)return;
-  const b=bookByRFID(rfid);
-  if(b&&!isel('rm-sku').value){isel('rm-sku').value=b.sku;rmLookup();}
-}
+function rmLookupRFID(){}
 
 /* Submit: Missing Item */
 function submitMissingReport(){
   const sku=isel('rm-sku').value.trim().toUpperCase();
-  const rfid=isel('rm-rfid').value.trim().toUpperCase();
   const note=isel('rm-note')?.value.trim();
   if(!sku){toast('Please enter a book SKU.','error');return;}
   if(!note){toast('Please describe what you found.','error');return;}
@@ -2250,7 +2264,7 @@ function submitMissingReport(){
   const photos=_riPhotos.map(p=>p.dataUrl);
   DB.missingReports.push({
     id:uid('mr'),reportId,bookId:b.id,bookTitle:b.title,
-    sku:b.sku,rfid:rfid||b.rfid,
+    sku:b.sku,rfid:b.rfid,
     staffId:CU.id,staffName:CU.name,note,photos,
     submittedAt:new Date().toISOString(),
     status:'pending',confirmedBy:null,confirmedAt:null,deducted:false,
@@ -2264,7 +2278,7 @@ function submitMissingReport(){
 
 /* Submit: Defective Book */
 function submitDefectReportStaff(){
-  const isManual=isel('ri-manual-mode')?.checked;
+  const isManual=isel('rm-manual-mode')?.checked;
   const defType=isel('ri-defect-type')?.value;
   const qty=parseInt(isel('ri-defect-qty')?.value)||0;
   const note=isel('ri-defect-note')?.value.trim();
@@ -2275,13 +2289,11 @@ function submitDefectReportStaff(){
   let bookId=null,bookTitle='',bookSku='—',bookRfid='—';
 
   if(isManual){
-    /* Manual entry — book not in system */
-    bookTitle=isel('ri-manual-title')?.value.trim();
-    const manCat=isel('ri-def-cat')?.value;
-    const manAuthor=isel('ri-manual-author')?.value.trim()||'';
+    bookTitle=isel('rm-manual-title')?.value.trim();
+    const manCat=isel('rm-manual-cat')?.value;
+    const manAuthor=isel('rm-manual-author')?.value.trim()||'';
     if(!bookTitle){toast('Please enter the book title.','error');return;}
     if(!manCat){toast('Please select a category for the book.','error');return;}
-    /* Store manual info in the defect record */
     const photos=_riPhotos.map(p=>p.dataUrl);
     const reason=defType+(note?' — '+note:'');
     getDefectiveItems().push({
@@ -2305,7 +2317,7 @@ function submitDefectReportStaff(){
   const sku=isel('rm-sku').value.trim().toUpperCase();
   if(!sku){toast('Please enter a book SKU.','error');return;}
   const b=bookBySKU(sku)||findBookByCode(sku);
-  if(!b){toast('SKU not recognised. Please check and try again.','error');return;}
+  if(!b){toast('SKU not recognised. Tick "Enter book details manually" above to proceed.','error');return;}
   const photos=_riPhotos.map(p=>p.dataUrl);
   const reason=defType+(note?' — '+note:'');
   getDefectiveItems().push({
@@ -2613,86 +2625,224 @@ function supTabs(active){
 }
 
 /* ===== INVENTORY ORDER LIST ===== */
-function pgSupInventoryList(s=''){
-  const books=DB.books.filter(b=>{
-    const q=s.toLowerCase();
-    return !q||b.title.toLowerCase().includes(q)||b.sku.toLowerCase().includes(q)||b.category.toLowerCase().includes(q)||b.author.toLowerCase().includes(q);
-  }).sort((a,b)=>a.sku.localeCompare(b.sku));
+function pgSupInventoryList(sub,s){
+  if(!sub)sub='inventory';
+  if(s===undefined)s='';
 
-  /* Quantity in Reorder = sum of qty in pending/approved restock orders for each book */
+  /* ── shared stats ── */
+  const lowCount=DB.books.filter(b=>b.qty<b.minStock).length;
   const reorderQty={};
   DB.stockRequests.filter(r=>r.type==='restock'&&(r.status==='pending'||r.status==='approved'||r.status==='awaiting_delivery'))
     .forEach(r=>{if(r.bookId)reorderQty[r.bookId]=(reorderQty[r.bookId]||0)+r.qty;});
-
-  const thStyle='padding:8px 10px;border:1px solid #333;background:#F5C518;color:#1a1a1a;font-weight:700;font-size:.72rem;text-align:center;white-space:nowrap;';
-  const tdStyle='padding:6px 9px;border:1px solid #d0d0d0;font-size:.76rem;';
-  const tdCStyle='padding:6px 9px;border:1px solid #d0d0d0;font-size:.76rem;text-align:center;';
-
-  const rows=books.length?books.map((b,i)=>{
-    const inReorder=reorderQty[b.id]||0;
-    const discontinued=isCatDisabled(b.category)?'Yes':'No';
-    const isLow=b.qty<b.minStock;
-    const rowBg=i%2===0?'#fff':'#fafafa';
-    const qtyColor=isLow?'color:#dc2626;font-weight:700':'';
-    return`<tr style="background:${rowBg}">
-      <td style="${tdStyle}font-family:monospace;font-size:.71rem">${b.sku}</td>
-      <td style="${tdStyle}font-weight:600;max-width:200px">${b.title}</td>
-      <td style="${tdStyle}color:#555;font-size:.72rem;max-width:160px">${b.author} · ${b.category}</td>
-      <td style="${tdCStyle}font-weight:600">${rmF(b.price)}</td>
-      <td style="${tdCStyle}${qtyColor}">${b.qty}</td>
-      <td style="${tdCStyle}">${b.minStock}</td>
-      <td style="${tdCStyle}">7</td>
-      <td style="${tdCStyle}font-weight:${inReorder>0?'700':'400'};color:${inReorder>0?'var(--pu)':'#888'}">${inReorder||'—'}</td>
-      <td style="${tdCStyle}font-weight:600;color:${discontinued==='Yes'?'#dc2626':'#16a34a'}">${discontinued}</td>
-    </tr>`;
-  }).join(''):`<tr><td colspan="9" style="text-align:center;padding:32px;color:#888">No books found.</td></tr>`;
-
-  const totalVal=books.reduce((a,b)=>a+b.qty*b.price,0);
-  const lowCount=books.filter(b=>b.qty<b.minStock).length;
   const inReorderTotal=Object.values(reorderQty).reduce((a,v)=>a+v,0);
 
-  setHTML(`<div class="ph"><div><h2>Supplier Directory</h2><p>Manage suppliers, registrations and inventory orders</p></div></div>
-  ${supTabs('sup-inventory')}
+  /* ── sub-tab bar ── */
+  const subTabs=[
+    {id:'inventory',lbl:'Inventory List',    icon:'clipboard-list'},
+    {id:'order-history',lbl:'Order History', icon:'history'},
+  ].map(t=>`<button class="btn bsm ${sub===t.id?'bnn':'bno'}" onclick="pgSupInventoryList('${t.id}','')">
+    <i data-lucide="${t.icon}"></i>${t.lbl}
+  </button>`).join('');
 
-  <!-- SUMMARY STATS -->
+  /* ── SUMMARY STATS (shared) ── */
+  const totalVal=DB.books.reduce((a,b)=>a+b.qty*b.price,0);
+  const statsHtml=`
   <div class="sg" style="grid-template-columns:repeat(4,1fr);margin-top:14px;margin-bottom:14px">
     <div class="sc"><div class="si blue"><i data-lucide="package"></i></div><div><div class="sv">${DB.books.length}</div><div class="sl">Total Items</div></div></div>
     <div class="sc"><div class="si green"><i data-lucide="trending-up"></i></div><div><div class="sv" style="font-size:1rem">${rmF(totalVal)}</div><div class="sl">Stock Value</div></div></div>
     <div class="sc"><div class="si ${lowCount>0?'warn':'slate'}"><i data-lucide="alert-triangle"></i></div><div><div class="sv">${lowCount}</div><div class="sl">Need Reorder</div></div></div>
     <div class="sc"><div class="si purple"><i data-lucide="truck"></i></div><div><div class="sv">${inReorderTotal}</div><div class="sl">Units on Order</div></div></div>
-  </div>
+  </div>`;
 
-  <!-- SEARCH + PRINT -->
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-    <div class="sbox" style="max-width:320px"><i data-lucide="search"></i>
-      <input type="text" placeholder="Search item, SKU, category…" value="${s}"
-        oninput="pgSupInventoryList(this.value)"/>
+  /* ════════════════════════════════
+     SUB-PAGE A — Inventory List
+  ════════════════════════════════ */
+  let bodyHtml='';
+  if(sub==='inventory'){
+    const books=DB.books.filter(b=>{
+      const q=s.toLowerCase();
+      return !q||b.title.toLowerCase().includes(q)||b.sku.toLowerCase().includes(q)||b.category.toLowerCase().includes(q)||(b.author||'').toLowerCase().includes(q);
+    }).sort((a,b)=>a.sku.localeCompare(b.sku));
+
+    const thStyle='padding:8px 10px;border:1px solid #333;background:#F5C518;color:#1a1a1a;font-weight:700;font-size:.72rem;text-align:center;white-space:nowrap;';
+    const tdStyle='padding:6px 9px;border:1px solid #d0d0d0;font-size:.76rem;';
+    const tdCStyle='padding:6px 9px;border:1px solid #d0d0d0;font-size:.76rem;text-align:center;';
+
+    const rows=books.length?books.map((b,i)=>{
+      const inReorder=reorderQty[b.id]||0;
+      const discontinued=isCatDisabled(b.category)?'Yes':'No';
+      const isLow=b.qty<b.minStock;
+      const rowBg=i%2===0?'#fff':'#fafafa';
+      const qtyColor=isLow?'color:#dc2626;font-weight:700':'';
+      return`<tr style="background:${rowBg}">
+        <td style="${tdStyle}font-family:monospace;font-size:.71rem">${b.sku}</td>
+        <td style="${tdStyle}font-weight:600;max-width:200px">${b.title}</td>
+        <td style="${tdStyle}color:#555;font-size:.72rem;max-width:160px">${b.author||'—'} · ${b.category}</td>
+        <td style="${tdCStyle}font-weight:600">${rmF(b.price)}</td>
+        <td style="${tdCStyle}${qtyColor}">${b.qty}</td>
+        <td style="${tdCStyle}">${b.minStock}</td>
+        <td style="${tdCStyle}">7</td>
+        <td style="${tdCStyle}font-weight:${inReorder>0?'700':'400'};color:${inReorder>0?'var(--pu)':'#888'}">${inReorder||'—'}</td>
+        <td style="${tdCStyle}font-weight:600;color:${discontinued==='Yes'?'#dc2626':'#16a34a'}">${discontinued}</td>
+      </tr>`;
+    }).join(''):`<tr><td colspan="9" style="text-align:center;padding:32px;color:#888">No books found.</td></tr>`;
+
+    bodyHtml=`
+    <!-- SEARCH -->
+    <div style="margin-bottom:10px">
+      <div class="sbox" style="max-width:320px"><i data-lucide="search"></i>
+        <input type="text" placeholder="Search item, SKU, category…" value="${s}"
+          oninput="pgSupInventoryList('inventory',this.value)"/>
+      </div>
     </div>
-    <button class="btn bno bsm" onclick="window.print()"><i data-lucide="printer"></i>Print List</button>
-  </div>
+    <!-- INVENTORY TABLE -->
+    <div style="overflow-x:auto;border-radius:var(--rl);box-shadow:var(--sh);border:1px solid #ccc">
+      <table style="width:100%;border-collapse:collapse;min-width:820px">
+        <thead>
+          <tr>
+            <th style="${thStyle}">Inventory ID</th>
+            <th style="${thStyle}">Name</th>
+            <th style="${thStyle}">Description</th>
+            <th style="${thStyle}">Unit Price</th>
+            <th style="${thStyle}">Quantity in Stock</th>
+            <th style="${thStyle}">Reorder Level</th>
+            <th style="${thStyle}">Reorder Time in Days</th>
+            <th style="${thStyle}">Quantity in Reorder</th>
+            <th style="${thStyle}">Discontinued?</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="font-size:.72rem;color:var(--tl);margin-top:8px;text-align:right">
+      Showing ${books.length} of ${DB.books.length} items · Reorder Time in Days defaults to 7 · Quantity in Reorder shows active stock orders
+    </div>`;
+  }
 
-  <!-- INVENTORY TABLE matching the format -->
-  <div style="overflow-x:auto;border-radius:var(--rl);box-shadow:var(--sh);border:1px solid #ccc">
-    <table style="width:100%;border-collapse:collapse;min-width:820px">
-      <thead>
-        <tr>
-          <th style="${thStyle}">Inventory ID</th>
-          <th style="${thStyle}">Name</th>
-          <th style="${thStyle}">Description</th>
-          <th style="${thStyle}">Unit Price</th>
-          <th style="${thStyle}">Quantity in Stock</th>
-          <th style="${thStyle}">Reorder Level</th>
-          <th style="${thStyle}">Reorder Time in Days</th>
-          <th style="${thStyle}">Quantity in Reorder</th>
-          <th style="${thStyle}">Discontinued?</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>
-  <div style="font-size:.72rem;color:var(--tl);margin-top:8px;text-align:right">
-    Showing ${books.length} of ${DB.books.length} items · Reorder Time in Days defaults to 7 · Quantity in Reorder shows active stock orders
-  </div>`);
+  /* ════════════════════════════════
+     SUB-PAGE B — Order History
+  ════════════════════════════════ */
+  if(sub==='order-history'){
+    const typeLabel={restock:'Restock',new_book:'New Title',new_genre:'New Genre'};
+    const statusBadge={
+      pending:'by',approved:'bg2',awaiting_delivery:'bb',delivered:'bg2',rejected:'br2',
+    };
+    const statusLabel={
+      pending:'Pending',approved:'Accepted',awaiting_delivery:'Awaiting Delivery',
+      delivered:'Delivered',rejected:'Rejected',
+    };
+
+    /* Filter + search */
+    const all=DB.stockRequests.slice().sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt));
+    const filtered=all.filter(r=>{
+      const q=s.toLowerCase();
+      return !q
+        ||(r.bookTitle||'').toLowerCase().includes(q)
+        ||(r.supplierName||'').toLowerCase().includes(q)
+        ||(r.category||'').toLowerCase().includes(q)
+        ||(r.status||'').toLowerCase().includes(q);
+    });
+
+    /* Status filter chips */
+    const statuses=['all','pending','approved','awaiting_delivery','delivered','rejected'];
+    /* Detect active status chip from s if it matches exactly */
+    const chipActive=statuses.find(st=>st!=='all'&&st===s)||'all';
+    const chipsFiltered=chipActive!=='all'?all.filter(r=>r.status===chipActive):all;
+    /* If chip is selected, ignore text search and use chip filter instead */
+    const displayRows=chipActive!=='all'?chipsFiltered:filtered;
+
+    const chips=statuses.map(st=>{
+      const cnt=st==='all'?all.length:all.filter(r=>r.status===st).length;
+      const active=chipActive===st;
+      return`<button class="btn bsm ${active?'bnn':'bno'}" onclick="pgSupInventoryList('order-history','${st==='all'?'':st}')" style="border-radius:20px">
+        ${st==='all'?'All Orders':(statusLabel[st]||st)}
+        <span class="badge ${active?'':'bgr'}" style="margin-left:3px">${cnt}</span>
+      </button>`;
+    }).join('');
+
+    /* Summary totals */
+    const totalOrders=all.length;
+    const totalUnits=all.reduce((a,r)=>a+r.qty,0);
+    const totalValue=all.reduce((a,r)=>a+(r.qty*(r.unitPrice||0)),0);
+    const delivered=all.filter(r=>r.status==='delivered').length;
+
+    const rows=displayRows.length?displayRows.map((r,i)=>{
+      const rowBg=i%2===0?'var(--wh)':'var(--bg)';
+      const sup=DB.suppliers.find(s=>s.id===r.supplierId);
+      const orderVal=(r.qty*(r.unitPrice||0));
+      return`<tr style="background:${rowBg}">
+        <td style="padding:8px 11px;font-size:.71rem;color:var(--tl);white-space:nowrap">${fmtD(r.submittedAt)}</td>
+        <td style="padding:8px 11px">
+          <div style="font-weight:600;font-size:.82rem">${r.bookTitle||r.category||'—'}</div>
+          <div style="font-size:.69rem;color:var(--tl);margin-top:2px">${r.category||'—'}</div>
+        </td>
+        <td style="padding:8px 11px;font-size:.78rem">${r.supplierName||sup?.name||'—'}</td>
+        <td style="padding:8px 11px;text-align:center">
+          <span class="badge bgr" style="font-size:.65rem">${typeLabel[r.type]||r.type}</span>
+        </td>
+        <td style="padding:8px 11px;text-align:center;font-weight:700">${r.qty}</td>
+        <td style="padding:8px 11px;text-align:right;font-size:.79rem">${rmF(r.unitPrice||0)}</td>
+        <td style="padding:8px 11px;text-align:right;font-weight:600;color:var(--ok)">${rmF(orderVal)}</td>
+        <td style="padding:8px 11px;text-align:center">
+          <span class="badge ${statusBadge[r.status]||'bgr'}">${statusLabel[r.status]||r.status}</span>
+        </td>
+        <td style="padding:8px 11px;font-size:.71rem;color:var(--tl)">${r.deliveredAt?fmtD(r.deliveredAt):'—'}</td>
+      </tr>`;
+    }).join(''):`<tr><td colspan="9" style="text-align:center;padding:36px;color:var(--tl)">No orders match the selected filter.</td></tr>`;
+
+    bodyHtml=`
+    <!-- ORDER HISTORY SUMMARY -->
+    <div class="sg" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">
+      <div class="sc"><div class="si blue"><i data-lucide="shopping-cart"></i></div><div><div class="sv">${totalOrders}</div><div class="sl">Total Orders</div></div></div>
+      <div class="sc"><div class="si purple"><i data-lucide="package"></i></div><div><div class="sv">${totalUnits}</div><div class="sl">Units Ordered</div></div></div>
+      <div class="sc"><div class="si green"><i data-lucide="wallet"></i></div><div><div class="sv" style="font-size:1rem">${rmF(totalValue)}</div><div class="sl">Total Order Value</div></div></div>
+      <div class="sc"><div class="si green"><i data-lucide="check-circle"></i></div><div><div class="sv">${delivered}</div><div class="sl">Delivered</div></div></div>
+    </div>
+
+    <!-- STATUS FILTER CHIPS + SEARCH -->
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      ${chips}
+      <div class="sbox" style="max-width:240px;margin-left:auto"><i data-lucide="search"></i>
+        <input type="text" placeholder="Search title, supplier…" value="${chipActive!=='all'?'':s}"
+          oninput="pgSupInventoryList('order-history',this.value)"/>
+      </div>
+    </div>
+
+    <!-- ORDER HISTORY TABLE -->
+    <div class="card">
+      <div class="ch">
+        <h2>Order History</h2>
+        <span class="badge bgr">${displayRows.length} order${displayRows.length!==1?'s':''}</span>
+      </div>
+      <div class="tw">
+        <table style="min-width:780px">
+          <thead><tr>
+            <th>Order Date</th>
+            <th>Book / Title</th>
+            <th>Supplier</th>
+            <th style="text-align:center">Type</th>
+            <th style="text-align:center">Qty</th>
+            <th style="text-align:right">Unit Price</th>
+            <th style="text-align:right">Order Value</th>
+            <th style="text-align:center">Status</th>
+            <th>Delivered</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }
+
+  setHTML(`
+    <div class="ph"><div><h2>Supplier Directory</h2><p>Manage suppliers, registrations and inventory orders</p></div></div>
+    ${supTabs('sup-inventory')}
+    ${statsHtml}
+    <!-- SUB-TABS -->
+    <div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">
+      ${subTabs}
+    </div>
+    ${bodyHtml}
+  `);
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
@@ -4966,7 +5116,89 @@ function doConfirmDefective(id){
 
 
 function reportDefectManual(){
-  var body=
+  window._dfPhotos=[];
+  var isManager=CU.role==='Manager';
+
+  /* ══════════════════════════════════════
+     STAFF FORM — direct manual entry only
+     (no scan, no toggle, no photos)
+  ══════════════════════════════════════ */
+  if(!isManager){
+    var staffBody=
+      '<div class="fgrid">'
+        +'<div class="fg full" id="df-scan-section"><label>Scan / Type Book Code</label>'
+          +'<div style="display:flex;gap:6px;align-items:center">'
+            +'<input id="df-scan" type="text" placeholder="Scan QR or type barcode, SKU, RFID\u2026" autocomplete="off" oninput="dfScanLookup()" style="flex:1;min-width:0;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)"/>'
+            +'<button class="qr-scan-btn" type="button" title="Scan QR / Barcode" onclick="openQR(isel(\'df-scan\'))" style="flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button>'
+          +'</div>'
+          +'<div id="df-book-info" style="margin-top:6px"></div>'
+        +'</div>'
+        +'<div class="fg full">'
+          +'<div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--bgm);border-radius:var(--r);cursor:pointer" onclick="var cb=isel(\'df-manual-mode\');cb.checked=!cb.checked;dfToggleManual()">'
+            +'<input type="checkbox" id="df-manual-mode" onchange="dfToggleManual()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--ac);flex-shrink:0" onclick="event.stopPropagation()"/>'
+            +'<span style="font-size:.8rem;font-weight:600;color:var(--tm)">Enter book details manually</span>'
+            +'<span style="font-size:.72rem;color:var(--tl);margin-left:2px">(optional — e.g. barcode sticker missing or peeled off)</span>'
+          +'</div>'
+        +'</div>'
+        +'<div id="df-manual-fields" style="display:none;grid-column:1/-1">'
+          +'<div class="fgrid">'
+            +'<div class="fg full"><label>Book Title *</label>'
+              +'<input id="df-manual-title" placeholder="Full book title e.g. Business Management"/>'
+            +'</div>'
+            +'<div class="fg"><label>Author <span style="font-weight:400;text-transform:none">(optional)</span></label>'
+              +'<input id="df-manual-author" placeholder="e.g. Robert Griffin"/>'
+            +'</div>'
+            +'<div class="fg"><label>Category *</label>'
+              +'<div id="df-cat-cbox" class="cbox"></div>'
+              +'<input type="hidden" id="df-manual-cat"/>'
+            +'</div>'
+          +'</div>'
+        +'</div>'
+        +'<div class="fg"><label>Qty Defective *</label><input id="df-qty" type="number" min="1" value="1"/></div>'
+        +'<div class="fg"><label>Defect Type *</label>'
+          +'<select id="df-defect-type">'
+            +'<option value="">Select defect type\u2026</option>'
+            +'<option value="Torn / damaged pages">Torn / Damaged Pages</option>'
+            +'<option value="Water damage">Water Damage</option>'
+            +'<option value="Cover damage">Cover Damage</option>'
+            +'<option value="Print error / missing pages">Print Error / Missing Pages</option>'
+            +'<option value="Duplicate / blank pages">Duplicate / Blank Pages</option>'
+            +'<option value="Binding broken">Binding Broken</option>'
+            +'<option value="Wrong book delivered">Wrong Book Delivered</option>'
+            +'<option value="Other defect">Other</option>'
+          +'</select>'
+        +'</div>'
+        +'<div class="fg full"><label>Defect Description *</label>'
+          +'<textarea id="df-reason" rows="2" placeholder="e.g. torn cover, missing pages, water damage\u2026"></textarea>'
+        +'</div>'
+      +'</div>';
+
+    openMo('Report Defective Item',staffBody,
+      '<button class="btn bno" onclick="closeMo()">Cancel</button>'
+      +'<button class="btn bnd" onclick="saveDefectReport()"><i data-lucide="shield-x"></i>Flag as Defective</button>'
+    );
+    return;
+  }
+
+  /* ══════════════════════════════════════
+     MANAGER FORM — scan + optional manual + photos
+  ══════════════════════════════════════ */
+  var photoSection=
+    '<div class="fg full" style="border-top:1px solid var(--bd);padding-top:10px;margin-top:4px">'
+      +'<label style="font-size:.69rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">'
+        +'Attach Photos <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--tl)">(optional)</span>'
+      +'</label>'
+      +'<div id="df-photo-row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start">'
+        +'<label id="df-photo-add" style="width:72px;height:72px;border:2px dashed var(--bd);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;color:var(--tl);font-size:.68rem;font-weight:600;transition:border .15s;flex-shrink:0" title="Add photo">'
+          +'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'
+          +'Add'
+          +'<input type="file" accept="image/*" multiple style="display:none" onchange="dfAddPhotos(this)"/>'
+        +'</label>'
+      +'</div>'
+      +'<div style="font-size:.7rem;color:var(--tl);margin-top:5px">Up to 5 photos · JPG / PNG</div>'
+    +'</div>';
+
+  var mgrBody=
     '<div class="fgrid">'
       +'<div class="fg full" id="df-scan-section"><label>Scan / Type Book Code</label>'
         +'<div style="display:flex;gap:6px;align-items:center">'
@@ -4975,6 +5207,30 @@ function reportDefectManual(){
         +'</div>'
         +'<div id="df-book-info" style="margin-top:6px"></div>'
       +'</div>'
+
+      /* manual toggle */
+      +'<div class="fg full">'
+        +'<div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--bgm);border-radius:var(--r);cursor:pointer" onclick="var cb=isel(\'df-manual-mode\');cb.checked=!cb.checked;dfToggleManual()">'
+          +'<input type="checkbox" id="df-manual-mode" onchange="dfToggleManual()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--ac);flex-shrink:0" onclick="event.stopPropagation()"/>'
+          +'<span style="font-size:.8rem;font-weight:600;color:var(--tm)">Enter book details manually</span>'
+          +'<span style="font-size:.72rem;color:var(--tl);margin-left:2px">(optional — e.g. barcode sticker missing or peeled off)</span>'
+        +'</div>'
+      +'</div>'
+      +'<div id="df-manual-fields" style="display:none;grid-column:1/-1">'
+        +'<div class="fgrid">'
+          +'<div class="fg full"><label>Book Title *</label>'
+            +'<input id="df-manual-title" placeholder="Full book title e.g. Business Management"/>'
+          +'</div>'
+          +'<div class="fg"><label>Author <span style="font-weight:400;text-transform:none">(optional)</span></label>'
+            +'<input id="df-manual-author" placeholder="e.g. Robert Griffin"/>'
+          +'</div>'
+          +'<div class="fg"><label>Category *</label>'
+            +'<div id="df-cat-cbox" class="cbox"></div>'
+            +'<input type="hidden" id="df-manual-cat"/>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+
       +'<div class="fg"><label>Qty Defective *</label><input id="df-qty" type="number" min="1" value="1"/></div>'
       +'<div class="fg"><label>Defect Type *</label>'
         +'<select id="df-defect-type">'
@@ -4992,25 +5248,66 @@ function reportDefectManual(){
       +'<div class="fg full"><label>Defect Description *</label>'
         +'<textarea id="df-reason" rows="2" placeholder="e.g. torn cover, missing pages, water damage\u2026"></textarea>'
       +'</div>'
-
+      +photoSection
     +'</div>';
 
-  openMo('Report Defective Item',body,
+  openMo('Report Defective Item',mgrBody,
     '<button class="btn bno" onclick="closeMo()">Cancel</button>'
     +'<button class="btn bnd" onclick="saveDefectReport()"><i data-lucide="shield-x"></i>Flag as Defective</button>'
   );
+}
+
+/* Add photos from file input → convert to base64 and render previews */
+function dfAddPhotos(input){
+  var files=Array.from(input.files||[]);
+  if(!files.length)return;
+  var row=isel('df-photo-row');
+  var addBtn=isel('df-photo-add');
+  if(!row)return;
+  files.forEach(function(file){
+    if(window._dfPhotos.length>=5){toast('Maximum 5 photos allowed.','warn');return;}
+    if(!file.type.startsWith('image/')){toast('Only image files are allowed.','warn');return;}
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var dataUrl=e.target.result;
+      window._dfPhotos.push(dataUrl);
+      var idx=window._dfPhotos.length-1;
+      var wrap=document.createElement('div');
+      wrap.style.cssText='position:relative;width:72px;height:72px;flex-shrink:0';
+      wrap.innerHTML=
+        '<img src="'+dataUrl+'" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1.5px solid var(--bd);display:block"/>'
+        +'<button onclick="dfRemovePhoto('+idx+',this.parentNode)" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--dg);color:#fff;border:none;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;line-height:1" title="Remove">\u00d7</button>';
+      row.insertBefore(wrap,addBtn);
+      /* Hide add button once limit reached */
+      if(window._dfPhotos.length>=5)addBtn.style.display='none';
+    };
+    reader.readAsDataURL(file);
+  });
+  /* Reset input so same file can be re-added after removal */
+  input.value='';
+}
+
+/* Remove a photo preview and mark its slot as null */
+function dfRemovePhoto(idx,wrap){
+  if(window._dfPhotos)window._dfPhotos[idx]=null;
+  if(wrap&&wrap.parentNode)wrap.parentNode.removeChild(wrap);
+  var addBtn=isel('df-photo-add');
+  if(addBtn)addBtn.style.display='';
 }
 
 function dfToggleManual(){
   var manual=isel('df-manual-mode')&&isel('df-manual-mode').checked;
   var mf=isel('df-manual-fields');
   var sc=isel('df-scan-section');
-  if(mf)mf.style.display=manual?'block':'none';
-  /* Dim (but keep) scan section so manager can still see it */
-  if(sc)sc.style.opacity=manual?'0.4':'1';
-  if(manual){
-    if(isel('df-book-info'))isel('df-book-info').innerHTML='';
-    initModalCatCombo('df-cat-cbox','df-manual-cat','');
+  if(mf){
+    mf.style.display=manual?'block':'none';
+    if(sc)sc.style.opacity=manual?'0.45':'1';
+    if(manual){
+      if(isel('df-book-info'))isel('df-book-info').innerHTML='';
+      if(!isel('df-cat-cbox').querySelector('input'))
+        initModalCatCombo('df-cat-cbox','df-manual-cat','');
+    }
+    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
   }
 }
 
@@ -5031,12 +5328,57 @@ function dfScanLookup(){
 }
 
 function saveDefectReport(){
-  var isManual=isel('df-manual-mode')&&isel('df-manual-mode').checked;
+  var isManager=CU.role==='Manager';
   var qty=parseInt(isel('df-qty')?isel('df-qty').value:0)||0;
   var defType=isel('df-defect-type')?isel('df-defect-type').value:'';
   var reason=isel('df-reason')?isel('df-reason').value.trim():'';
   if(!defType){toast('Please select a defect type.','error');return;}
   if(qty<=0||!reason){toast('Please fill all required fields.','error');return;}
+
+  var photos=(window._dfPhotos||[]).filter(function(p){return p!=null;});
+
+  /* ── STAFF path — scan or manual (no photos) ── */
+  if(!isManager){
+    var isManual=isel('df-manual-mode')&&isel('df-manual-mode').checked;
+    if(isManual){
+      var title=isel('df-manual-title')?isel('df-manual-title').value.trim():'';
+      var author=isel('df-manual-author')?isel('df-manual-author').value.trim():'';
+      var cat=isel('df-manual-cat')?isel('df-manual-cat').value:'';
+      if(!title){toast('Please enter the book title.','error');return;}
+      if(!cat){toast('Please select a category.','error');return;}
+      getDefectiveItems().push({
+        id:uid('df'),bookId:null,bookTitle:title,sku:'—',rfid:'—',qty:qty,
+        reason:defType+(reason?'\u2014 '+reason:''),defectType:defType,
+        source:'staff_manual',sourceRef:'',
+        manualEntry:true,manualCategory:cat,manualAuthor:author,photos:[],
+        reportedBy:CU.name,reportedAt:new Date().toISOString(),
+        status:'pending',confirmedBy:null,confirmedAt:null,confirmedNote:'',
+        linkedSupReturnId:null,disposalNote:'',disposedBy:null,disposedAt:null
+      });
+      refreshBadges();
+      toast('"'+title+'" flagged as defective ('+qty+' unit[s]).','warn');
+      closeMo();pgDefective('pending');
+      return;
+    }
+    var code=isel('df-scan')?isel('df-scan').value:'';
+    var b=findBookByCode(code);
+    if(!b){toast('No book found. Tick "Enter book details manually" above to proceed.','error');return;}
+    getDefectiveItems().push({
+      id:uid('df'),bookId:b.id,bookTitle:b.title,sku:b.sku,rfid:b.rfid,qty:qty,
+      reason:defType+(reason?'\u2014 '+reason:''),defectType:defType,
+      source:'staff_scan',sourceRef:'',manualEntry:false,photos:[],
+      reportedBy:CU.name,reportedAt:new Date().toISOString(),
+      status:'pending',confirmedBy:null,confirmedAt:null,confirmedNote:'',linkedSupReturnId:null,
+      disposalNote:'',disposedBy:null,disposedAt:null
+    });
+    refreshBadges();
+    toast(b.title+' flagged as defective ('+qty+' unit[s]).','warn');
+    closeMo();pgDefective('pending');
+    return;
+  }
+
+  /* ── MANAGER path — scan or manual toggle ── */
+  var isManual=isel('df-manual-mode')&&isel('df-manual-mode').checked;
 
   if(isManual){
     var title=isel('df-manual-title')?isel('df-manual-title').value.trim():'';
@@ -5046,33 +5388,35 @@ function saveDefectReport(){
     if(!cat){toast('Please select a category.','error');return;}
     getDefectiveItems().push({
       id:uid('df'),bookId:null,bookTitle:title,sku:'—',rfid:'—',qty:qty,
-      reason:defType+(reason?' \u2014 '+reason:''),defectType:defType,
+      reason:defType+(reason?'\u2014 '+reason:''),defectType:defType,
       source:'manager_manual',sourceRef:'',
-      manualEntry:true,manualCategory:cat,manualAuthor:author,photos:[],
+      manualEntry:true,manualCategory:cat,manualAuthor:author,photos:photos,
       reportedBy:CU.name,reportedAt:new Date().toISOString(),
       status:'pending',confirmedBy:null,confirmedAt:null,confirmedNote:'',
       linkedSupReturnId:null,disposalNote:'',disposedBy:null,disposedAt:null
     });
     refreshBadges();
-    toast('"'+title+'" flagged as defective (manual entry, '+qty+' unit[s]).','warn');
+    toast('"'+title+'" flagged as defective (manual, '+qty+' unit[s])'+(photos.length?' · '+photos.length+' photo(s).':'.'));
+    window._dfPhotos=[];
     closeMo();pgDefective('pending');
     return;
   }
 
   var code=isel('df-scan')?isel('df-scan').value:'';
   var b=findBookByCode(code);
-  if(!b){toast('No book found for that code. Use "Enter manually" if it\'s not in the system.','error');return;}
+  if(!b){toast('No book found. Tick "Enter book details manually" above to proceed.','error');return;}
   getDefectiveItems().push({
     id:uid('df'),bookId:b.id,bookTitle:b.title,sku:b.sku,rfid:b.rfid,qty:qty,
-    reason:defType+(reason?' \u2014 '+reason:''),defectType:defType,
-    source:'manager_report',sourceRef:'',manualEntry:false,photos:[],
+    reason:defType+(reason?'\u2014 '+reason:''),defectType:defType,
+    source:'manager_scan',sourceRef:'',manualEntry:false,photos:photos,
     reportedBy:CU.name,reportedAt:new Date().toISOString(),
     status:'pending',
     confirmedBy:null,confirmedAt:null,confirmedNote:'',linkedSupReturnId:null,
     disposalNote:'',disposedBy:null,disposedAt:null
   });
   refreshBadges();
-  toast(b.title+' flagged as defective ('+qty+' unit[s]).','warn');
+  toast(b.title+' flagged as defective ('+qty+' unit[s])'+(photos.length?' · '+photos.length+' photo(s).':'.'));
+  window._dfPhotos=[];
   closeMo();pgDefective('pending');
 }
 /* =====================================================
@@ -5126,7 +5470,7 @@ function pgReturns(tab='no-want'){
     const linkedSR=r.linkedSupReturnId?DB.supplierReturns.find(s=>s.id===r.linkedSupReturnId):null;
 
     let actionBtn='';
-    if(r.status==='pending'){
+    if(r.status==='pending'||(r.status==='approved'&&r.condition==='good'&&!r.addedBack)){
       if(isDefTab){
         actionBtn=`<div class="ret-actions">
           <button class="btn bna bsm" onclick="confirmDefectiveReturn('${r.id}')">
@@ -5149,6 +5493,7 @@ function pgReturns(tab='no-want'){
           <div class="ret-meta">
             <span class="cid">${r.custId}</span> ${r.custName} &nbsp;·&nbsp;
             Linked to: <span class="txr">${r.txnRef}</span> &nbsp;·&nbsp; ${fmtDT(r.receivedAt)}
+            ${r.manualEntry?'&nbsp;·&nbsp; <span class="badge by" style="font-size:.62rem">Manual Entry</span>':''}
           </div>
         </div>
         <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:flex-start">
@@ -5371,6 +5716,29 @@ function openCustReturnForm(){
         <div style="font-size:.71rem;color:var(--tl);margin-top:3px">Scan the receipt's transaction code, or the book's barcode, SKU or RFID tag — or type it manually.</div>
       </div>
       <div id="cr-txn-info" style="grid-column:1/-1;display:none;background:var(--bg);border-radius:var(--r);padding:10px 12px;font-size:.79rem"></div>
+
+      <!-- Optional manual book entry -->
+      <div class="fg full" style="border-top:1px solid var(--bd);padding-top:10px;margin-top:2px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--tm);text-transform:none;letter-spacing:0">
+          <input type="checkbox" id="cr-manual-mode" onchange="crToggleManual()" style="width:14px;height:14px;cursor:pointer;accent-color:var(--ac)"/>
+          <span>Enter book details manually <span style="font-size:.72rem;color:var(--tl);font-weight:500">(optional — e.g. barcode sticker missing or peeled off)</span></span>
+        </label>
+      </div>
+      <div id="cr-manual-fields" style="display:none;grid-column:1/-1">
+        <div class="fgrid">
+          <div class="fg full"><label>Book Title *</label>
+            <input id="cr-manual-title" placeholder="Full book title e.g. Business Management"/>
+          </div>
+          <div class="fg"><label>Author <span style="font-weight:400;text-transform:none">(optional)</span></label>
+            <input id="cr-manual-author" placeholder="e.g. Author Name"/>
+          </div>
+          <div class="fg"><label>Category *</label>
+            <div id="cr-cat-cbox" class="cbox"></div>
+            <input type="hidden" id="cr-manual-cat"/>
+          </div>
+        </div>
+      </div>
+
       <div class="fg"><label>Return Reason *</label>
         <select id="cr-reason" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
           <option value="">Select reason…</option>
@@ -5407,7 +5775,7 @@ function crScanLookup(){
   const t=findTxnByCode(code);
   if(!t){
     infoEl.style.display='block';
-    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0;background:var(--dlt);color:var(--dg)"><i data-lucide="alert-circle"></i>No matching purchase found for this code.</div>';
+    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0;background:var(--dlt);color:var(--dg)"><i data-lucide="alert-circle"></i>No matching purchase found for this code. Try a different code, or tick <b>"Enter book details manually"</b> below.</div>';
     if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
     return;
   }
@@ -5436,7 +5804,25 @@ function crCalcRefund(){
   else amtEl.value='0.00';
 }
 
+function crToggleManual(){
+  const manual=isel('cr-manual-mode')&&isel('cr-manual-mode').checked;
+  const mf=isel('cr-manual-fields');
+  const sc=isel('cr-scan')?.closest('.fg');
+  if(mf){
+    mf.style.display=manual?'block':'none';
+    /* Dim (but keep) the scan section — RFID is still primary */
+    if(sc)sc.style.opacity=manual?'0.45':'1';
+    if(manual){
+      /* Init the category combobox only once */
+      if(!isel('cr-cat-cbox').querySelector('input'))
+        initModalCatCombo('cr-cat-cbox','cr-manual-cat','');
+    }
+    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+  }
+}
+
 function saveCustReturn(){
+  const isManual=isel('cr-manual-mode')&&isel('cr-manual-mode').checked;
   const t=findTxnByCode(isel('cr-scan')?.value);
   const reason=isel('cr-reason').value;
   const cond=isel('cr-cond').value;
@@ -5446,8 +5832,39 @@ function saveCustReturn(){
   const detail=isel('cr-detail').value.trim();
   const date=isel('cr-date').value;
   const note=isel('cr-note').value.trim();
-  if(!t){toast('Scan or enter a valid receipt/book code first.','error');return;}
+
   if(!reason||qty<=0||!detail){toast('Please fill all required fields.','error');return;}
+
+  /* ── Manual entry path (no transaction found) ── */
+  if(isManual){
+    const manTitle=isel('cr-manual-title')?isel('cr-manual-title').value.trim():'';
+    const manAuthor=isel('cr-manual-author')?isel('cr-manual-author').value.trim():'';
+    const manCat=isel('cr-manual-cat')?isel('cr-manual-cat').value:'';
+    if(!manTitle){toast('Please enter the book title.','error');return;}
+    if(!manCat){toast('Please select a category.','error');return;}
+    const retId='RET-CUST-'+String(DB.customerReturns.length+1).padStart(3,'0');
+    const newRet={
+      id:uid('cr'),returnId:retId,txnRef:'MANUAL',
+      custId:'—',custName:'Walk-in / Unknown',
+      bookId:null,bookTitle:manTitle,sku:'—',
+      manualEntry:true,manualCategory:manCat,manualAuthor:manAuthor,
+      qty,unitPrice:refAmt||0,
+      reason,reasonDetail:detail,condition:cond,
+      refundType:refType,refundAmount:refAmt,
+      staffId:CU.id,staffName:CU.name,
+      receivedAt:new Date(date+'T'+new Date().toTimeString().slice(0,8)).toISOString(),
+      status:'pending',managerNote:note,
+      processedBy:null,processedAt:null,addedBack:false,
+    };
+    DB.customerReturns.push(newRet);
+    DB.notifications.push({id:uid('n'),title:'New customer return recorded (manual)',sub:`${retId}: ${manTitle} — manual entry`,time:new Date().toISOString(),read:false,targetRole:'Manager',link:'returns'});
+    refreshDot();refreshBadges();
+    toast(`Customer return ${retId} recorded (manual entry).`,'success');closeMo();pgReturns('no-want');
+    return;
+  }
+
+  /* ── Normal path — transaction required ── */
+  if(!t){toast('Scan or enter a valid receipt/book code first, or tick "Enter book details manually".','error');return;}
   const b=DB.books.find(x=>x.id===t.bookId);
   const retId='RET-CUST-'+String(DB.customerReturns.length+1).padStart(3,'0');
   const newRet={
