@@ -600,9 +600,9 @@ users:[
   {id:'s3',name:'KL Book Distributors',username:'supplier3',password:'sup123',role:'Supplier',supplierId:'sp3'},
 ],
 suppliers:[
-  {id:'sp1',name:'Pustaka Sdn Bhd',contact:'Ahmad Razak',phone:'03-2234 5678',email:'ahmad@pustaka.com.my',address:'Lot 5, Jalan Pudu, KL',userId:'s1'},
-  {id:'sp2',name:'Buku Kita Trading',contact:'Lim Mei Ling',phone:'03-8765 4321',email:'meiling@bukukita.com.my',address:'No.12, Jalan Cheras, KL',userId:'s2'},
-  {id:'sp3',name:'KL Book Distributors',contact:'Rajesh Kumar',phone:'03-5567 8901',email:'rajesh@klbooks.com.my',address:'Unit 3A, Kompleks Sogo, KL',userId:'s3'},
+  {id:'sp1',name:'Pustaka Sdn Bhd',contact:'Ahmad Razak',phone:'03-2234 5678',email:'ahmad@pustaka.com.my',address:'Lot 5, Jalan Pudu, KL',userId:'s1',supplierType:'Type 1'},
+  {id:'sp2',name:'Buku Kita Trading',contact:'Lim Mei Ling',phone:'03-8765 4321',email:'meiling@bukukita.com.my',address:'No.12, Jalan Cheras, KL',userId:'s2',supplierType:'Type 2'},
+  {id:'sp3',name:'KL Book Distributors',contact:'Rajesh Kumar',phone:'03-5567 8901',email:'rajesh@klbooks.com.my',address:'Unit 3A, Kompleks Sogo, KL',userId:'s3',supplierType:'Type 2'},
 ],
 transactions:[
   {id:'t01',ref:'TXN-2605-001',custId:'CUST-12234',custName:'Ahmad Farid',bookId:'b31',bookTitle:'Business Management',qty:2,unitPrice:60.00,date:'2026-05-10',staffId:'u3',staffName:'Ibad',note:'Walk-in'},
@@ -661,10 +661,22 @@ stockRequests:[
 ],
 /* RFID gate events — simulated unauthorized exit detections */
 rfidEvents:[
-  {id:'re1',rfid:'RFID-0002',bookId:'b02',sku:'BT-CS-002',bookTitle:'Data Structures & Algorithms',time:'2026-06-10T08:14:33',type:'unauthorized',confirmed:true,deducted:true},
-  {id:'re2',rfid:'RFID-0013',bookId:'b13',sku:'BT-MA-003',bookTitle:'Introduction to Probability',time:'2026-06-10T10:22:11',type:'unauthorized',confirmed:false,deducted:false},
-  {id:'re3',rfid:'RFID-0051',bookId:'b51',sku:'BT-EC-001',bookTitle:'Principles of Economics',time:'2026-06-10T11:45:00',type:'unauthorized',confirmed:false,deducted:false},
-  {id:'re4',rfid:'RFID-0001',bookId:'b01',sku:'BT-CS-001',bookTitle:'Introduction to Programming',time:'2026-06-10T13:07:44',type:'authorized',confirmed:false,deducted:false},
+  {id:'re1', rfid:'RFID-0002',bookId:'b02',sku:'BT-CS-002',bookTitle:'Data Structures & Algorithms',     time:'2026-06-10T08:14:33',type:'unauthorized',confirmed:true, deducted:true},
+  {id:'re2', rfid:'RFID-0013',bookId:'b13',sku:'BT-MA-003',bookTitle:'Introduction to Probability',      time:'2026-06-10T10:22:11',type:'unauthorized',confirmed:false,deducted:false},
+  {id:'re3', rfid:'RFID-0051',bookId:'b51',sku:'BT-EC-001',bookTitle:'Principles of Economics',          time:'2026-06-10T11:45:00',type:'unauthorized',confirmed:false,deducted:false},
+  {id:'re4', rfid:'RFID-0001',bookId:'b01',sku:'BT-CS-001',bookTitle:'Introduction to Programming',      time:'2026-06-10T13:07:44',type:'authorized', confirmed:false,deducted:false},
+  {id:'re5', rfid:'RFID-0007',bookId:'b07',sku:'BT-CS-007',bookTitle:'Clean Code',                       time:'2026-06-11T09:05:12',type:'unauthorized',confirmed:false,deducted:false},
+  {id:'re6', rfid:'RFID-0034',bookId:'b34',sku:'BT-BU-004',bookTitle:'Organisational Behaviour',         time:'2026-06-11T10:33:47',type:'unauthorized',confirmed:true, deducted:true},
+  {id:'re7', rfid:'RFID-0078',bookId:'b78',sku:'BT-LI-008',bookTitle:'The Alchemist',                    time:'2026-06-12T08:58:20',type:'authorized', confirmed:false,deducted:false},
+  {id:'re8', rfid:'RFID-0055',bookId:'b55',sku:'BT-EC-005',bookTitle:'Behavioural Economics',             time:'2026-06-12T14:21:09',type:'unauthorized',confirmed:false,deducted:false},
+  {id:'re9', rfid:'RFID-0041',bookId:'b41',sku:'BT-HI-001',bookTitle:'Malaysian History',                time:'2026-06-13T09:44:55',type:'unauthorized',confirmed:true, deducted:true},
+  {id:'re10',rfid:'RFID-0006',bookId:'b06',sku:'BT-CS-006',bookTitle:'AI: A Modern Approach',            time:'2026-06-13T11:17:33',type:'authorized', confirmed:false,deducted:false},
+  {id:'re11',rfid:'RFID-0025',bookId:'b25',sku:'BT-SC-005',bookTitle:'Biochemistry',                     time:'2026-06-14T08:30:00',type:'unauthorized',confirmed:false,deducted:false},
+  {id:'re12',rfid:'RFID-0009',bookId:'b09',sku:'BT-CS-009',bookTitle:'The Pragmatic Programmer',         time:'2026-06-15T10:05:22',type:'unauthorized',confirmed:false,deducted:false},
+  {id:'re13',rfid:'RFID-0072',bookId:'b72',sku:'BT-LI-002',bookTitle:'The Great Gatsby',                 time:'2026-06-16T09:12:44',type:'authorized', confirmed:false,deducted:false},
+  {id:'re14',rfid:'RFID-0031',bookId:'b31',sku:'BT-BU-001',bookTitle:'Business Management',              time:'2026-06-17T13:48:10',type:'unauthorized',confirmed:false,deducted:false},
+  {id:'re15',rfid:'RFID-0018',bookId:'b18',sku:'BT-MA-008',bookTitle:'Statistics & Probability',         time:'2026-06-18T08:22:37',type:'unauthorized',confirmed:false,deducted:false},
+  {id:'re16',rfid:'RFID-0003',bookId:'b03',sku:'BT-CS-003',bookTitle:'Operating Systems Internals',      time:'2026-06-19T11:55:01',type:'unauthorized',confirmed:false,deducted:false},
 ],
 /* Staff missing reports — staff-submitted manual reports */
 missingReports:[
@@ -1233,9 +1245,11 @@ function pgDashAdmin(){
 /* selected categories for book catalogue filter — persists while on page */
 let _bkCats=[];
 
-function pgBooks(s='',stf=''){
+function pgBooks(pg,s,stf){
+  if(pg===undefined||typeof pg==='string'){stf=s;s=pg;pg=1;}
+  if(!s)s='';if(!stf)stf='';
   const ce=CU.role==='Manager';
-  const bks=DB.books.filter(b=>{
+  const all=DB.books.filter(b=>{
     const q=s.toLowerCase();
     const matchQ=!q||b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)||b.isbn.includes(q)||b.sku.toLowerCase().includes(q)||b.rfid.toLowerCase().includes(q);
     const matchCat=!_bkCats.length||_bkCats.includes(b.category);
@@ -1243,12 +1257,11 @@ function pgBooks(s='',stf=''){
     const matchStat=!stf||st===stf;
     return matchQ&&matchCat&&matchStat&&!isCatDisabled(b.category);
   });
-
-  const PAGE=10;
-  const visible=bks.slice(0,PAGE);
-  const hidden=bks.slice(PAGE);
-
-  const makeRow=b=>{const st=sSt(b);const sup=DB.suppliers.find(x=>x.id===b.supplierId);return`<tr>
+  const PER=10,bkTotal=Math.max(1,Math.ceil(all.length/PER));
+  pg=Math.min(Math.max(1,pg),bkTotal);
+  const bks=all.slice((pg-1)*PER,pg*PER);
+  const bkFrom=(pg-1)*PER+1,bkTo=Math.min(pg*PER,all.length);
+  const rows=bks.length?bks.map(b=>{const st=sSt(b);const sup=DB.suppliers.find(x=>x.id===b.supplierId);return`<tr>
     <td><div style="font-weight:600">${b.title}</div><div style="font-size:.7rem;color:var(--tl);margin-top:2px">ISBN: ${b.isbn}</div></td>
     <td><span class="sku">${b.sku}</span></td>
     <td><span class="rfidtag">${b.rfid}</span></td>
@@ -1262,44 +1275,25 @@ function pgBooks(s='',stf=''){
       <button class="bic" onclick="printBookBarcode('${b.id}')" style="margin-right:2px" title="Print Barcode Label"><i data-lucide="barcode"></i></button>
       ${ce?`<button class="bic ed" onclick="editBook('${b.id}')"><i data-lucide="pencil"></i></button>
       <button class="bic dl" onclick="delBook('${b.id}')" style="margin-left:3px"><i data-lucide="trash-2"></i></button>`
-      :''}</td></tr>`;};
-
-  const rows=bks.length
-    ? visible.map(makeRow).join('')
-      + (hidden.length ? hidden.map(b=>`<tr class="bk-extra" style="display:none">${makeRow(b).replace(/^<tr>/,'').replace(/<\/tr>$/,'')}</tr>`).join('') : '')
+      :''}</td></tr>`;}).join('')
     :`<tr><td colspan="12"><div class="empty"><div class="eico"><i data-lucide="search-x"></i></div><h3>No books found</h3>${_bkCats.length?'<p>Try removing some category filters.</p>':''}</div></td></tr>`;
-
-  const seeMoreBtn=hidden.length?`<div id="bk-seemore-row" style="padding:14px;text-align:center;border-top:1px solid var(--bd)">
-    <button class="btn bno" onclick="bkShowMore()" style="gap:6px;min-width:160px">
-      <i data-lucide="chevrons-down"></i>See More
-      <span class="badge bgr" style="margin-left:2px">${hidden.length} more</span>
-    </button>
-  </div>`:'';
-
   const catBtn=ce?'<button class="btn bno" onclick="openManageCats()"><i data-lucide="tag"></i>Manage Categories</button>':'';
   const addBookBtn=ce?'<button class="btn bnn" onclick="editBook(null)"><i data-lucide="plus"></i>Add Book</button>':'';
   const statOpts=['In Stock','Low Stock','Out of Stock'].map(v=>`<option value="${v}"${stf===v?' selected':''}>${v}</option>`).join('');
-
   setHTML(`<div class="ph"><div><h2>Book Catalogue</h2><p>${DB.books.length} titles — each with unique SKU, RFID tag &amp; Barcode</p></div>
     <div class="pha">${catBtn}${addBookBtn}</div></div>
     <div class="card"><div class="ch"><div class="tb2">
-      <div class="sbox"><i data-lucide="search"></i><input id="bk-srch" type="text" placeholder="Search title, author, SKU, RFID…" value="${s}" oninput="dbs('bk',pgBooks,this.value,document.querySelector('select.flt')?document.querySelector('select.flt').value:'')"/><button class="qr-scan-btn" type="button" title="Scan QR / Barcode" onclick="openQR(isel('bk-srch'))"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button></div>
-      <select class="flt" onchange="pgBooks(isel('bk-srch')?isel('bk-srch').value:'',this.value)"><option value="">All Status</option>${statOpts}</select>
+      <div class="sbox"><i data-lucide="search"></i><input id="bk-srch" type="text" placeholder="Search title, author, SKU, RFID…" value="${s}" oninput="dbs('bk',(v)=>pgBooks(1,v,document.querySelector('select.flt')?document.querySelector('select.flt').value:''),this.value)"/><button class="qr-scan-btn" type="button" title="Scan QR / Barcode" onclick="openQR(isel('bk-srch'))"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button></div>
+      <select class="flt" onchange="pgBooks(1,isel('bk-srch')?isel('bk-srch').value:'',this.value)"><option value="">All Status</option>${statOpts}</select>
       <div class="cbox" id="cat-cbox"></div>
-    </div>
-    <span style="font-size:.75rem;color:var(--tl)">Showing ${Math.min(PAGE,bks.length)} of ${bks.length}</span>
-    </div>
+    <span style="font-size:.75rem;color:var(--tl)">${all.length?`Showing ${bkFrom}–${bkTo} of ${all.length}`:'No results'}</span>
+    </div></div>
     <div class="tw"><table><thead><tr><th>Title / ISBN</th><th>SKU</th><th>RFID Tag</th><th>Barcode</th><th>Author</th><th>Category</th><th>Price</th><th>Qty</th><th>Min</th><th>Status</th><th>Supplier</th><th>Action</th></tr></thead>
-    <tbody id="bk-tbody">${rows}</tbody></table></div>
-    ${seeMoreBtn}
+    <tbody>${rows}</tbody></table></div>
+    ${makePager(pg,bkTotal,'pgBooks',"'"+(s||'').replace(/'/g,"\\'")+'\',\''+(stf||'')+"'")}
     </div>`);
-  initCatCombo(stf);
-}
 
-function bkShowMore(){
-  document.querySelectorAll('.bk-extra').forEach(r=>r.style.display='');
-  const btn=isel('bk-seemore-row');if(btn)btn.remove();
-  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+  initCatCombo(stf);
 }
 
 /* Toggle a category in/out of the multi-select filter */
@@ -1308,7 +1302,7 @@ function bkCatToggle(cat){
   if(idx>=0)_bkCats.splice(idx,1);else _bkCats.push(cat);
   const s=isel('bk-srch')?isel('bk-srch').value:'';
   const stf=document.querySelector('select.flt')?document.querySelector('select.flt').value:'';
-  pgBooks(s,stf);
+  pgBooks(1,s,stf);
 }
 /* Remove one chip by name */
 function bkCatRemove(cat){
@@ -1438,9 +1432,86 @@ function initModalCatCombo(wrapId,hiddenId,initial){
   render();
 }
 
+
+/* ══ Shared pagination ══ */
+function makePager(page,total,fn,ea){
+  if(total<=1)return'';
+  const e=ea?','+ea:'';
+  const btn=(p,lbl,dis,act)=>`<button onclick="${dis?'':fn+'('+p+e+')'}"
+    style="min-width:32px;height:32px;padding:0 8px;border-radius:6px;
+    border:1.5px solid ${act?'var(--ac)':dis?'var(--bd)':'var(--bd)'};
+    background:${act?'var(--ac)':'var(--wh)'};color:${act?'#fff':dis?'var(--tl)':'var(--tm)'};
+    font-weight:${act?700:500};font-size:.78rem;cursor:${dis?'default':'pointer'};
+    opacity:${dis?.4:1}" ${dis?'disabled':''}>${lbl}</button>`;
+  let pages=[];
+  if(total<=7){for(let i=1;i<=total;i++)pages.push(i);}
+  else{pages=[1];if(page>3)pages.push('…');
+    for(let i=Math.max(2,page-1);i<=Math.min(total-1,page+1);i++)pages.push(i);
+    if(page<total-2)pages.push('…');pages.push(total);}
+  return`<div style="display:flex;align-items:center;justify-content:center;gap:5px;padding:14px 0;flex-wrap:wrap">
+    ${btn(page-1,'&#8592;',page===1,false)}
+    ${pages.map(p=>p==='…'?`<span style="color:var(--tl);padding:0 2px">…</span>`:btn(p,p,false,p===page)).join('')}
+    ${btn(page+1,'&#8594;',page===total,false)}</div>`;
+}
+
+/* ══ Supplier single-select search (type-ahead, no chips) ══
+   Shows name only in input; Type 1/Type 2 badge only in dropdown. */
+function initSupCombo(wrapId,hiddenId,currentId,onSelect){
+  const wrap=isel(wrapId);if(!wrap)return;
+  const sups=DB.suppliers;
+  let selId=currentId||'';
+  let hl=-1,filtered=sups.slice();
+  const getName=id=>{const s=sups.find(x=>x.id===id);return s?s.name:'';};
+  const render=()=>{
+    wrap.innerHTML=`<div class="cbox-in" id="${wrapId}-in">
+      <i data-lucide="truck" style="font-size:.78rem;color:var(--tl);flex-shrink:0"></i>
+      <input id="${wrapId}-inp" type="text" placeholder="Search supplier…" autocomplete="off"
+        value="${getName(selId)}"
+        style="min-width:0;flex:1;border:none;background:transparent;outline:none;font-size:.84rem;font-family:var(--fn)"/>
+      ${selId?`<span class="cbox-clr" id="${wrapId}-clr" title="Clear" style="flex-shrink:0;cursor:pointer"><i data-lucide="x"></i></span>`:''}
+    </div>
+    <div class="cbox-dd" id="${wrapId}-dd"></div>`;
+    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+    bindSup();
+  };
+  const renderDD=()=>{
+    const dd=isel(wrapId+'-dd');if(!dd)return;
+    if(!filtered.length){dd.innerHTML='<div class="cbox-empty">No matching suppliers</div>';return;}
+    dd.innerHTML=filtered.map((s,i)=>`<div class="cbox-opt${s.id===selId?' sel':''}${i===hl?' hl':''}" data-id="${s.id}"
+      style="display:flex;align-items:center;gap:8px;padding:7px 11px">
+      <span style="flex:1;font-size:.82rem;font-weight:${s.id===selId?700:400};color:${s.id===selId?'var(--ac)':'var(--tm)'}">${s.name}</span>
+    </div>`).join('');
+  };
+  const pick=id=>{
+    selId=id;const h=isel(hiddenId);if(h)h.value=id;
+    isel(wrapId+'-dd').classList.remove('open');
+    render();if(onSelect)onSelect(id);
+  };
+  const clear=()=>{selId='';const h=isel(hiddenId);if(h)h.value='';
+    const inp=isel(wrapId+'-inp');if(inp){inp.value='';inp.focus();}
+    isel(wrapId+'-dd').classList.remove('open');render();if(onSelect)onSelect('');};
+  function bindSup(){
+    const inp=isel(wrapId+'-inp'),dd=isel(wrapId+'-dd'),clr=isel(wrapId+'-clr');
+    if(!inp||!dd)return;
+    const openDD=()=>{filtered=sups.filter(s=>!inp.value||s.name.toLowerCase().includes(inp.value.toLowerCase()));hl=-1;renderDD();dd.classList.add('open');};
+    inp.addEventListener('focus',openDD);
+    inp.addEventListener('input',openDD);
+    inp.addEventListener('keydown',e=>{
+      if(!dd.classList.contains('open'))return;
+      if(e.key==='ArrowDown'){e.preventDefault();hl=Math.min(hl+1,filtered.length-1);renderDD();}
+      else if(e.key==='ArrowUp'){e.preventDefault();hl=Math.max(hl-1,0);renderDD();}
+      else if(e.key==='Enter'){e.preventDefault();const s=hl>=0?filtered[hl]:filtered.length===1?filtered[0]:null;if(s)pick(s.id);}
+      else if(e.key==='Escape'){dd.classList.remove('open');inp.blur();}
+    });
+    dd.addEventListener('mousedown',e=>{const o=e.target.closest('.cbox-opt');if(!o)return;e.preventDefault();pick(o.dataset.id);});
+    if(clr)clr.addEventListener('mousedown',e=>{e.preventDefault();clear();});
+    document.addEventListener('click',function out(e){if(!wrap.contains(e.target)){dd.classList.remove('open');document.removeEventListener('click',out);}});
+  }
+  render();
+}
+
 function editBook(id){
   const b=id?DB.books.find(x=>x.id===id):{title:'',author:'',isbn:'',category:'',price:'',minStock:10,supplierId:'',sku:'Auto',rfid:'Auto',barcode:'Auto'};
-  const sO=DB.suppliers.map(s=>`<option value="${s.id}"${b.supplierId===s.id?' selected':''}>${s.name}</option>`).join('');
   openMo(id?'Edit Book':'Add Book',`${!id?'<div class="finfo"><i data-lucide="info"></i>SKU, RFID tag and Barcode are auto-generated. Qty starts at 0.</div>':''}
     <div class="fgrid">
       <div class="fg full"><label>Book Title *</label><input id="ft" value="${b.title}" placeholder="Full title"/></div>
@@ -1449,7 +1520,7 @@ function editBook(id){
       <div class="fg"><label>Category *</label><div id="fc-cbox" class="cbox"></div><input type="hidden" id="fc" value="${b.category}"/></div>
       <div class="fg"><label>Price (RM) *</label><input id="fp" type="number" min="0" step="0.01" value="${b.price}"/></div>
       <div class="fg"><label>Min Stock</label><input id="fm" type="number" min="0" value="${b.minStock}"/></div>
-      <div class="fg"><label>Supplier</label><select id="fs"><option value="">Select supplier…</option>${sO}</select></div>
+      <div class="fg"><label>Supplier</label><div id="fs-cbox" class="cbox"></div><input type="hidden" id="fs" value="${b.supplierId}"/></div>
       ${id?`<div class="fg">
         <label>SKU</label><input readonly value="${b.sku}"/>
       </div>
@@ -1459,6 +1530,7 @@ function editBook(id){
     </div>`,`<button class="btn bno" onclick="closeMo()">Cancel</button>
      <button class="btn bnn" onclick="saveBook('${id||''}')"><i data-lucide="save"></i>Save</button>`,true);
   initModalCatCombo('fc-cbox','fc',b.category);
+  setTimeout(()=>initSupCombo('fs-cbox','fs',b.supplierId||''),30);
 }
 /* ===== PRINT REAL BARCODE LABEL (Code-128) ===== */
 function printBookBarcode(id){
@@ -1651,9 +1723,15 @@ function missingTabs(active){
 }
 
 /* ===== SUB-PAGE 1: RFID GATE MONITOR ===== */
-function pgMissingRFID(){
+function pgMissingRFID(pg){
+  if(!pg)pg=1;
   const unconfRFID=DB.rfidEvents.filter(e=>e.type==='unauthorized'&&!e.confirmed);
-  const rfidRows=DB.rfidEvents.slice().reverse().map(e=>`
+  const all=DB.rfidEvents.slice().reverse();
+  const PER=10,totalPg=Math.max(1,Math.ceil(all.length/PER));
+  pg=Math.min(Math.max(1,pg),totalPg);
+  const paged=all.slice((pg-1)*PER,pg*PER);
+  const from=(pg-1)*PER+1,to=Math.min(pg*PER,all.length);
+  const rfidRows=paged.map(e=>`
     <div class="rfid-event ${e.type==='authorized'?'auth':''}">
       <div><span class="rfid-ev-tag">${e.rfid}</span></div>
       <div class="rfid-ev-info">
@@ -1680,18 +1758,19 @@ function pgMissingRFID(){
     <div class="rfid-gate-hdr">
       <h3><i data-lucide="radio-tower" style="font-size:1rem"></i>&nbsp;RFID Gate Monitor</h3>
       <div>
-        <div class="rfid-status" style="color:#86efac">
-          <div class="rfid-pulse"></div><span>Gate Active</span>
-        </div>
+        <div class="rfid-status" style="color:#86efac"><div class="rfid-pulse"></div><span>Gate Active</span></div>
+        <div style="font-size:.71rem;color:rgba(255,255,255,.45);margin-top:4px">Showing ${from}–${to} of ${all.length}</div>
         ${CU.role==='Manager'?`<button class="btn bna bsm" onclick="simRFID()" style="margin-top:6px;width:100%"><i data-lucide="zap"></i>Simulate Gate Event</button>`:''}
       </div>
     </div>
     <div class="rfid-log" id="rfid-log">${rfidRows||'<div style="color:rgba(255,255,255,.4);font-size:.8rem;padding:8px">No events recorded yet.</div>'}</div>
+    <div style="padding:4px 12px 12px">${makePager(pg,totalPg,'pgMissingRFID','').replace(/background:var\(--wh\)/g,'background:#1e293b').replace(/border:1.5px solid var\(--bd\)/g,'border:1.5px solid #334155').replace(/color:var\(--tm\)/g,'color:#cbd5e1').replace(/color:var\(--tl\)/g,'color:#64748b')}</div>
   </div>`);
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
 /* ===== SUB-PAGE 2: LOSS ANALYTICS ===== */
+function _pgAna(p){window._anaPg=p;pgMissingAnalytics();}
 function pgMissingAnalytics(){
   if(CU.role==='Staff'){pgMissingRFID();return;}
   /* Build per-book aggregation from missing reports + RFID unauthorized events */
@@ -1726,7 +1805,10 @@ function pgMissingAnalytics(){
     if(ev.deducted){e.rfidDeducted++;e.totalLost++;}
   });
 
-  const entries=Object.values(bookMap).sort((a,b)=>b.totalLost-a.totalLost||b.staffReports+b.rfidEvents-(a.staffReports+a.rfidEvents));
+  const allEntries=Object.values(bookMap).sort((a,b)=>b.totalLost-a.totalLost||b.staffReports+b.rfidEvents-(a.staffReports+a.rfidEvents));
+  const anaPg=Math.max(1,window._anaPg||1);
+  const anaTotal=Math.max(1,Math.ceil(allEntries.length/10));
+  const entries=allEntries.slice((anaPg-1)*10,anaPg*10);
 
   /* Summary totals */
   const totalReports=DB.missingReports.length;
@@ -1795,7 +1877,7 @@ function pgMissingAnalytics(){
   </div>
 
   <div class="ph">
-    <div><h2>Loss by Book</h2><p>${entries.length} book${entries.length!==1?'s':''} with missing reports or RFID records — sorted by confirmed losses</p></div>
+    <div><h2>Loss by Book</h2><p>${allEntries.length} book${allEntries.length!==1?'s':''} with missing reports or RFID records — sorted by confirmed losses</p></div>
   </div>
   <div class="card"><div class="tw"><table>
     <thead><tr>
@@ -1807,15 +1889,23 @@ function pgMissingAnalytics(){
       <th>Status Breakdown</th>
     </tr></thead>
     <tbody>${rows}</tbody>
-  </table></div></div>`);
+  </table></div>
+  ${makePager(anaPg,anaTotal,'_pgAna','')}
+  </div>`);
+
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
 /* ===== SUB-PAGE 3: MISSING ITEM REPORTS ===== */
-function pgMissingReports(){
+function pgMissingReports(ppg,cpg){
+  if(!ppg)ppg=1;if(!cpg)cpg=1;
   if(CU.role==='Staff'){pgMissingRFID();return;}
-  const pending=DB.missingReports.filter(r=>r.status==='pending');
-  const confirmed=DB.missingReports.filter(r=>r.status==='confirmed').slice().reverse();
+  const allPend=DB.missingReports.filter(r=>r.status==='pending').slice().reverse();
+  const pTotal=Math.max(1,Math.ceil(allPend.length/10));ppg=Math.min(Math.max(1,ppg),pTotal);
+  const pending=allPend.slice((ppg-1)*10,ppg*10);
+  const allConf=DB.missingReports.filter(r=>r.status==='confirmed').slice().reverse();
+  const cTotal=Math.max(1,Math.ceil(allConf.length/10));cpg=Math.min(Math.max(1,cpg),cTotal);
+  const confirmed=allConf.slice((cpg-1)*10,cpg*10);
   const found=DB.missingReports.filter(r=>r.status==='found').slice().reverse();
   const dismissed=DB.missingReports.filter(r=>r.status==='dismissed').slice().reverse();
 
@@ -1823,7 +1913,7 @@ function pgMissingReports(){
   const stLabel={pending:'Pending',confirmed:'Confirmed',dismissed:'Dismissed',found:'Found'};
 
   /* Pending rows — with action buttons for manager */
-  const pendingRows=pending.length?pending.slice().reverse().map(mr=>`<tr>
+  const pendingRows=pending.length?pending.map(mr=>`<tr>
     <td><span class="txr">${mr.reportId}</span></td>
     <td>${fmtDT(mr.submittedAt)}</td>
     <td style="font-weight:600">${mr.bookTitle}</td>
@@ -1905,7 +1995,9 @@ function pgMissingReports(){
   <div class="card" style="margin-bottom:16px"><div class="tw"><table>
     <thead><tr><th>Report ID</th><th>Date/Time</th><th>Book Title</th><th>SKU</th><th>Reported By</th><th>Note</th><th>Status</th><th>Action</th></tr></thead>
     <tbody>${pendingRows}</tbody>
-  </table></div></div>
+  </table></div>
+  ${makePager(ppg,pTotal,'pgMissingReports',cpg+','+cpg)}
+  </div>
 
   <!-- SECTION 2: CONFIRMED HISTORY -->
   <div class="ph">
@@ -1913,7 +2005,7 @@ function pgMissingReports(){
       <h2>Confirmed Missing — History</h2>
       <p>Items confirmed lost &amp; deducted from inventory. If a book is found, click <b>Book Found</b> to restore stock and recalculate losses.</p>
     </div>
-    <div class="pha"><span class="badge br2">${confirmed.length} confirmed</span></div>
+    <div class="pha"><span class="badge br2">${allConf.length} confirmed</span></div>
   </div>
   <div class="card" style="margin-bottom:16px">
     ${confirmed.length?`<div class="finfo" style="margin:10px 14px 0;border-radius:var(--r)"><i data-lucide="info"></i>
@@ -1923,6 +2015,7 @@ function pgMissingReports(){
       <thead><tr><th>Book Title</th><th>SKU</th><th>Reported By</th><th>Reported At</th><th>Confirmed At</th><th>Confirmed By</th><th>Note</th><th style="text-align:right">Value Lost</th><th>Photos</th><th>Action</th></tr></thead>
       <tbody>${confirmedRows}</tbody>
     </table></div>
+    ${makePager(cpg,cTotal,'pgMissingReports',ppg+','+cpg)}
   </div>
 
   ${foundRows?`<!-- SECTION 3: FOUND / RESTORED -->
@@ -2078,24 +2171,31 @@ function pgReportMissing(){
             <button class="qr-scan-btn" type="button" title="Scan QR / Barcode" onclick="openQR(isel('rm-sku'))"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button>
           </div>
         </div>
+
+        <!-- Manual entry checkbox -->
         <div class="fg full">
-          <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--bgm);border-radius:var(--r);cursor:pointer" onclick="var cb=isel('rm-manual-mode');cb.checked=!cb.checked;rmToggleManual()">
-            <input type="checkbox" id="rm-manual-mode" onchange="rmToggleManual()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--ac);flex-shrink:0" onclick="event.stopPropagation()"/>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--bgm);border-radius:var(--r);cursor:pointer"
+               onclick="var cb=isel('ri-manual-mode');cb.checked=!cb.checked;riToggleManual()">
+            <input type="checkbox" id="ri-manual-mode" onchange="riToggleManual()"
+              style="width:15px;height:15px;cursor:pointer;accent-color:var(--ac);flex-shrink:0"
+              onclick="event.stopPropagation()"/>
             <span style="font-size:.8rem;font-weight:600;color:var(--tm)">Enter book details manually</span>
             <span style="font-size:.72rem;color:var(--tl);margin-left:2px">(optional — e.g. barcode sticker missing or peeled off)</span>
           </div>
         </div>
-        <div id="rm-manual-fields" style="display:none;grid-column:1/-1">
+
+        <!-- Manual fields (hidden until checkbox ticked) -->
+        <div id="ri-manual-fields" style="display:none;grid-column:1/-1">
           <div class="fgrid">
             <div class="fg full"><label>Book Title *</label>
-              <input id="rm-manual-title" placeholder="Full book title e.g. Business Management"/>
+              <input id="ri-manual-title" placeholder="Full book title e.g. Business Management"/>
             </div>
             <div class="fg"><label>Author <span style="font-weight:400;text-transform:none">(optional)</span></label>
-              <input id="rm-manual-author" placeholder="e.g. Robert Griffin"/>
+              <input id="ri-manual-author" placeholder="e.g. Robert Griffin"/>
             </div>
             <div class="fg"><label>Category *</label>
-              <div id="rm-cat-cbox" class="cbox"></div>
-              <input type="hidden" id="rm-manual-cat"/>
+              <div id="ri-def-cat-cbox" class="cbox"></div>
+              <input type="hidden" id="ri-def-cat"/>
             </div>
           </div>
         </div>
@@ -2172,22 +2272,6 @@ function pgReportMissing(){
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
-function rmToggleManual(){
-  const manual=isel('rm-manual-mode')?.checked;
-  const mf=isel('rm-manual-fields');
-  const scanSec=isel('rm-sku')?.closest('.fg');
-  if(mf){
-    mf.style.display=manual?'block':'none';
-    if(scanSec)scanSec.style.opacity=manual?'0.45':'1';
-    if(manual){
-      if(isel('rm-lookup-result'))isel('rm-lookup-result').innerHTML='';
-      if(!isel('rm-cat-cbox').querySelector('input'))
-        initModalCatCombo('rm-cat-cbox','rm-manual-cat','');
-    }
-    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
-  }
-}
-
 /* Switch between missing / defect type */
 function riSetType(type){
   _riType=type;
@@ -2205,9 +2289,21 @@ function riSetType(type){
   if(df)df.style.display=type==='defect'?'':'none';
   if(ft)ft.textContent=type==='missing'?'Missing Item Report':'Defective Book Report';
   /* Reset manual mode when switching type */
-  if(type==='missing'){const cb=isel('rm-manual-mode');if(cb)cb.checked=false;const mfld=isel('rm-manual-fields');if(mfld)mfld.style.display='none';}
+  if(type==='missing'){const cb=isel('ri-manual-mode');if(cb)cb.checked=false;const mfld=isel('ri-manual-fields');if(mfld)mfld.style.display='none';}
 }
 
+/* Toggle manual book entry for defect reports */
+function riToggleManual(){
+  const manual=isel('ri-manual-mode')?.checked;
+  const mf=isel('ri-manual-fields');
+  if(mf)mf.style.display=manual?'':'none';
+  if(manual){
+    /* Clear the SKU lookup area so it's not confusing */
+    if(isel('rm-lookup-result'))isel('rm-lookup-result').innerHTML='';
+    /* Init the category combobox */
+    initModalCatCombo('ri-def-cat-cbox','ri-def-cat','');
+  }
+}
 
 /* Photo upload handler */
 function riAddPhoto(input){
@@ -2285,7 +2381,7 @@ function rmLookup(){
       </div></div>`;
     if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
   } else {
-    el.innerHTML=`<div style="background:var(--dlt);border-radius:var(--r);padding:9px 13px;font-size:.8rem;color:var(--dg)"><i data-lucide="x-circle"></i>&nbsp;No book found with SKU: <b>${sku}</b></div>`;
+    el.innerHTML=`<div style="background:var(--dlt);border-radius:var(--r);padding:9px 13px;font-size:.8rem;color:var(--dg)"><i data-lucide="x-circle"></i>&nbsp;No book found with SKU: <b>${sku}</b> — or tick "Enter book details manually" above.</div>`;
     if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
   }
 }
@@ -2294,16 +2390,37 @@ function rmLookupRFID(){}
 
 /* Submit: Missing Item */
 function submitMissingReport(){
-  const sku=isel('rm-sku').value.trim().toUpperCase();
+  const isManual=isel('ri-manual-mode')?.checked;
   const note=isel('rm-note')?.value.trim();
-  if(!sku){toast('Please enter a book SKU.','error');return;}
   if(!note){toast('Please describe what you found.','error');return;}
+  const photos=_riPhotos.map(p=>p.dataUrl);
+  const reportId='MR-'+new Date().toISOString().slice(2,10).replace(/-/g,'')+'-'+String(DB.missingReports.length+1).padStart(3,'0');
+
+  if(isManual){
+    const manTitle=isel('ri-manual-title')?.value.trim();
+    const manCat=isel('ri-def-cat')?.value;
+    const manAuthor=isel('ri-manual-author')?.value.trim()||'';
+    if(!manTitle){toast('Please enter the book title.','error');return;}
+    if(!manCat){toast('Please select a category.','error');return;}
+    DB.missingReports.push({
+      id:uid('mr'),reportId,bookId:null,bookTitle:manTitle,
+      sku:'—',rfid:'—',manualEntry:true,manualCategory:manCat,manualAuthor:manAuthor,
+      staffId:CU.id,staffName:CU.name,note,photos,
+      submittedAt:new Date().toISOString(),
+      status:'pending',confirmedBy:null,confirmedAt:null,deducted:false,
+    });
+    DB.notifications.push({id:uid('n'),title:`Missing item report from ${CU.name}`,sub:`${manTitle} (manual) — ${reportId}`,time:new Date().toISOString(),read:false,targetRole:'Manager',link:'missing'});
+    _riPhotos=[];refreshDot();refreshBadges();
+    toast(`Report ${reportId} submitted (manual entry).`,'success');nav('missing-reports');
+    return;
+  }
+
+  const sku=isel('rm-sku').value.trim().toUpperCase();
+  if(!sku){toast('Please enter a book SKU or tick "Enter book details manually".','error');return;}
   const b=bookBySKU(sku)||findBookByCode(sku);
-  if(!b){toast('SKU not recognised. Please check and try again.','error');return;}
+  if(!b){toast('SKU not recognised. Tick "Enter book details manually" above.','error');return;}
   if(DB.missingReports.find(r=>r.bookId===b.id&&r.status==='pending')){
     toast('A pending report already exists for this book.','warn');return;}
-  const reportId='MR-'+new Date().toISOString().slice(2,10).replace(/-/g,'')+'-'+String(DB.missingReports.length+1).padStart(3,'0');
-  const photos=_riPhotos.map(p=>p.dataUrl);
   DB.missingReports.push({
     id:uid('mr'),reportId,bookId:b.id,bookTitle:b.title,
     sku:b.sku,rfid:b.rfid,
@@ -2311,16 +2428,15 @@ function submitMissingReport(){
     submittedAt:new Date().toISOString(),
     status:'pending',confirmedBy:null,confirmedAt:null,deducted:false,
   });
-  DB.notifications.push({id:uid('n'),title:`Missing item report from ${CU.name}`,sub:`${b.title} — ${reportId}${photos.length?' ('+photos.length+' photo'+( photos.length>1?'s':'')+')'  :''}`,time:new Date().toISOString(),read:false,targetRole:'Manager',link:'missing'});
-  _riPhotos=[];
-  refreshDot();refreshBadges();
+  DB.notifications.push({id:uid('n'),title:`Missing item report from ${CU.name}`,sub:`${b.title} — ${reportId}${photos.length?' ('+photos.length+' photo'+(photos.length>1?'s':'')+')'  :''}`,time:new Date().toISOString(),read:false,targetRole:'Manager',link:'missing'});
+  _riPhotos=[];refreshDot();refreshBadges();
   toast(`Report ${reportId} submitted.${photos.length?' '+photos.length+' photo(s) attached.':''}`,'success');
   nav('missing-reports');
 }
 
 /* Submit: Defective Book */
 function submitDefectReportStaff(){
-  const isManual=isel('rm-manual-mode')?.checked;
+  const isManual=isel('ri-manual-mode')?.checked;
   const defType=isel('ri-defect-type')?.value;
   const qty=parseInt(isel('ri-defect-qty')?.value)||0;
   const note=isel('ri-defect-note')?.value.trim();
@@ -2331,11 +2447,13 @@ function submitDefectReportStaff(){
   let bookId=null,bookTitle='',bookSku='—',bookRfid='—';
 
   if(isManual){
-    bookTitle=isel('rm-manual-title')?.value.trim();
-    const manCat=isel('rm-manual-cat')?.value;
-    const manAuthor=isel('rm-manual-author')?.value.trim()||'';
+    /* Manual entry — book not in system */
+    bookTitle=isel('ri-manual-title')?.value.trim();
+    const manCat=isel('ri-def-cat')?.value;
+    const manAuthor=isel('ri-manual-author')?.value.trim()||'';
     if(!bookTitle){toast('Please enter the book title.','error');return;}
     if(!manCat){toast('Please select a category for the book.','error');return;}
+    /* Store manual info in the defect record */
     const photos=_riPhotos.map(p=>p.dataUrl);
     const reason=defType+(note?' — '+note:'');
     getDefectiveItems().push({
@@ -2359,7 +2477,7 @@ function submitDefectReportStaff(){
   const sku=isel('rm-sku').value.trim().toUpperCase();
   if(!sku){toast('Please enter a book SKU.','error');return;}
   const b=bookBySKU(sku)||findBookByCode(sku);
-  if(!b){toast('SKU not recognised. Tick "Enter book details manually" above to proceed.','error');return;}
+  if(!b){toast('SKU not recognised. Please check and try again.','error');return;}
   const photos=_riPhotos.map(p=>p.dataUrl);
   const reason=defType+(note?' — '+note:'');
   getDefectiveItems().push({
@@ -2414,24 +2532,26 @@ function ensureDemoTxns(from,to){
   DB.transactions.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
 }
 let HIST={from:'',to:'',mode:'range',single:''};
-function pgHistory(s='',cf=''){
+function pgHistory(pg,s,cf){
+  if(pg===undefined||typeof pg==='string'){cf=s;s=pg;pg=1;}
+  if(!s)s='';if(!cf)cf='';
   const td=new Date().toISOString().split('T')[0];
   if(!HIST.from)HIST.from=td.slice(0,7)+'-01';if(!HIST.to)HIST.to=td;if(!HIST.single)HIST.single=td;
   ensureDemoTxns(HIST.mode==='single'?HIST.single:HIST.from,HIST.mode==='single'?HIST.single:HIST.to);
-  const txns=[...DB.transactions].reverse().filter(t=>{
+  const allTxns=[...DB.transactions].reverse().filter(t=>{
     const q=s.toLowerCase(),bk=DB.books.find(b=>b.id===t.bookId);
     const matchQ=!q||t.custId.toLowerCase().includes(q)||t.custName.toLowerCase().includes(q)||t.bookTitle.toLowerCase().includes(q)||t.ref.toLowerCase().includes(q);
-    const matchCat=!cf||bk?.category===cf;
+    const matchCat=!_hiCats.length||(bk&&_hiCats.includes(bk.category));
     const matchDate=HIST.mode==='single'?t.date===HIST.single:(!HIST.from||t.date>=HIST.from)&&(!HIST.to||t.date<=HIST.to);
     return matchQ&&matchCat&&matchDate;
   });
-  const tR=txns.reduce((a,t)=>a+t.qty*t.unitPrice,0);
-  const tU=txns.reduce((a,t)=>a+t.qty,0);
-  const PAGE=10;
-  const visible=txns.slice(0,PAGE);
-  const hidden=txns.slice(PAGE);
-
-  const makeRow=t=>{const bk=DB.books.find(b=>b.id===t.bookId);return`<tr>
+  const PER=10,hiTotal=Math.max(1,Math.ceil(allTxns.length/PER));
+  pg=Math.min(Math.max(1,pg),hiTotal);
+  const txns=allTxns.slice((pg-1)*PER,pg*PER);
+  const hiFrom=(pg-1)*PER+1,hiTo=Math.min(pg*PER,allTxns.length);
+  const tR=allTxns.reduce((a,t)=>a+t.qty*t.unitPrice,0);
+  const tU=allTxns.reduce((a,t)=>a+t.qty,0);
+  const rows=txns.length?txns.map(t=>{const bk=DB.books.find(b=>b.id===t.bookId);return`<tr>
     <td><span class="txr">${t.ref}</span></td><td>${fmtD(t.date)}</td>
     <td><span class="cid">${t.custId}</span><div style="font-size:.73rem;color:var(--tl)">${t.custName}</div></td>
     <td><div style="font-weight:600">${t.bookTitle}</div>
@@ -2442,20 +2562,8 @@ function pgHistory(s='',cf=''){
     <td style="text-align:right;font-weight:700;color:var(--ok)">${rmF(t.qty*t.unitPrice)}</td>
     <td style="font-size:.77rem">${t.staffName}</td>
     <td style="font-size:.75rem;color:var(--tl)">${t.note||'—'}</td>
-    <td><button class="bic" onclick="viewTxnReceipt('${t.id}')" title="View Receipt"><i data-lucide="receipt"></i></button></td></tr>`;};
-
-  const rows=txns.length
-    ? visible.map(makeRow).join('')
-      + (hidden.length ? hidden.map(t=>`<tr class="hi-extra" style="display:none">${makeRow(t).replace(/^<tr>/,'').replace(/<\/tr>$/,'')}</tr>`).join('') : '')
+    <td><button class="bic" onclick="viewTxnReceipt('${t.id}')" title="View Receipt"><i data-lucide="receipt"></i></button></td></tr>`;}).join('')
     :`<tr><td colspan="11"><div class="empty"><div class="eico"><i data-lucide="search-x"></i></div><h3>No records</h3></div></td></tr>`;
-
-  const seeMoreBtn=hidden.length?`<div id="hi-seemore-row" style="padding:14px;text-align:center;border-top:1px solid var(--bd)">
-    <button class="btn bno" onclick="hiShowMore()" style="gap:6px;min-width:160px">
-      <i data-lucide="chevrons-down"></i>See More
-      <span class="badge bgr" style="margin-left:2px">${hidden.length} more</span>
-    </button>
-  </div>`:'';
-
   setHTML(`<div class="sg" style="grid-template-columns:repeat(3,1fr)">
     <div class="sc"><div class="si blue"><i data-lucide="receipt"></i></div><div><div class="sv">${txns.length}</div><div class="sl">Transactions</div></div></div>
     <div class="sc"><div class="si purple"><i data-lucide="shopping-cart"></i></div><div><div class="sv">${tU}</div><div class="sl">Units Sold</div></div></div>
@@ -2474,53 +2582,72 @@ function pgHistory(s='',cf=''){
       </div>
     </div>
     <div class="rfg">
-      ${HIST.mode==='range'?`<div class="fg"><label>From</label><input type="date" id="hdf" value="${HIST.from}" onchange="HIST.from=this.value;pgHistory(isel('hi-srch')?isel('hi-srch').value:'','${cf}')"/></div>
-        <div class="fg"><label>To</label><input type="date" id="hdt" value="${HIST.to}" onchange="HIST.to=this.value;pgHistory(isel('hi-srch')?isel('hi-srch').value:'','${cf}')"/></div>`
-        :`<div class="fg"><label>Date</label><input type="date" id="hds" value="${HIST.single}" onchange="HIST.single=this.value;pgHistory(isel('hi-srch')?isel('hi-srch').value:'','${cf}')"/></div>`}
+      ${HIST.mode==='range'?`<div class="fg"><label>From</label><input type="date" id="hdf" value="${HIST.from}" onchange="HIST.from=this.value;pgHistory(1,isel('hi-srch')?isel('hi-srch').value:'',CP_HIST_CF())"/></div>
+        <div class="fg"><label>To</label><input type="date" id="hdt" value="${HIST.to}" onchange="HIST.to=this.value;pgHistory(1,isel('hi-srch')?isel('hi-srch').value:'',CP_HIST_CF())"/></div>`
+        :`<div class="fg"><label>Date</label><input type="date" id="hds" value="${HIST.single}" onchange="HIST.single=this.value;pgHistory(1,isel('hi-srch')?isel('hi-srch').value:'',CP_HIST_CF())"/></div>`}
     </div>
   </div>
 
   <div class="card"><div class="ch"><div class="tb2">
-    <div class="sbox"><i data-lucide="search"></i><input id="hi-srch" type="text" placeholder="Search ref, customer, book, SKU…" value="${s}" oninput="dbs('hi',pgHistory,this.value,cf)"/><button class="qr-scan-btn" type="button" title="Scan receipt barcode" onclick="openQR(isel('hi-srch'))"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button></div>
+    <div class="sbox"><i data-lucide="search"></i><input id="hi-srch" type="text" placeholder="Search ref, customer, book, SKU…" value="${s}" oninput="dbs('hi',(v)=>pgHistory(1,v,CP_HIST_CF()),this.value)"/><button class="qr-scan-btn" type="button" title="Scan receipt barcode" onclick="openQR(isel('hi-srch'))"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button></div>
     <div class="cbox" id="hi-cat-cbox"></div>
   </div>
-  <span style="font-size:.75rem;color:var(--tl)">Showing ${Math.min(PAGE,txns.length)} of ${txns.length}</span>
+  <span style="font-size:.75rem;color:var(--tl)">${allTxns.length?`Showing ${hiFrom}–${hiTo} of ${allTxns.length}`:'No results'}</span>
   </div>
   <div class="tw"><table><thead><tr><th>Ref</th><th>Date</th><th>Customer</th><th>Book / SKU</th><th>Category</th><th style="text-align:right">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th><th>Staff</th><th>Note</th><th></th></tr></thead>
-  <tbody id="hi-tbody">${rows}</tbody></table></div>
-  ${seeMoreBtn}
-  </div>`);
+  <tbody>${rows}</tbody></table></div></div>`);
   initHistCatCombo(cf);
 }
-function setHistMode(m){HIST.mode=m;pgHistory(isel('hi-srch')?isel('hi-srch').value:'',CP_HIST_CF());}
+function setHistMode(m){HIST.mode=m;pgHistory(1,isel('hi-srch')?isel('hi-srch').value:'',CP_HIST_CF());}
 function setHistQ(p){const td=new Date(),iso=d=>d.toISOString().split('T')[0];
   if(p==='week'){const d=td.getDay()||7;const mo=new Date(td);mo.setDate(td.getDate()-d+1);HIST.from=iso(mo);HIST.to=iso(td);}
   else{HIST.from=td.toISOString().slice(0,7)+'-01';HIST.to=iso(td);}
-  HIST.mode='range';pgHistory(isel('hi-srch')?isel('hi-srch').value:'',CP_HIST_CF());}
-function resetHist(){const td=new Date().toISOString().split('T')[0];HIST={from:td.slice(0,7)+'-01',to:td,mode:'range',single:td};pgHistory();}
-function hiShowMore(){
-  document.querySelectorAll('.hi-extra').forEach(r=>r.style.display='');
-  const btn=isel('hi-seemore-row');if(btn)btn.remove();
-  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+  HIST.mode='range';pgHistory(1,isel('hi-srch')?isel('hi-srch').value:'',CP_HIST_CF());}
+function resetHist(){const td=new Date().toISOString().split('T')[0];HIST={from:td.slice(0,7)+'-01',to:td,mode:'range',single:td};_hiCats=[];pgHistory(1);}
+function CP_HIST_CF(){return _hiCats.join(',');}
+let _hiCats=[];
+
+function hiCatToggle(cat){
+  const idx=_hiCats.indexOf(cat);
+  if(idx>=0)_hiCats.splice(idx,1);else _hiCats.push(cat);
+  pgHistory(1,isel('hi-srch')?isel('hi-srch').value:'');
 }
-function CP_HIST_CF(){const inp=isel('hc-input');return inp?inp.value:'';}
-/* Type-ahead category combobox for Transaction History — mirrors the one in Book Catalogue */
+function hiCatRemove(cat){
+  _hiCats=_hiCats.filter(c=>c!==cat);
+  pgHistory(1,isel('hi-srch')?isel('hi-srch').value:'');
+}
+
 function initHistCatCombo(cf){
   const wrap=isel('hi-cat-cbox');if(!wrap)return;
+  /* sync _hiCats from cf string on first load */
+  if(cf&&cf!==''&&!_hiCats.length)_hiCats=cf.split(',').filter(Boolean);
   const cats=getActiveCats();
-  const txnCounts={};DB.transactions.forEach(t=>{const bk=DB.books.find(b=>b.id===t.bookId);if(bk)txnCounts[bk.category]=(txnCounts[bk.category]||0)+1;});
+  const txnCounts={};
+  DB.transactions.forEach(t=>{const bk=DB.books.find(b=>b.id===t.bookId);if(bk)txnCounts[bk.category]=(txnCounts[bk.category]||0)+1;});
   let hl=-1,filtered=cats.slice();
-  wrap.innerHTML=`<div class="cbox-in" id="hc-in">
-      <i data-lucide="tag"></i>
-      <input id="hc-input" type="text" placeholder="Filter by category…" autocomplete="off" value="${cf||''}"/>
-      ${cf?'<span class="cbox-clr" id="hc-clear" title="Clear"><i data-lucide="x"></i></span>':''}
+  const hasChips=_hiCats.length>0;
+  const chipsHtml=_hiCats.map(c=>`<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 4px 2px 8px;background:var(--alt);color:var(--ac);border-radius:20px;font-size:.69rem;font-weight:700;white-space:nowrap;line-height:1.4">${c}<span onclick="hiCatRemove('${c}')" title="Remove" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:rgba(37,99,235,.15);margin-left:1px;font-size:.8rem;line-height:1">&times;</span></span>`).join('');
+  wrap.innerHTML=`<div class="cbox-in" id="hc-in" style="${hasChips?'height:auto;min-height:32px;flex-wrap:wrap;padding:4px 8px;align-items:center;':''}">
+      ${chipsHtml}
+      <i data-lucide="tag" style="flex-shrink:0;font-size:.78rem;color:var(--tl)"></i>
+      <input id="hc-input" type="text" placeholder="${hasChips?'Add more…':'Filter by category…'}" autocomplete="off" style="min-width:90px;flex:1"/>
+      ${hasChips?`<span class="cbox-clr" id="hc-clear" title="Clear all" style="flex-shrink:0"><i data-lucide="x"></i></span>`:''}
     </div>
     <div class="cbox-dd" id="hc-dd"></div>`;
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
   const inp=isel('hc-input'),dd=isel('hc-dd'),clr=isel('hc-clear');
   function renderDD(){
     if(!filtered.length){dd.innerHTML='<div class="cbox-empty">No matching categories</div>';return;}
-    dd.innerHTML=filtered.map((c,i)=>`<div class="cbox-opt${c===cf?' sel':''}${i===hl?' hl':''}" data-cat="${c}">${c}<small>${txnCounts[c]||0}</small></div>`).join('');
+    dd.innerHTML=filtered.map((c,i)=>{
+      const sel=_hiCats.includes(c);
+      return`<div class="cbox-opt${i===hl?' hl':''}" data-cat="${c}" style="display:flex;align-items:center;gap:8px">
+        <span style="width:15px;height:15px;border-radius:3px;border:1.5px solid ${sel?'var(--ac)':'var(--bdm)'};background:${sel?'var(--ac)':'transparent'};display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">
+          ${sel?'<svg width="9" height="9" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+        </span>
+        <span style="${sel?'font-weight:700;color:var(--ac)':''}">${c}</span>
+        <small style="margin-left:auto">${txnCounts[c]||0}</small>
+      </div>`;
+    }).join('');
   }
   function openDD(){filtered=cats.filter(c=>c.toLowerCase().includes(inp.value.toLowerCase()));hl=-1;renderDD();dd.classList.add('open');}
   function closeDD(){dd.classList.remove('open');}
@@ -2530,15 +2657,21 @@ function initHistCatCombo(cf){
     if(!dd.classList.contains('open'))return;
     if(e.key==='ArrowDown'){e.preventDefault();hl=Math.min(hl+1,filtered.length-1);renderDD();}
     else if(e.key==='ArrowUp'){e.preventDefault();hl=Math.max(hl-1,0);renderDD();}
-    else if(e.key==='Enter'){e.preventDefault();if(hl>=0&&filtered[hl]){pgHistory(isel('hi-srch')?isel('hi-srch').value:'',filtered[hl]);}else if(filtered.length===1){pgHistory(isel('hi-srch')?isel('hi-srch').value:'',filtered[0]);}}
+    else if(e.key==='Enter'){
+      e.preventDefault();
+      const cat=hl>=0&&filtered[hl]?filtered[hl]:filtered.length===1?filtered[0]:null;
+      if(cat)hiCatToggle(cat);
+    }
     else if(e.key==='Escape'){closeDD();inp.blur();}
   });
   dd.addEventListener('mousedown',e=>{
     const opt=e.target.closest('.cbox-opt');if(!opt)return;
-    e.preventDefault();
-    pgHistory(isel('hi-srch')?isel('hi-srch').value:'',opt.dataset.cat);
+    e.preventDefault();hiCatToggle(opt.dataset.cat);
   });
-  if(clr)clr.addEventListener('mousedown',e=>{e.preventDefault();pgHistory(isel('hi-srch')?isel('hi-srch').value:'','');});
+  if(clr)clr.addEventListener('mousedown',e=>{
+    e.preventDefault();_hiCats=[];
+    pgHistory(1,isel('hi-srch')?isel('hi-srch').value:'');
+  });
   document.addEventListener('click',function outside(e){
     if(!wrap.contains(e.target)){closeDD();document.removeEventListener('click',outside);}
   });
@@ -2692,224 +2825,90 @@ function supTabs(active){
 }
 
 /* ===== INVENTORY ORDER LIST ===== */
-function pgSupInventoryList(sub,s){
-  if(!sub)sub='inventory';
-  if(s===undefined)s='';
+function pgSupInventoryList(pg,s){
+  if(typeof pg==='string'||pg===undefined){s=pg;pg=1;}
+  if(!s)s='';if(!pg)pg=1;
 
-  /* ── shared stats ── */
-  const lowCount=DB.books.filter(b=>b.qty<b.minStock).length;
+  const allBooks=DB.books.filter(b=>{
+    const q=s.toLowerCase();
+    return !q||b.title.toLowerCase().includes(q)||b.sku.toLowerCase().includes(q)||b.category.toLowerCase().includes(q)||(b.author||'').toLowerCase().includes(q);
+  }).sort((a,b)=>a.sku.localeCompare(b.sku));
+
+  const PER=10,invTotal=Math.max(1,Math.ceil(allBooks.length/PER));
+  pg=Math.min(Math.max(1,pg),invTotal);
+  const books=allBooks.slice((pg-1)*PER,pg*PER);
+  const invFrom=(pg-1)*PER+1,invTo=Math.min(pg*PER,allBooks.length);
+
   const reorderQty={};
   DB.stockRequests.filter(r=>r.type==='restock'&&(r.status==='pending'||r.status==='approved'||r.status==='awaiting_delivery'))
     .forEach(r=>{if(r.bookId)reorderQty[r.bookId]=(reorderQty[r.bookId]||0)+r.qty;});
-  const inReorderTotal=Object.values(reorderQty).reduce((a,v)=>a+v,0);
 
-  /* ── sub-tab bar ── */
-  const subTabs=[
-    {id:'inventory',lbl:'Inventory List',    icon:'clipboard-list'},
-    {id:'order-history',lbl:'Order History', icon:'history'},
-  ].map(t=>`<button class="btn bsm ${sub===t.id?'bnn':'bno'}" onclick="pgSupInventoryList('${t.id}','')">
-    <i data-lucide="${t.icon}"></i>${t.lbl}
-  </button>`).join('');
+  const thStyle='padding:8px 10px;border:1px solid #333;background:#F5C518;color:#1a1a1a;font-weight:700;font-size:.72rem;text-align:center;white-space:nowrap;';
+  const tdStyle='padding:6px 9px;border:1px solid #d0d0d0;font-size:.76rem;';
+  const tdCStyle='padding:6px 9px;border:1px solid #d0d0d0;font-size:.76rem;text-align:center;';
 
-  /* ── SUMMARY STATS (shared) ── */
+  const rows=books.length?books.map((b,i)=>{
+    const inReorder=reorderQty[b.id]||0;
+    const discontinued=isCatDisabled(b.category)?'Yes':'No';
+    const isLow=b.qty<b.minStock;
+    const rowBg=i%2===0?'#fff':'#fafafa';
+    const qtyColor=isLow?'color:#dc2626;font-weight:700':'';
+    return`<tr style="background:${rowBg}">
+      <td style="${tdStyle}font-family:monospace;font-size:.71rem">${b.sku}</td>
+      <td style="${tdStyle}font-weight:600;max-width:200px">${b.title}</td>
+      <td style="${tdStyle}color:#555;font-size:.72rem;max-width:160px">${b.author||'—'} · ${b.category}</td>
+      <td style="${tdCStyle}font-weight:600">${rmF(b.price)}</td>
+      <td style="${tdCStyle}${qtyColor}">${b.qty}</td>
+      <td style="${tdCStyle}">${b.minStock}</td>
+      <td style="${tdCStyle}">7</td>
+      <td style="${tdCStyle}font-weight:${inReorder>0?'700':'400'};color:${inReorder>0?'var(--pu)':'#888'}">${inReorder||'—'}</td>
+      <td style="${tdCStyle}font-weight:600;color:${discontinued==='Yes'?'#dc2626':'#16a34a'}">${discontinued}</td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="9" style="text-align:center;padding:32px;color:#888">No books found for "<b>${s}</b>".</td></tr>`;
+
   const totalVal=DB.books.reduce((a,b)=>a+b.qty*b.price,0);
-  const statsHtml=`
+  const lowCount=DB.books.filter(b=>b.qty<b.minStock).length;
+  const inReorderTotal=Object.values(reorderQty).reduce((a,v)=>a+v,0);
+  const sJs=s.replace(/'/g,"\\'");
+
+  setHTML(`<div class="ph"><div><h2>Supplier Directory</h2><p>Manage suppliers, registrations and inventory orders</p></div></div>
+  ${supTabs('sup-inventory')}
+
   <div class="sg" style="grid-template-columns:repeat(4,1fr);margin-top:14px;margin-bottom:14px">
     <div class="sc"><div class="si blue"><i data-lucide="package"></i></div><div><div class="sv">${DB.books.length}</div><div class="sl">Total Items</div></div></div>
     <div class="sc"><div class="si green"><i data-lucide="trending-up"></i></div><div><div class="sv" style="font-size:1rem">${rmF(totalVal)}</div><div class="sl">Stock Value</div></div></div>
     <div class="sc"><div class="si ${lowCount>0?'warn':'slate'}"><i data-lucide="alert-triangle"></i></div><div><div class="sv">${lowCount}</div><div class="sl">Need Reorder</div></div></div>
     <div class="sc"><div class="si purple"><i data-lucide="truck"></i></div><div><div class="sv">${inReorderTotal}</div><div class="sl">Units on Order</div></div></div>
-  </div>`;
+  </div>
 
-  /* ════════════════════════════════
-     SUB-PAGE A — Inventory List
-  ════════════════════════════════ */
-  let bodyHtml='';
-  if(sub==='inventory'){
-    const books=DB.books.filter(b=>{
-      const q=s.toLowerCase();
-      return !q||b.title.toLowerCase().includes(q)||b.sku.toLowerCase().includes(q)||b.category.toLowerCase().includes(q)||(b.author||'').toLowerCase().includes(q);
-    }).sort((a,b)=>a.sku.localeCompare(b.sku));
-
-    const thStyle='padding:8px 10px;border:1px solid #333;background:#F5C518;color:#1a1a1a;font-weight:700;font-size:.72rem;text-align:center;white-space:nowrap;';
-    const tdStyle='padding:6px 9px;border:1px solid #d0d0d0;font-size:.76rem;';
-    const tdCStyle='padding:6px 9px;border:1px solid #d0d0d0;font-size:.76rem;text-align:center;';
-
-    const rows=books.length?books.map((b,i)=>{
-      const inReorder=reorderQty[b.id]||0;
-      const discontinued=isCatDisabled(b.category)?'Yes':'No';
-      const isLow=b.qty<b.minStock;
-      const rowBg=i%2===0?'#fff':'#fafafa';
-      const qtyColor=isLow?'color:#dc2626;font-weight:700':'';
-      return`<tr style="background:${rowBg}">
-        <td style="${tdStyle}font-family:monospace;font-size:.71rem">${b.sku}</td>
-        <td style="${tdStyle}font-weight:600;max-width:200px">${b.title}</td>
-        <td style="${tdStyle}color:#555;font-size:.72rem;max-width:160px">${b.author||'—'} · ${b.category}</td>
-        <td style="${tdCStyle}font-weight:600">${rmF(b.price)}</td>
-        <td style="${tdCStyle}${qtyColor}">${b.qty}</td>
-        <td style="${tdCStyle}">${b.minStock}</td>
-        <td style="${tdCStyle}">7</td>
-        <td style="${tdCStyle}font-weight:${inReorder>0?'700':'400'};color:${inReorder>0?'var(--pu)':'#888'}">${inReorder||'—'}</td>
-        <td style="${tdCStyle}font-weight:600;color:${discontinued==='Yes'?'#dc2626':'#16a34a'}">${discontinued}</td>
-      </tr>`;
-    }).join(''):`<tr><td colspan="9" style="text-align:center;padding:32px;color:#888">No books found.</td></tr>`;
-
-    bodyHtml=`
-    <!-- SEARCH -->
-    <div style="margin-bottom:10px">
-      <div class="sbox" style="max-width:320px"><i data-lucide="search"></i>
-        <input type="text" placeholder="Search item, SKU, category…" value="${s}"
-          oninput="pgSupInventoryList('inventory',this.value)"/>
-      </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+    <div class="sbox" style="max-width:320px"><i data-lucide="search"></i>
+      <input type="text" placeholder="Search item, SKU, category…" value="${s}"
+        oninput="pgSupInventoryList(1,this.value)"/>
     </div>
-    <!-- INVENTORY TABLE -->
-    <div style="overflow-x:auto;border-radius:var(--rl);box-shadow:var(--sh);border:1px solid #ccc">
-      <table style="width:100%;border-collapse:collapse;min-width:820px">
-        <thead>
-          <tr>
-            <th style="${thStyle}">Inventory ID</th>
-            <th style="${thStyle}">Name</th>
-            <th style="${thStyle}">Description</th>
-            <th style="${thStyle}">Unit Price</th>
-            <th style="${thStyle}">Quantity in Stock</th>
-            <th style="${thStyle}">Reorder Level</th>
-            <th style="${thStyle}">Reorder Time in Days</th>
-            <th style="${thStyle}">Quantity in Reorder</th>
-            <th style="${thStyle}">Discontinued?</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-    <div style="font-size:.72rem;color:var(--tl);margin-top:8px;text-align:right">
-      Showing ${books.length} of ${DB.books.length} items · Reorder Time in Days defaults to 7 · Quantity in Reorder shows active stock orders
-    </div>`;
-  }
+    <span style="font-size:.75rem;color:var(--tl)">${allBooks.length?`Showing ${invFrom}–${invTo} of ${allBooks.length}`:'No results'}</span>
+  </div>
 
-  /* ════════════════════════════════
-     SUB-PAGE B — Order History
-  ════════════════════════════════ */
-  if(sub==='order-history'){
-    const typeLabel={restock:'Restock',new_book:'New Title',new_genre:'New Genre'};
-    const statusBadge={
-      pending:'by',approved:'bg2',awaiting_delivery:'bb',delivered:'bg2',rejected:'br2',
-    };
-    const statusLabel={
-      pending:'Pending',approved:'Accepted',awaiting_delivery:'Awaiting Delivery',
-      delivered:'Delivered',rejected:'Rejected',
-    };
-
-    /* Filter + search */
-    const all=DB.stockRequests.slice().sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt));
-    const filtered=all.filter(r=>{
-      const q=s.toLowerCase();
-      return !q
-        ||(r.bookTitle||'').toLowerCase().includes(q)
-        ||(r.supplierName||'').toLowerCase().includes(q)
-        ||(r.category||'').toLowerCase().includes(q)
-        ||(r.status||'').toLowerCase().includes(q);
-    });
-
-    /* Status filter chips */
-    const statuses=['all','pending','approved','awaiting_delivery','delivered','rejected'];
-    /* Detect active status chip from s if it matches exactly */
-    const chipActive=statuses.find(st=>st!=='all'&&st===s)||'all';
-    const chipsFiltered=chipActive!=='all'?all.filter(r=>r.status===chipActive):all;
-    /* If chip is selected, ignore text search and use chip filter instead */
-    const displayRows=chipActive!=='all'?chipsFiltered:filtered;
-
-    const chips=statuses.map(st=>{
-      const cnt=st==='all'?all.length:all.filter(r=>r.status===st).length;
-      const active=chipActive===st;
-      return`<button class="btn bsm ${active?'bnn':'bno'}" onclick="pgSupInventoryList('order-history','${st==='all'?'':st}')" style="border-radius:20px">
-        ${st==='all'?'All Orders':(statusLabel[st]||st)}
-        <span class="badge ${active?'':'bgr'}" style="margin-left:3px">${cnt}</span>
-      </button>`;
-    }).join('');
-
-    /* Summary totals */
-    const totalOrders=all.length;
-    const totalUnits=all.reduce((a,r)=>a+r.qty,0);
-    const totalValue=all.reduce((a,r)=>a+(r.qty*(r.unitPrice||0)),0);
-    const delivered=all.filter(r=>r.status==='delivered').length;
-
-    const rows=displayRows.length?displayRows.map((r,i)=>{
-      const rowBg=i%2===0?'var(--wh)':'var(--bg)';
-      const sup=DB.suppliers.find(s=>s.id===r.supplierId);
-      const orderVal=(r.qty*(r.unitPrice||0));
-      return`<tr style="background:${rowBg}">
-        <td style="padding:8px 11px;font-size:.71rem;color:var(--tl);white-space:nowrap">${fmtD(r.submittedAt)}</td>
-        <td style="padding:8px 11px">
-          <div style="font-weight:600;font-size:.82rem">${r.bookTitle||r.category||'—'}</div>
-          <div style="font-size:.69rem;color:var(--tl);margin-top:2px">${r.category||'—'}</div>
-        </td>
-        <td style="padding:8px 11px;font-size:.78rem">${r.supplierName||sup?.name||'—'}</td>
-        <td style="padding:8px 11px;text-align:center">
-          <span class="badge bgr" style="font-size:.65rem">${typeLabel[r.type]||r.type}</span>
-        </td>
-        <td style="padding:8px 11px;text-align:center;font-weight:700">${r.qty}</td>
-        <td style="padding:8px 11px;text-align:right;font-size:.79rem">${rmF(r.unitPrice||0)}</td>
-        <td style="padding:8px 11px;text-align:right;font-weight:600;color:var(--ok)">${rmF(orderVal)}</td>
-        <td style="padding:8px 11px;text-align:center">
-          <span class="badge ${statusBadge[r.status]||'bgr'}">${statusLabel[r.status]||r.status}</span>
-        </td>
-        <td style="padding:8px 11px;font-size:.71rem;color:var(--tl)">${r.deliveredAt?fmtD(r.deliveredAt):'—'}</td>
-      </tr>`;
-    }).join(''):`<tr><td colspan="9" style="text-align:center;padding:36px;color:var(--tl)">No orders match the selected filter.</td></tr>`;
-
-    bodyHtml=`
-    <!-- ORDER HISTORY SUMMARY -->
-    <div class="sg" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">
-      <div class="sc"><div class="si blue"><i data-lucide="shopping-cart"></i></div><div><div class="sv">${totalOrders}</div><div class="sl">Total Orders</div></div></div>
-      <div class="sc"><div class="si purple"><i data-lucide="package"></i></div><div><div class="sv">${totalUnits}</div><div class="sl">Units Ordered</div></div></div>
-      <div class="sc"><div class="si green"><i data-lucide="wallet"></i></div><div><div class="sv" style="font-size:1rem">${rmF(totalValue)}</div><div class="sl">Total Order Value</div></div></div>
-      <div class="sc"><div class="si green"><i data-lucide="check-circle"></i></div><div><div class="sv">${delivered}</div><div class="sl">Delivered</div></div></div>
-    </div>
-
-    <!-- STATUS FILTER CHIPS + SEARCH -->
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-      ${chips}
-      <div class="sbox" style="max-width:240px;margin-left:auto"><i data-lucide="search"></i>
-        <input type="text" placeholder="Search title, supplier…" value="${chipActive!=='all'?'':s}"
-          oninput="pgSupInventoryList('order-history',this.value)"/>
-      </div>
-    </div>
-
-    <!-- ORDER HISTORY TABLE -->
-    <div class="card">
-      <div class="ch">
-        <h2>Order History</h2>
-        <span class="badge bgr">${displayRows.length} order${displayRows.length!==1?'s':''}</span>
-      </div>
-      <div class="tw">
-        <table style="min-width:780px">
-          <thead><tr>
-            <th>Order Date</th>
-            <th>Book / Title</th>
-            <th>Supplier</th>
-            <th style="text-align:center">Type</th>
-            <th style="text-align:center">Qty</th>
-            <th style="text-align:right">Unit Price</th>
-            <th style="text-align:right">Order Value</th>
-            <th style="text-align:center">Status</th>
-            <th>Delivered</th>
-          </tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>`;
-  }
-
-  setHTML(`
-    <div class="ph"><div><h2>Supplier Directory</h2><p>Manage suppliers, registrations and inventory orders</p></div></div>
-    ${supTabs('sup-inventory')}
-    ${statsHtml}
-    <!-- SUB-TABS -->
-    <div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">
-      ${subTabs}
-    </div>
-    ${bodyHtml}
-  `);
+  <div style="overflow-x:auto;border-radius:var(--rl);box-shadow:var(--sh);border:1px solid #ccc">
+    <table style="width:100%;border-collapse:collapse;min-width:820px">
+      <thead><tr>
+        <th style="${thStyle}">Inventory ID</th>
+        <th style="${thStyle}">Name</th>
+        <th style="${thStyle}">Description</th>
+        <th style="${thStyle}">Unit Price</th>
+        <th style="${thStyle}">Quantity in Stock</th>
+        <th style="${thStyle}">Reorder Level</th>
+        <th style="${thStyle}">Reorder Time in Days</th>
+        <th style="${thStyle}">Quantity in Reorder</th>
+        <th style="${thStyle}">Discontinued?</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+  ${makePager(pg,invTotal,'pgSupInventoryList',"'"+sJs+"'")}
+  <div style="font-size:.72rem;color:var(--tl);margin-top:4px;text-align:right">
+    Reorder Time in Days defaults to 7 · Quantity in Reorder shows active stock orders
+  </div>`);
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
@@ -2921,7 +2920,7 @@ function pgSup(s=''){
     return`<tr>
       <td>
         <div style="font-weight:600">${sup.name}</div>
-        <div style="font-size:.71rem;color:var(--tl);margin-top:2px">${bookCount} book${bookCount!==1?'s':''} supplied</div>
+        <div style="display:flex;align-items:center;gap:5px;margin-top:3px"><span class="badge ${sup.supplierType==='Type 2'?'bp':'bb'}" style="font-size:.62rem">${sup.supplierType||'Type 1'}</span><span style="font-size:.71rem;color:var(--tl)">${bookCount} book${bookCount!==1?'s':''} supplied</span></div>
       </td>
       <td>${sup.contact}</td><td>${sup.phone}</td>
       <td><a href="mailto:${sup.email}" style="color:var(--ac)">${sup.email}</a></td>
@@ -2938,26 +2937,30 @@ function pgSup(s=''){
     <div class="card" style="margin-top:13px"><div class="ch"><div class="sbox" style="max-width:290px"><i data-lucide="search"></i>
       <input type="text" placeholder="Search…" value="${s}" oninput="dbs('sp',pgSup,this.value)"/></div></div>
     <div class="tw"><table><thead><tr><th>Name</th><th>Contact</th><th>Phone</th><th>Email</th><th>Address</th><th>Action</th></tr></thead>
-    <tbody>${rows}</tbody></table></div></div>`);
+    <tbody>${rows}</tbody></table></div>
+    </div>`);
+
 }
 
 /* ===== SUPPLIER REGISTRATION REQUESTS ===== */
-function pgSupRegistrations(tab='pending'){
+function pgSupRegistrations(tab,pg){if(!tab)tab='pending';if(!pg)pg=1;
   const all=DB.supplierRegistrations||[];
   const pending=all.filter(r=>r.status==='pending');
   const approved=all.filter(r=>r.status==='approved');
   const rejected=all.filter(r=>r.status==='rejected');
-  const shown=tab==='pending'?pending:tab==='approved'?approved:rejected;
+  const allReg=(tab==='pending'?pending:tab==='approved'?approved:rejected).slice().reverse();
+  const regTotal=Math.max(1,Math.ceil(allReg.length/3));pg=Math.min(Math.max(1,pg),regTotal);
+  const shown=allReg.slice((pg-1)*3,pg*3);
 
   const tabH=[
     {id:'pending',lbl:'Pending',count:pending.length,cls:'by'},
     {id:'approved',lbl:'Approved',count:approved.length,cls:'bg2'},
     {id:'rejected',lbl:'Rejected',count:rejected.length,cls:'bgr'},
-  ].map(t=>`<button class="btn bsm ${tab===t.id?'bnn':'bno'}" onclick="pgSupRegistrations('${t.id}')">
+  ].map(t=>`<button class="btn bsm ${tab===t.id?'bnn':'bno'}" onclick="pgSupRegistrations('${t.id}',1)">
     ${t.lbl} <span class="badge ${t.cls}" style="margin-left:4px">${t.count}</span>
   </button>`).join('');
 
-  const cards=shown.length?shown.slice().reverse().map(r=>{
+  const cards=shown.length?shown.map(r=>{
     const catBadges=(r.categories||[]).map(c=>`<span class="badge bgr">${c}</span>`).join(' ');
     const borderCol=r.status==='pending'?'var(--wn)':r.status==='approved'?'var(--ok)':'var(--dg)';
     const stBadge=r.status==='pending'?'<span class="badge by">Pending</span>':r.status==='approved'?'<span class="badge bg2">Approved</span>':'<span class="badge br2">Rejected</span>';
@@ -3012,7 +3015,8 @@ function pgSupRegistrations(tab='pending'){
   setHTML(`<div class="ph"><div><h2>Supplier Registrations</h2><p>Review and respond to new supplier applications</p></div></div>
   ${supTabs('sup-registrations')}
   <div style="display:flex;gap:6px;margin:14px 0 12px;flex-wrap:wrap">${tabH}</div>
-  ${cards}`);
+  ${cards}
+  ${makePager(pg,regTotal,'pgSupRegistrations',"'"+tab+"'")}`);
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
@@ -3274,21 +3278,27 @@ function doRejectSupReg(id){
   closeMo();pgSupRegistrations('rejected');
 }
 function editSup(id){
-  const s=id?DB.suppliers.find(x=>x.id===id):{name:'',contact:'',phone:'',email:'',address:''};
+  const s=id?DB.suppliers.find(x=>x.id===id):{name:'',contact:'',phone:'',email:'',address:'',supplierType:'Type 1'};
   openMo(id?'Edit Supplier':'Add Supplier',`<div class="fgrid">
     <div class="fg full"><label>Supplier Name *</label><input id="sn" value="${s.name}"/></div>
     <div class="fg"><label>Contact Person *</label><input id="sc" value="${s.contact}"/></div>
     <div class="fg"><label>Phone *</label><input id="sp2" value="${s.phone}" placeholder="03-xxxx xxxx"/></div>
     <div class="fg full"><label>Email *</label><input id="se" type="email" value="${s.email}"/></div>
     <div class="fg full"><label>Address</label><textarea id="sa" rows="2">${s.address}</textarea></div>
+    <div class="fg full"><label>Supplier Type *</label>
+      <select id="stype" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
+        <option value="Type 1"${(s.supplierType||'Type 1')==='Type 1'?' selected':''}>Type 1 — Primary / Publisher</option>
+        <option value="Type 2"${s.supplierType==='Type 2'?' selected':''}>Type 2 — Distributor / Reseller</option>
+      </select>
+    </div>
   </div>`,`<button class="btn bno" onclick="closeMo()">Cancel</button>
     <button class="btn bnn" onclick="saveSup('${id||''}')"><i data-lucide="save"></i>Save</button>`);
 }
 function saveSup(id){
-  const n=isel('sn').value.trim(),c=isel('sc').value.trim(),p=isel('sp2').value.trim(),e=isel('se').value.trim(),a=isel('sa').value.trim();
-  if(!n||!c||!p||!e){toast('Fill required fields.','error');return;}
-  if(id){Object.assign(DB.suppliers.find(x=>x.id===id),{name:n,contact:c,phone:p,email:e,address:a});toast('Supplier updated.');}
-  else{DB.suppliers.push({id:uid('sp'),name:n,contact:c,phone:p,email:e,address:a,userId:null});toast('Supplier added.');}
+  const n=isel('sn').value.trim(),cc=isel('sc').value.trim(),p=isel('sp2').value.trim(),e=isel('se').value.trim(),a=isel('sa').value.trim(),t=isel('stype').value;
+  if(!n||!cc||!p||!e){toast('Fill required fields.','error');return;}
+  if(id){Object.assign(DB.suppliers.find(x=>x.id===id),{name:n,contact:cc,phone:p,email:e,address:a,supplierType:t});toast('Supplier updated.');}
+  else{DB.suppliers.push({id:uid('sp'),name:n,contact:cc,phone:p,email:e,address:a,supplierType:t,userId:null});toast('Supplier added.');}
   closeMo();pgSup();
 }
 function delSup(id){
@@ -3312,7 +3322,10 @@ function navSupCat(supId){
 }
 
 /* ===== SUPPLIER CATALOGUE SUB-PAGE ===== */
-function pgSupCatalogue(supId,s='',stf=''){
+function pgSupCatalogue(supId,s,stf,pg){
+  if(typeof supId==='number'){const _p=supId;supId=s;s=stf;stf=pg;pg=_p;}
+  if(!supId)supId=_supCatId;
+  if(!s)s='';if(!stf)stf='';if(!pg)pg=1;
   if(!supId)supId=_supCatId;
   if(!supId){pgSup();return;}
   _supCatId=supId;
@@ -3328,6 +3341,11 @@ function pgSupCatalogue(supId,s='',stf=''){
     const matchCat=!_scCats.length||_scCats.includes(b.category);
     return matchQ&&matchSt&&matchCat;
   });
+  const allFiltered=books.slice();
+  const scPER=10,scTotal=Math.max(1,Math.ceil(allFiltered.length/scPER));
+  pg=Math.min(Math.max(1,pg),scTotal);
+  const scBooks=allFiltered.slice((pg-1)*scPER,pg*scPER);
+  const scFrom=(pg-1)*scPER+1,scTo=Math.min(pg*scPER,allFiltered.length);
 
   /* Stats */
   const totalUnits=allBooks.reduce((a,b)=>a+b.qty,0);
@@ -3337,7 +3355,7 @@ function pgSupCatalogue(supId,s='',stf=''){
 
   const statOpts=['In Stock','Low Stock','Out of Stock'].map(v=>`<option value="${v}"${stf===v?' selected':''}>${v}</option>`).join('');
 
-  const rows=books.length?books.map(b=>{
+  const rows=scBooks.length?scBooks.map(b=>{
     const st=sSt(b);
     const totalSold=DB.transactions.filter(t=>t.bookId===b.id).reduce((a,t)=>a+t.qty,0);
     return`<tr>
@@ -3407,14 +3425,14 @@ function pgSupCatalogue(supId,s='',stf=''){
       <div class="tb2">
         <div class="sbox"><i data-lucide="search"></i>
           <input id="scat-srch" type="text" placeholder="Search title, author, SKU…" value="${s}"
-            oninput="pgSupCatalogue('${supId}',this.value,document.querySelector('#scat-stf')?document.querySelector('#scat-stf').value:'')"/>
+            oninput="pgSupCatalogue('${supId}',this.value,document.querySelector('#scat-stf')?document.querySelector('#scat-stf').value:'',1)"/>
         </div>
         <select id="scat-stf" class="flt"
-          onchange="pgSupCatalogue('${supId}',isel('scat-srch')?isel('scat-srch').value:'',this.value)">
+          onchange="pgSupCatalogue('${supId}',isel('scat-srch')?isel('scat-srch').value:'',this.value,1)">
           <option value="">All Status</option>${statOpts}
         </select>
         <div class="cbox" id="sc-cbox"></div>
-        <span class="badge bgr">${allBooks.length} total</span>
+        <span style="font-size:.75rem;color:var(--tl)">${allFiltered.length?`${scFrom}–${scTo} of ${allFiltered.length}`:'0'} books</span>
       </div>
     </div>
     <div class="tw"><table>
@@ -3428,6 +3446,7 @@ function pgSupCatalogue(supId,s='',stf=''){
       </tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
+    ${makePager(pg,scTotal,'pgSupCatalogue',"'${supId}','"+(s||'').replace(/'/g,"\\'")+'\',\''+(stf||'')+"'")}
   </div>`);
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
   initScCatCombo(stf,supId);
@@ -3439,13 +3458,13 @@ function scCatToggle(cat){
   if(idx>=0)_scCats.splice(idx,1);else _scCats.push(cat);
   const s=isel('scat-srch')?isel('scat-srch').value:'';
   const stf=isel('scat-stf')?isel('scat-stf').value:'';
-  pgSupCatalogue(_supCatId,s,stf);
+  pgSupCatalogue(_supCatId,s,stf,1);
 }
 function scCatRemove(cat){
   _scCats=_scCats.filter(c=>c!==cat);
   const s=isel('scat-srch')?isel('scat-srch').value:'';
   const stf=isel('scat-stf')?isel('scat-stf').value:'';
-  pgSupCatalogue(_supCatId,s,stf);
+  pgSupCatalogue(_supCatId,s,stf,1);
 }
 
 /* Multi-select category combobox for Supplier Catalogue */
@@ -3502,7 +3521,7 @@ function initScCatCombo(stf,supId){
   });
   if(clearAll)clearAll.addEventListener('mousedown',e=>{
     e.preventDefault();_scCats=[];
-    pgSupCatalogue(_supCatId,isel('scat-srch')?isel('scat-srch').value:'',isel('scat-stf')?isel('scat-stf').value:'');
+    pgSupCatalogue(_supCatId,isel('scat-srch')?isel('scat-srch').value:'',isel('scat-stf')?isel('scat-stf').value:'',1);
   });
   document.addEventListener('click',function outside(e){
     if(!wrap.contains(e.target)){closeDD();document.removeEventListener('click',outside);}
@@ -3602,13 +3621,16 @@ function doAssignBook(supId){
 
 /* ===== STOCK REQUESTS ===== */
 /* ===== REQUEST NEW STOCK ===== */
-function pgStockOrder(flt){
-  if(!flt)flt='pending';
+function pgStockOrder(flt,pg){
+  if(!flt)flt='pending';if(!pg)pg=1;
   var restock=DB.stockRequests.filter(function(r){return r.type==='restock';});
   var counts={pending:0,approved:0,awaiting_delivery:0,rejected:0,delivered:0};
   restock.forEach(function(r){if(counts[r.status]!==undefined)counts[r.status]++;});
-  var shown=restock.filter(function(r){return r.status===flt;})
+  var allShown=restock.filter(function(r){return r.status===flt;})
     .slice().sort(function(a,b){return b.submittedAt.localeCompare(a.submittedAt);});
+  var soPER=3,soTotal=Math.max(1,Math.ceil(allShown.length/soPER));
+  pg=Math.min(Math.max(1,pg),soTotal);
+  var shown=allShown.slice((pg-1)*soPER,pg*soPER);
 
   var tabDefs=[
     {id:'pending',lbl:'Order Placed',icon:'shopping-cart'},
@@ -3687,7 +3709,8 @@ function pgStockOrder(flt){
     +'<div class="sc"><div class="si red"><i data-lucide="x-circle"></i></div><div><div class="sv">'+counts.rejected+'</div><div class="sl">Supplier Rejected</div></div></div>'
     +'</div>'
     +'<div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">'+tabs+'</div>'
-    +cards);
+    +cards
+    +makePager(pg,soTotal,'pgStockOrder',"'"+flt+"'"));
 }
 function startDelivery(id){
   var r=DB.stockRequests.find(function(x){return x.id===id;});
@@ -3697,10 +3720,9 @@ function startDelivery(id){
 }
 
 function openNewOrderForm(){
-  var sO=DB.suppliers.map(function(s){return '<option value="'+s.id+'">'+s.name+'</option>';}).join('');
   var body='<div class="finfo"><i data-lucide="send"></i>Place a stock order. After submitting, contact the supplier and they will confirm.</div>'
     +'<div class="fgrid">'
-    +'<div class="fg full"><label>Supplier *</label><select id="no-sup" onchange="noLoadBooks()" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.85rem;font-family:var(--fn)"><option value="">Select supplier\u2026</option>'+sO+'</select></div>'
+    +'<div class="fg full"><label>Supplier *</label><div id="no-sup-cbox" class="cbox"></div><input type="hidden" id="no-sup"/></div>'
     +'<div class="fg full" id="no-bookwrap" style="display:none"><label>Book *</label>'
       +'<div style="display:flex;gap:6px;align-items:center">'
         +'<div id="no-book-cbox" class="cbox" style="flex:1;min-width:0"></div>'
@@ -3717,6 +3739,7 @@ function openNewOrderForm(){
     +'<div class="fg full" id="no-notewrap" style="display:none"><label>Note to Supplier</label><textarea id="no-note" rows="2" placeholder="e.g. Urgent \u2014 needed by end of week."></textarea></div>'
     +'</div>';
   openMo('New Stock Order',body,'<button class="btn bno" onclick="closeMo()">Cancel</button><button class="btn bna" id="no-submit" style="display:none" onclick="submitNewOrder()"><i data-lucide="send"></i>Place Order</button>',true);
+  setTimeout(function(){initSupCombo('no-sup-cbox','no-sup','',function(sid){if(sid)noLoadBooks();else{var w=isel('no-bookwrap');if(w)w.style.display='none';['no-info','no-qtywrap','no-pricewrap','no-notewrap'].forEach(function(i){var el=isel(i);if(el)el.style.display='none';});var s=isel('no-submit');if(s)s.style.display='none';}});},30);
 }
 function noLoadBooks(){
   var sid=isel('no-sup').value;
@@ -3864,8 +3887,8 @@ function confirmDelivery(id){
 }
 
 /* ===== SUPPLIER PROPOSALS ===== */
-function pgStockReceive(flt){
-  if(!flt)flt='pending';
+function pgStockReceive(flt,pg){
+  if(!flt)flt='pending';if(!pg)pg=1;
   var proposals=DB.stockRequests.filter(function(r){return r.type==='new_book'||r.type==='new_genre';});
   var counts={pending:0,approved:0,confirm_delivery:0,delivered:0,rejected:0,added:0};
   proposals.forEach(function(r){
@@ -3874,12 +3897,15 @@ function pgStockReceive(flt){
       else counts.approved++;
     } else if(counts[r.status]!==undefined)counts[r.status]++;
   });
-  var shown=(flt==='confirm_delivery'
+  var allSR=(flt==='confirm_delivery'
     ?proposals.filter(function(r){return r.status==='approved'&&r.deliveryConfirmedAt;})
     :flt==='approved'
       ?proposals.filter(function(r){return r.status==='approved'&&!r.deliveryConfirmedAt;})
       :proposals.filter(function(r){return r.status===flt;})
   ).slice().sort(function(a,b){return b.submittedAt.localeCompare(a.submittedAt);});
+  var srPER=3,srTotal=Math.max(1,Math.ceil(allSR.length/srPER));
+  pg=Math.min(Math.max(1,pg),srTotal);
+  var shown=allSR.slice((pg-1)*srPER,pg*srPER);
 
   var tabDefs=[
     {id:'pending',lbl:'Pending Review',icon:'clock'},
@@ -3966,7 +3992,8 @@ function pgStockReceive(flt){
     +'<div class="sc"><div class="si red"><i data-lucide="x-circle"></i></div><div><div class="sv">'+counts.rejected+'</div><div class="sl">Rejected</div></div></div>'
     +'</div>'
     +'<div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">'+tabs+'</div>'
-    +cards);
+    +cards
+    +makePager(pg,srTotal,'pgStockReceive',"'"+flt+"'"));
 }
 function reviewProposal(id,dec){
   var r=DB.stockRequests.find(function(x){return x.id===id;}),bd=r.pendingBookData||{};
@@ -4048,11 +4075,10 @@ function finalAddToCatalogue(id){
   closeMo();pgStockReceive('added');
 }
 function openAddProposalForm(){
-  var sO=DB.suppliers.map(function(s){return '<option value="'+s.id+'">'+s.name+'</option>';}).join('');
   var catOpts=getCats().map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
   var body='<div class="finfo"><i data-lucide="info"></i>Enter all details as provided by the supplier.</div>'
     +'<div class="fgrid">'
-    +'<div class="fg full"><label>Supplier *</label><select id="pp-sup" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.85rem;font-family:var(--fn)"><option value="">Select supplier\u2026</option>'+sO+'</select></div>'
+    +'<div class="fg full"><label>Supplier *</label><div id="pp-sup-cbox" class="cbox"></div><input type="hidden" id="pp-sup"/></div>'
     +'<div class="fg full"><label>Proposal Type *</label><select id="pp-type" onchange="ppTypeChg()" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.85rem;font-family:var(--fn)"><option value="">Select type\u2026</option><option value="new_book">New Book Title</option><option value="new_genre">New Genre / Category</option></select></div>'
     +'<div class="fg full"><label>Book Title / Genre Name *</label><input id="pp-title" placeholder="Full title or genre name"/></div>'
     +'<div class="fg"><label>Author *</label><input id="pp-author" placeholder="Author name(s)"/></div>'
@@ -4066,6 +4092,7 @@ function openAddProposalForm(){
     +'<div class="fg full"><label>Supplier Note</label><textarea id="pp-note" rows="2" placeholder="Any extra info\u2026"></textarea></div>'
     +'</div>';
   openMo('Log Supplier Proposal',body,'<button class="btn bno" onclick="closeMo()">Cancel</button><button class="btn bna" onclick="submitProposal()"><i data-lucide="inbox"></i>Log Proposal</button>',true);
+  setTimeout(function(){initSupCombo('pp-sup-cbox','pp-sup','');},30);
 }
 function ppTypeChg(){var t=isel('pp-type').value,dw=isel('pp-detailwrap');if(dw)dw.style.display=(t==='new_genre'?'flex':'none');}
 function ppCatChg(){var v=isel('pp-cat')?isel('pp-cat').value:'',wrap=isel('pp-newcatwrap');if(wrap)wrap.style.display=(v==='__new__'?'flex':'none');}
@@ -4102,9 +4129,12 @@ function genEmployeeId(role){
   var next=(nums.length?Math.max.apply(null,nums):0)+1;
   return 'EMP-'+prefix+'-'+String(next).padStart(3,'0');
 }
-function pgStaff(s){
+function pgStaff(s,pg){if(!pg)pg=1;
   if(s===undefined)s='';
-  var list=DB.users.filter(function(u){return u.role==='Staff'&&(!s||u.name.toLowerCase().indexOf(s.toLowerCase())>=0||u.username.indexOf(s)>=0||(u.employeeId&&u.employeeId.toLowerCase().indexOf(s.toLowerCase())>=0));});
+  var allSt=DB.users.filter(function(u){return u.role==='Staff'&&(!s||u.name.toLowerCase().indexOf(s.toLowerCase())>=0||u.username.indexOf(s)>=0||(u.employeeId&&u.employeeId.toLowerCase().indexOf(s.toLowerCase())>=0));});
+  var stTotal=Math.max(1,Math.ceil(allSt.length/10));
+  pg=Math.min(Math.max(1,pg),stTotal);
+  var list=allSt.slice((pg-1)*10,pg*10);
   var rows=list.length?list.map(function(u){
     return '<tr><td><span class="sku" style="font-size:.75rem">'+( u.employeeId||'—')+'</span></td>'
       +'<td style="font-weight:600">'+u.name+'</td>'
@@ -4116,9 +4146,11 @@ function pgStaff(s){
   setHTML('<div class="ph"><div><h2>Manage Staff</h2><p>Staff accounts with unique Employee IDs</p></div>'
     +'<button class="btn bnn" onclick="editStaff(null)"><i data-lucide="plus"></i>Add Staff</button></div>'
     +'<div class="card"><div class="ch"><div class="sbox" style="max-width:300px"><i data-lucide="search"></i>'
-    +'<input type="text" placeholder="Search name, username or Employee ID…" value="'+s+'" oninput="dbs(\'st\',pgStaff,this.value)"/></div></div>'
+    +'<input type="text" placeholder="Search name, username or Employee ID…" value="'+s+'" oninput="dbs(\'st\',(v)=>pgStaff(v,1),this.value)"/></div></div>'
     +'<div class="tw"><table><thead><tr><th>Employee ID</th><th>Name</th><th>Username</th><th>Email</th><th>Action</th></tr></thead>'
-    +'<tbody>'+rows+'</tbody></table></div></div>');
+    +'<tbody>'+rows+'</tbody></table></div>'
+    +makePager(pg,stTotal,'pgStaff',"'"+s+"'")
+    +'</div>');
 }
 function editStaff(id){
   var u=id?DB.users.find(function(x){return x.id===id;}):{name:'',username:'',email:'',employeeId:''};
@@ -4184,7 +4216,8 @@ function pgUsers(s,rf){
     +'<div class="card"><div class="ch"><div class="sbox" style="max-width:320px"><i data-lucide="search"></i>'
     +'<input id="usr-srch" type="text" placeholder="Search name, username or Employee ID…" value="'+s+'" oninput="dbs(\'us\',pgUsers,this.value,\''+rf+'\')"/></div></div>'
     +'<div class="tw"><table><thead><tr><th>Employee ID</th><th>Name</th><th>Username</th><th>Role</th><th>Email</th><th>Action</th></tr></thead>'
-    +'<tbody>'+rows+'</tbody></table></div></div>');
+    +'<tbody>'+rows+'</tbody></table></div>'
+    +'</div>');
 }
 function editUserA(id){
   var u=id?DB.users.find(function(x){return x.id===id;}):{name:'',username:'',role:'Staff',email:'',employeeId:''};
@@ -4560,7 +4593,7 @@ function submitSupReq(){
   refreshBadges();refreshDot();toast('Request submitted.','success');nav('sup-hist');
 }
 
-function pgSupHist(flt='all'){
+function pgSupHist(flt,pg){if(!flt)flt='all';if(!pg)pg=1;
   const sup=getMySup();if(!sup){setHTML('<p>Supplier profile not found.</p>');return;}
   const all=DB.stockRequests.filter(r=>r.supplierId===sup.id);
   const tabs=[
@@ -4571,8 +4604,10 @@ function pgSupHist(flt='all'){
     {id:'delivered',lbl:'Delivered',c:all.filter(r=>r.status==='delivered').length},
     {id:'rejected',lbl:'Rejected',c:all.filter(r=>r.status==='rejected').length},
   ];
-  const shown=(flt==='all'?all:all.filter(r=>r.status===flt)).sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt));
-  const tH=tabs.map(t=>`<button class="btn bsm ${flt===t.id?'bnn':'bno'}" onclick="pgSupHist('${t.id}')">${t.lbl} <span class="badge bgr" style="margin-left:3px">${t.c}</span></button>`).join('');
+  const allSH=(flt==='all'?all:all.filter(r=>r.status===flt)).sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt));
+  const shTotal=Math.max(1,Math.ceil(allSH.length/3));pg=Math.min(Math.max(1,pg),shTotal);
+  const shown=allSH.slice((pg-1)*3,pg*3);
+  const tH=tabs.map(t=>`<button class="btn bsm ${flt===t.id?'bnn':'bno'}" onclick="pgSupHist('${t.id}',1)">${t.lbl} <span class="badge bgr" style="margin-left:3px">${t.c}</span></button>`).join('');
   const sm={pending:'by',approved:'bg2',awaiting_delivery:'bp',delivered:'bb',rejected:'br2'};
   const sl={pending:'Pending',approved:'Accepted',awaiting_delivery:'Shipped',delivered:'Delivered',rejected:'Rejected'};
   const tl={restock:'Restock',new_book:'New Book',new_genre:'New Genre'};
@@ -5183,89 +5218,7 @@ function doConfirmDefective(id){
 
 
 function reportDefectManual(){
-  window._dfPhotos=[];
-  var isManager=CU.role==='Manager';
-
-  /* ══════════════════════════════════════
-     STAFF FORM — direct manual entry only
-     (no scan, no toggle, no photos)
-  ══════════════════════════════════════ */
-  if(!isManager){
-    var staffBody=
-      '<div class="fgrid">'
-        +'<div class="fg full" id="df-scan-section"><label>Scan / Type Book Code</label>'
-          +'<div style="display:flex;gap:6px;align-items:center">'
-            +'<input id="df-scan" type="text" placeholder="Scan QR or type barcode, SKU, RFID\u2026" autocomplete="off" oninput="dfScanLookup()" style="flex:1;min-width:0;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)"/>'
-            +'<button class="qr-scan-btn" type="button" title="Scan QR / Barcode" onclick="openQR(isel(\'df-scan\'))" style="flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button>'
-          +'</div>'
-          +'<div id="df-book-info" style="margin-top:6px"></div>'
-        +'</div>'
-        +'<div class="fg full">'
-          +'<div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--bgm);border-radius:var(--r);cursor:pointer" onclick="var cb=isel(\'df-manual-mode\');cb.checked=!cb.checked;dfToggleManual()">'
-            +'<input type="checkbox" id="df-manual-mode" onchange="dfToggleManual()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--ac);flex-shrink:0" onclick="event.stopPropagation()"/>'
-            +'<span style="font-size:.8rem;font-weight:600;color:var(--tm)">Enter book details manually</span>'
-            +'<span style="font-size:.72rem;color:var(--tl);margin-left:2px">(optional — e.g. barcode sticker missing or peeled off)</span>'
-          +'</div>'
-        +'</div>'
-        +'<div id="df-manual-fields" style="display:none;grid-column:1/-1">'
-          +'<div class="fgrid">'
-            +'<div class="fg full"><label>Book Title *</label>'
-              +'<input id="df-manual-title" placeholder="Full book title e.g. Business Management"/>'
-            +'</div>'
-            +'<div class="fg"><label>Author <span style="font-weight:400;text-transform:none">(optional)</span></label>'
-              +'<input id="df-manual-author" placeholder="e.g. Robert Griffin"/>'
-            +'</div>'
-            +'<div class="fg"><label>Category *</label>'
-              +'<div id="df-cat-cbox" class="cbox"></div>'
-              +'<input type="hidden" id="df-manual-cat"/>'
-            +'</div>'
-          +'</div>'
-        +'</div>'
-        +'<div class="fg"><label>Qty Defective *</label><input id="df-qty" type="number" min="1" value="1"/></div>'
-        +'<div class="fg"><label>Defect Type *</label>'
-          +'<select id="df-defect-type">'
-            +'<option value="">Select defect type\u2026</option>'
-            +'<option value="Torn / damaged pages">Torn / Damaged Pages</option>'
-            +'<option value="Water damage">Water Damage</option>'
-            +'<option value="Cover damage">Cover Damage</option>'
-            +'<option value="Print error / missing pages">Print Error / Missing Pages</option>'
-            +'<option value="Duplicate / blank pages">Duplicate / Blank Pages</option>'
-            +'<option value="Binding broken">Binding Broken</option>'
-            +'<option value="Wrong book delivered">Wrong Book Delivered</option>'
-            +'<option value="Other defect">Other</option>'
-          +'</select>'
-        +'</div>'
-        +'<div class="fg full"><label>Defect Description *</label>'
-          +'<textarea id="df-reason" rows="2" placeholder="e.g. torn cover, missing pages, water damage\u2026"></textarea>'
-        +'</div>'
-      +'</div>';
-
-    openMo('Report Defective Item',staffBody,
-      '<button class="btn bno" onclick="closeMo()">Cancel</button>'
-      +'<button class="btn bnd" onclick="saveDefectReport()"><i data-lucide="shield-x"></i>Flag as Defective</button>'
-    );
-    return;
-  }
-
-  /* ══════════════════════════════════════
-     MANAGER FORM — scan + optional manual + photos
-  ══════════════════════════════════════ */
-  var photoSection=
-    '<div class="fg full" style="border-top:1px solid var(--bd);padding-top:10px;margin-top:4px">'
-      +'<label style="font-size:.69rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">'
-        +'Attach Photos <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--tl)">(optional)</span>'
-      +'</label>'
-      +'<div id="df-photo-row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start">'
-        +'<label id="df-photo-add" style="width:72px;height:72px;border:2px dashed var(--bd);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;color:var(--tl);font-size:.68rem;font-weight:600;transition:border .15s;flex-shrink:0" title="Add photo">'
-          +'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'
-          +'Add'
-          +'<input type="file" accept="image/*" multiple style="display:none" onchange="dfAddPhotos(this)"/>'
-        +'</label>'
-      +'</div>'
-      +'<div style="font-size:.7rem;color:var(--tl);margin-top:5px">Up to 5 photos · JPG / PNG</div>'
-    +'</div>';
-
-  var mgrBody=
+  var body=
     '<div class="fgrid">'
       +'<div class="fg full" id="df-scan-section"><label>Scan / Type Book Code</label>'
         +'<div style="display:flex;gap:6px;align-items:center">'
@@ -5274,8 +5227,25 @@ function reportDefectManual(){
         +'</div>'
         +'<div id="df-book-info" style="margin-top:6px"></div>'
       +'</div>'
+      +'<div class="fg"><label>Qty Defective *</label><input id="df-qty" type="number" min="1" value="1"/></div>'
+      +'<div class="fg"><label>Defect Type *</label>'
+        +'<select id="df-defect-type">'
+          +'<option value="">Select defect type\u2026</option>'
+          +'<option value="Torn / damaged pages">Torn / Damaged Pages</option>'
+          +'<option value="Water damage">Water Damage</option>'
+          +'<option value="Cover damage">Cover Damage</option>'
+          +'<option value="Print error / missing pages">Print Error / Missing Pages</option>'
+          +'<option value="Duplicate / blank pages">Duplicate / Blank Pages</option>'
+          +'<option value="Binding broken">Binding Broken</option>'
+          +'<option value="Wrong book delivered">Wrong Book Delivered</option>'
+          +'<option value="Other defect">Other</option>'
+        +'</select>'
+      +'</div>'
+      +'<div class="fg full"><label>Defect Description *</label>'
+        +'<textarea id="df-reason" rows="2" placeholder="e.g. torn cover, missing pages, water damage\u2026"></textarea>'
+      +'</div>'
 
-      /* manual toggle */
+      /* ── Manual entry toggle (both staff and manager) ── */
       +'<div class="fg full">'
         +'<div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--bgm);border-radius:var(--r);cursor:pointer" onclick="var cb=isel(\'df-manual-mode\');cb.checked=!cb.checked;dfToggleManual()">'
           +'<input type="checkbox" id="df-manual-mode" onchange="dfToggleManual()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--ac);flex-shrink:0" onclick="event.stopPropagation()"/>'
@@ -5298,83 +5268,24 @@ function reportDefectManual(){
         +'</div>'
       +'</div>'
 
-      +'<div class="fg"><label>Qty Defective *</label><input id="df-qty" type="number" min="1" value="1"/></div>'
-      +'<div class="fg"><label>Defect Type *</label>'
-        +'<select id="df-defect-type">'
-          +'<option value="">Select defect type\u2026</option>'
-          +'<option value="Torn / damaged pages">Torn / Damaged Pages</option>'
-          +'<option value="Water damage">Water Damage</option>'
-          +'<option value="Cover damage">Cover Damage</option>'
-          +'<option value="Print error / missing pages">Print Error / Missing Pages</option>'
-          +'<option value="Duplicate / blank pages">Duplicate / Blank Pages</option>'
-          +'<option value="Binding broken">Binding Broken</option>'
-          +'<option value="Wrong book delivered">Wrong Book Delivered</option>'
-          +'<option value="Other defect">Other</option>'
-        +'</select>'
-      +'</div>'
-      +'<div class="fg full"><label>Defect Description *</label>'
-        +'<textarea id="df-reason" rows="2" placeholder="e.g. torn cover, missing pages, water damage\u2026"></textarea>'
-      +'</div>'
-      +photoSection
     +'</div>';
 
-  openMo('Report Defective Item',mgrBody,
+  openMo('Report Defective Item',body,
     '<button class="btn bno" onclick="closeMo()">Cancel</button>'
     +'<button class="btn bnd" onclick="saveDefectReport()"><i data-lucide="shield-x"></i>Flag as Defective</button>'
   );
-}
-
-/* Add photos from file input → convert to base64 and render previews */
-function dfAddPhotos(input){
-  var files=Array.from(input.files||[]);
-  if(!files.length)return;
-  var row=isel('df-photo-row');
-  var addBtn=isel('df-photo-add');
-  if(!row)return;
-  files.forEach(function(file){
-    if(window._dfPhotos.length>=5){toast('Maximum 5 photos allowed.','warn');return;}
-    if(!file.type.startsWith('image/')){toast('Only image files are allowed.','warn');return;}
-    var reader=new FileReader();
-    reader.onload=function(e){
-      var dataUrl=e.target.result;
-      window._dfPhotos.push(dataUrl);
-      var idx=window._dfPhotos.length-1;
-      var wrap=document.createElement('div');
-      wrap.style.cssText='position:relative;width:72px;height:72px;flex-shrink:0';
-      wrap.innerHTML=
-        '<img src="'+dataUrl+'" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1.5px solid var(--bd);display:block"/>'
-        +'<button onclick="dfRemovePhoto('+idx+',this.parentNode)" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--dg);color:#fff;border:none;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;line-height:1" title="Remove">\u00d7</button>';
-      row.insertBefore(wrap,addBtn);
-      /* Hide add button once limit reached */
-      if(window._dfPhotos.length>=5)addBtn.style.display='none';
-    };
-    reader.readAsDataURL(file);
-  });
-  /* Reset input so same file can be re-added after removal */
-  input.value='';
-}
-
-/* Remove a photo preview and mark its slot as null */
-function dfRemovePhoto(idx,wrap){
-  if(window._dfPhotos)window._dfPhotos[idx]=null;
-  if(wrap&&wrap.parentNode)wrap.parentNode.removeChild(wrap);
-  var addBtn=isel('df-photo-add');
-  if(addBtn)addBtn.style.display='';
 }
 
 function dfToggleManual(){
   var manual=isel('df-manual-mode')&&isel('df-manual-mode').checked;
   var mf=isel('df-manual-fields');
   var sc=isel('df-scan-section');
-  if(mf){
-    mf.style.display=manual?'block':'none';
-    if(sc)sc.style.opacity=manual?'0.45':'1';
-    if(manual){
-      if(isel('df-book-info'))isel('df-book-info').innerHTML='';
-      if(!isel('df-cat-cbox').querySelector('input'))
-        initModalCatCombo('df-cat-cbox','df-manual-cat','');
-    }
-    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+  if(mf)mf.style.display=manual?'block':'none';
+  /* Dim (but keep) scan section so manager can still see it */
+  if(sc)sc.style.opacity=manual?'0.4':'1';
+  if(manual){
+    if(isel('df-book-info'))isel('df-book-info').innerHTML='';
+    initModalCatCombo('df-cat-cbox','df-manual-cat','');
   }
 }
 
@@ -5395,57 +5306,12 @@ function dfScanLookup(){
 }
 
 function saveDefectReport(){
-  var isManager=CU.role==='Manager';
+  var isManual=isel('df-manual-mode')&&isel('df-manual-mode').checked;
   var qty=parseInt(isel('df-qty')?isel('df-qty').value:0)||0;
   var defType=isel('df-defect-type')?isel('df-defect-type').value:'';
   var reason=isel('df-reason')?isel('df-reason').value.trim():'';
   if(!defType){toast('Please select a defect type.','error');return;}
   if(qty<=0||!reason){toast('Please fill all required fields.','error');return;}
-
-  var photos=(window._dfPhotos||[]).filter(function(p){return p!=null;});
-
-  /* ── STAFF path — scan or manual (no photos) ── */
-  if(!isManager){
-    var isManual=isel('df-manual-mode')&&isel('df-manual-mode').checked;
-    if(isManual){
-      var title=isel('df-manual-title')?isel('df-manual-title').value.trim():'';
-      var author=isel('df-manual-author')?isel('df-manual-author').value.trim():'';
-      var cat=isel('df-manual-cat')?isel('df-manual-cat').value:'';
-      if(!title){toast('Please enter the book title.','error');return;}
-      if(!cat){toast('Please select a category.','error');return;}
-      getDefectiveItems().push({
-        id:uid('df'),bookId:null,bookTitle:title,sku:'—',rfid:'—',qty:qty,
-        reason:defType+(reason?'\u2014 '+reason:''),defectType:defType,
-        source:'staff_manual',sourceRef:'',
-        manualEntry:true,manualCategory:cat,manualAuthor:author,photos:[],
-        reportedBy:CU.name,reportedAt:new Date().toISOString(),
-        status:'pending',confirmedBy:null,confirmedAt:null,confirmedNote:'',
-        linkedSupReturnId:null,disposalNote:'',disposedBy:null,disposedAt:null
-      });
-      refreshBadges();
-      toast('"'+title+'" flagged as defective ('+qty+' unit[s]).','warn');
-      closeMo();pgDefective('pending');
-      return;
-    }
-    var code=isel('df-scan')?isel('df-scan').value:'';
-    var b=findBookByCode(code);
-    if(!b){toast('No book found. Tick "Enter book details manually" above to proceed.','error');return;}
-    getDefectiveItems().push({
-      id:uid('df'),bookId:b.id,bookTitle:b.title,sku:b.sku,rfid:b.rfid,qty:qty,
-      reason:defType+(reason?'\u2014 '+reason:''),defectType:defType,
-      source:'staff_scan',sourceRef:'',manualEntry:false,photos:[],
-      reportedBy:CU.name,reportedAt:new Date().toISOString(),
-      status:'pending',confirmedBy:null,confirmedAt:null,confirmedNote:'',linkedSupReturnId:null,
-      disposalNote:'',disposedBy:null,disposedAt:null
-    });
-    refreshBadges();
-    toast(b.title+' flagged as defective ('+qty+' unit[s]).','warn');
-    closeMo();pgDefective('pending');
-    return;
-  }
-
-  /* ── MANAGER path — scan or manual toggle ── */
-  var isManual=isel('df-manual-mode')&&isel('df-manual-mode').checked;
 
   if(isManual){
     var title=isel('df-manual-title')?isel('df-manual-title').value.trim():'';
@@ -5455,35 +5321,33 @@ function saveDefectReport(){
     if(!cat){toast('Please select a category.','error');return;}
     getDefectiveItems().push({
       id:uid('df'),bookId:null,bookTitle:title,sku:'—',rfid:'—',qty:qty,
-      reason:defType+(reason?'\u2014 '+reason:''),defectType:defType,
+      reason:defType+(reason?' \u2014 '+reason:''),defectType:defType,
       source:'manager_manual',sourceRef:'',
-      manualEntry:true,manualCategory:cat,manualAuthor:author,photos:photos,
+      manualEntry:true,manualCategory:cat,manualAuthor:author,photos:[],
       reportedBy:CU.name,reportedAt:new Date().toISOString(),
       status:'pending',confirmedBy:null,confirmedAt:null,confirmedNote:'',
       linkedSupReturnId:null,disposalNote:'',disposedBy:null,disposedAt:null
     });
     refreshBadges();
-    toast('"'+title+'" flagged as defective (manual, '+qty+' unit[s])'+(photos.length?' · '+photos.length+' photo(s).':'.'));
-    window._dfPhotos=[];
+    toast('"'+title+'" flagged as defective (manual entry, '+qty+' unit[s]).','warn');
     closeMo();pgDefective('pending');
     return;
   }
 
   var code=isel('df-scan')?isel('df-scan').value:'';
   var b=findBookByCode(code);
-  if(!b){toast('No book found. Tick "Enter book details manually" above to proceed.','error');return;}
+  if(!b){toast('No book found for that code. Use "Enter manually" if it\'s not in the system.','error');return;}
   getDefectiveItems().push({
     id:uid('df'),bookId:b.id,bookTitle:b.title,sku:b.sku,rfid:b.rfid,qty:qty,
-    reason:defType+(reason?'\u2014 '+reason:''),defectType:defType,
-    source:'manager_scan',sourceRef:'',manualEntry:false,photos:photos,
+    reason:defType+(reason?' \u2014 '+reason:''),defectType:defType,
+    source:'manager_report',sourceRef:'',manualEntry:false,photos:[],
     reportedBy:CU.name,reportedAt:new Date().toISOString(),
     status:'pending',
     confirmedBy:null,confirmedAt:null,confirmedNote:'',linkedSupReturnId:null,
     disposalNote:'',disposedBy:null,disposedAt:null
   });
   refreshBadges();
-  toast(b.title+' flagged as defective ('+qty+' unit[s])'+(photos.length?' · '+photos.length+' photo(s).':'.'));
-  window._dfPhotos=[];
+  toast(b.title+' flagged as defective ('+qty+' unit[s]).','warn');
   closeMo();pgDefective('pending');
 }
 /* =====================================================
@@ -5520,7 +5384,7 @@ function pgReturns(tab='no-want'){
     {id:'no-want',       lbl:"Doesn't Want",   icon:'package-x',   list:noWant,  pend:pendNW},
     {id:'defective-ret', lbl:'Defective Return',icon:'shield-alert', list:defRets, pend:pendDR},
   ];
-  const tabH=tabs.map(t=>`<button class="btn bsm ${tab===t.id?'bnn':'bno'}" onclick="pgReturns('${t.id}')">
+  const tabH=tabs.map(t=>`<button class="btn bsm ${tab===t.id?'bnn':'bno'}" onclick="window._retPg=1;pgReturns('${t.id}')">
     <i data-lucide="${t.icon}"></i>${t.lbl}
     <span class="badge bgr" style="margin-left:3px">${t.list.length}</span>
     ${t.pend>0?`<span class="badge br2" style="margin-left:3px">${t.pend} pending</span>`:''}
@@ -5528,8 +5392,11 @@ function pgReturns(tab='no-want'){
 
   const cur=tabs.find(t=>t.id===tab)||tabs[0];
   const isDefTab=tab==='defective-ret';
-
-  const rows=cur.list.slice().reverse().map(r=>{
+  const retAll=cur.list.slice().reverse();
+  const retPER=3,retTotal=Math.max(1,Math.ceil(retAll.length/retPER));
+  const retPg=Math.min(Math.max(1,window._retPg||1),retTotal);
+  const retShown=retAll.slice((retPg-1)*retPER,retPg*retPER);
+  const rows=retShown.map(r=>{
     const statusMap={pending:'by',approved:'bg2',rejected:'br2',restocked:'bb',sent_to_supplier:'bp'};
     const statusLbl={pending:'Pending',approved:'Approved',rejected:'Rejected',restocked:'Restocked',sent_to_supplier:'Sent to Supplier'};
     const condMap={good:'bg2',damaged:'br2',defective:'by'};
@@ -5537,7 +5404,7 @@ function pgReturns(tab='no-want'){
     const linkedSR=r.linkedSupReturnId?DB.supplierReturns.find(s=>s.id===r.linkedSupReturnId):null;
 
     let actionBtn='';
-    if(r.status==='pending'||(r.status==='approved'&&r.condition==='good'&&!r.addedBack)){
+    if(r.status==='pending'){
       if(isDefTab){
         actionBtn=`<div class="ret-actions">
           <button class="btn bna bsm" onclick="confirmDefectiveReturn('${r.id}')">
@@ -5560,7 +5427,6 @@ function pgReturns(tab='no-want'){
           <div class="ret-meta">
             <span class="cid">${r.custId}</span> ${r.custName} &nbsp;·&nbsp;
             Linked to: <span class="txr">${r.txnRef}</span> &nbsp;·&nbsp; ${fmtDT(r.receivedAt)}
-            ${r.manualEntry?'&nbsp;·&nbsp; <span class="badge by" style="font-size:.62rem">Manual Entry</span>':''}
           </div>
         </div>
         <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:flex-start">
@@ -5605,7 +5471,9 @@ function pgReturns(tab='no-want'){
     <div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">${tabH}</div>
     ${rows.length?rows.join(''):`<div class="card cb"><div class="empty"><div class="eico"><i data-lucide="package-open"></i></div>
       <h3>No ${cur.lbl.toLowerCase()} returns</h3><p>Record a return when a customer brings back an item.</p></div></div>`}
+    ${makePager(retPg,retTotal,'_pgRet',"'"+tab+"'")}
   `);
+
 }
 
 /* Restock: Doesn't Want tab — add qty back to inventory */
@@ -5783,29 +5651,6 @@ function openCustReturnForm(){
         <div style="font-size:.71rem;color:var(--tl);margin-top:3px">Scan the receipt's transaction code, or the book's barcode, SKU or RFID tag — or type it manually.</div>
       </div>
       <div id="cr-txn-info" style="grid-column:1/-1;display:none;background:var(--bg);border-radius:var(--r);padding:10px 12px;font-size:.79rem"></div>
-
-      <!-- Optional manual book entry -->
-      <div class="fg full" style="border-top:1px solid var(--bd);padding-top:10px;margin-top:2px">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--tm);text-transform:none;letter-spacing:0">
-          <input type="checkbox" id="cr-manual-mode" onchange="crToggleManual()" style="width:14px;height:14px;cursor:pointer;accent-color:var(--ac)"/>
-          <span>Enter book details manually <span style="font-size:.72rem;color:var(--tl);font-weight:500">(optional — e.g. barcode sticker missing or peeled off)</span></span>
-        </label>
-      </div>
-      <div id="cr-manual-fields" style="display:none;grid-column:1/-1">
-        <div class="fgrid">
-          <div class="fg full"><label>Book Title *</label>
-            <input id="cr-manual-title" placeholder="Full book title e.g. Business Management"/>
-          </div>
-          <div class="fg"><label>Author <span style="font-weight:400;text-transform:none">(optional)</span></label>
-            <input id="cr-manual-author" placeholder="e.g. Author Name"/>
-          </div>
-          <div class="fg"><label>Category *</label>
-            <div id="cr-cat-cbox" class="cbox"></div>
-            <input type="hidden" id="cr-manual-cat"/>
-          </div>
-        </div>
-      </div>
-
       <div class="fg"><label>Return Reason *</label>
         <select id="cr-reason" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
           <option value="">Select reason…</option>
@@ -5842,7 +5687,7 @@ function crScanLookup(){
   const t=findTxnByCode(code);
   if(!t){
     infoEl.style.display='block';
-    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0;background:var(--dlt);color:var(--dg)"><i data-lucide="alert-circle"></i>No matching purchase found for this code. Try a different code, or tick <b>"Enter book details manually"</b> below.</div>';
+    infoEl.innerHTML='<div class="finfo" style="margin-bottom:0;background:var(--dlt);color:var(--dg)"><i data-lucide="alert-circle"></i>No matching purchase found for this code.</div>';
     if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
     return;
   }
@@ -5871,25 +5716,7 @@ function crCalcRefund(){
   else amtEl.value='0.00';
 }
 
-function crToggleManual(){
-  const manual=isel('cr-manual-mode')&&isel('cr-manual-mode').checked;
-  const mf=isel('cr-manual-fields');
-  const sc=isel('cr-scan')?.closest('.fg');
-  if(mf){
-    mf.style.display=manual?'block':'none';
-    /* Dim (but keep) the scan section — RFID is still primary */
-    if(sc)sc.style.opacity=manual?'0.45':'1';
-    if(manual){
-      /* Init the category combobox only once */
-      if(!isel('cr-cat-cbox').querySelector('input'))
-        initModalCatCombo('cr-cat-cbox','cr-manual-cat','');
-    }
-    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
-  }
-}
-
 function saveCustReturn(){
-  const isManual=isel('cr-manual-mode')&&isel('cr-manual-mode').checked;
   const t=findTxnByCode(isel('cr-scan')?.value);
   const reason=isel('cr-reason').value;
   const cond=isel('cr-cond').value;
@@ -5899,39 +5726,8 @@ function saveCustReturn(){
   const detail=isel('cr-detail').value.trim();
   const date=isel('cr-date').value;
   const note=isel('cr-note').value.trim();
-
+  if(!t){toast('Scan or enter a valid receipt/book code first.','error');return;}
   if(!reason||qty<=0||!detail){toast('Please fill all required fields.','error');return;}
-
-  /* ── Manual entry path (no transaction found) ── */
-  if(isManual){
-    const manTitle=isel('cr-manual-title')?isel('cr-manual-title').value.trim():'';
-    const manAuthor=isel('cr-manual-author')?isel('cr-manual-author').value.trim():'';
-    const manCat=isel('cr-manual-cat')?isel('cr-manual-cat').value:'';
-    if(!manTitle){toast('Please enter the book title.','error');return;}
-    if(!manCat){toast('Please select a category.','error');return;}
-    const retId='RET-CUST-'+String(DB.customerReturns.length+1).padStart(3,'0');
-    const newRet={
-      id:uid('cr'),returnId:retId,txnRef:'MANUAL',
-      custId:'—',custName:'Walk-in / Unknown',
-      bookId:null,bookTitle:manTitle,sku:'—',
-      manualEntry:true,manualCategory:manCat,manualAuthor:manAuthor,
-      qty,unitPrice:refAmt||0,
-      reason,reasonDetail:detail,condition:cond,
-      refundType:refType,refundAmount:refAmt,
-      staffId:CU.id,staffName:CU.name,
-      receivedAt:new Date(date+'T'+new Date().toTimeString().slice(0,8)).toISOString(),
-      status:'pending',managerNote:note,
-      processedBy:null,processedAt:null,addedBack:false,
-    };
-    DB.customerReturns.push(newRet);
-    DB.notifications.push({id:uid('n'),title:'New customer return recorded (manual)',sub:`${retId}: ${manTitle} — manual entry`,time:new Date().toISOString(),read:false,targetRole:'Manager',link:'returns'});
-    refreshDot();refreshBadges();
-    toast(`Customer return ${retId} recorded (manual entry).`,'success');closeMo();pgReturns('no-want');
-    return;
-  }
-
-  /* ── Normal path — transaction required ── */
-  if(!t){toast('Scan or enter a valid receipt/book code first, or tick "Enter book details manually".','error');return;}
   const b=DB.books.find(x=>x.id===t.bookId);
   const retId='RET-CUST-'+String(DB.customerReturns.length+1).padStart(3,'0');
   const newRet={
@@ -6012,7 +5808,7 @@ function doRejectCustReturn(id){
 function requestSupplierReturn(custReturnId){
   const cr=DB.customerReturns.find(x=>x.id===custReturnId);
   const b=DB.books.find(x=>x.id===cr.bookId);
-  const supOpts=DB.suppliers.map(s=>`<option value="${s.id}"${b?.supplierId===s.id?' selected':''}>${s.name}</option>`).join('');
+  const defaultSupId=b?.supplierId||'';
   const reasonSuggestion=cr.condition==='defective'?'printing_defect':'customer_return_damaged';
   openMo('Request Supplier Return',`
     <div class="finfo"><i data-lucide="info"></i>This will send a return request to the supplier. They will be notified to issue a credit note or replacement.</div>
@@ -6022,8 +5818,8 @@ function requestSupplierReturn(custReturnId){
     </div>
     <div class="fgrid">
       <div class="fg full"><label>Supplier *</label>
-        <select id="sr-sup" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
-          ${supOpts}</select></div>
+        <div id="sr-sup-cbox" class="cbox"></div>
+        <input type="hidden" id="sr-sup" value="${defaultSupId}"/></div>
       <div class="fg"><label>Return Reason</label>
         <select id="sr-reason" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
           <option value="customer_return_damaged"${reasonSuggestion==='customer_return_damaged'?' selected':''}>Customer Return — Damaged</option>
@@ -6038,6 +5834,7 @@ function requestSupplierReturn(custReturnId){
     </div>`,
     `<button class="btn bno" onclick="closeMo()">Cancel</button>
      <button class="btn bna" onclick="doRequestSupplierReturn('${custReturnId}')"><i data-lucide="send"></i>Send to Supplier</button>`, true);
+  setTimeout(()=>initSupCombo('sr-sup-cbox','sr-sup',defaultSupId),30);
 }
 
 function doRequestSupplierReturn(custReturnId){
@@ -6064,7 +5861,6 @@ function doRequestSupplierReturn(custReturnId){
 
 /* ── Direct Supplier Return (not linked to customer return) ── */
 function openDirectSupplierReturn(){
-  const sOpts=DB.suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
   openMo('Direct Supplier Return',`
     <div class="finfo"><i data-lucide="info"></i>Return items to a supplier without a linked customer return. E.g. excess stock or unsold damaged items.</div>
     <div class="fgrid">
@@ -6074,8 +5870,8 @@ function openDirectSupplierReturn(){
         <div id="dsr-book-info" style="margin-top:6px"></div>
       </div>
       <div class="fg full"><label>Supplier *</label>
-        <select id="dsr-sup" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
-          <option value="">Select supplier…</option>${sOpts}</select></div>
+        <div id="dsr-sup-cbox" class="cbox"></div>
+        <input type="hidden" id="dsr-sup"/></div>
       <div class="fg"><label>Reason</label>
         <select id="dsr-reason" style="width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.84rem;font-family:var(--fn)">
           <option value="excess_stock">Excess Stock</option>
@@ -6088,6 +5884,7 @@ function openDirectSupplierReturn(){
     </div>`,
     `<button class="btn bno" onclick="closeMo()">Cancel</button>
      <button class="btn bna" onclick="saveDirectSupRet()"><i data-lucide="send"></i>Send to Supplier</button>`, true);
+  setTimeout(()=>initSupCombo('dsr-sup-cbox','dsr-sup',''),30);
 }
 
 function dsrScanLookup(){
@@ -6144,7 +5941,7 @@ function pgReturnsSupplier(tab='supplier-pending'){
     {id:'refunding',         lbl:'Refund / Delivery', icon:'truck',         list:refunding},
     {id:'completed',         lbl:'Completed',         icon:'package-check', list:completed},
   ];
-  const tabH=tabDefs.map(t=>`<button class="btn bsm ${tab===t.id?'bnn':'bno'}" onclick="pgReturnsSupplier('${t.id}')">
+  const tabH=tabDefs.map(t=>`<button class="btn bsm ${tab===t.id?'bnn':'bno'}" onclick="window._srtPg=1;pgReturnsSupplier('${t.id}')">
     <i data-lucide="${t.icon}"></i>${t.lbl}
     <span class="badge bgr" style="margin-left:3px">${t.list.length}</span>
   </button>`).join('');
@@ -6265,7 +6062,7 @@ function pgReturnsSupplier(tab='supplier-pending'){
   `);
 }
 /* ── PAGE: Supplier — view return requests ── */
-function pgSupReturns(){
+function pgSupReturns(pg){if(!pg)pg=1;
   const sup=getMySup();if(!sup){setHTML('<div class="card cb"><p style="color:var(--tl)">Supplier profile not found.</p></div>');return;}
   const myReturns=DB.supplierReturns.filter(r=>r.supplierId===sup.id).slice().sort((a,b)=>b.requestedAt.localeCompare(a.requestedAt));
   const pending=myReturns.filter(r=>r.status==='supplier-pending');
@@ -6277,7 +6074,10 @@ function pgSupReturns(){
   const sm={'supplier-pending':'by','supplier-received':'bg2','refunding':'bp','completed':'bb','supplier-declined':'br2'};
   const sl={'supplier-pending':'Pending','supplier-received':'Acknowledged','refunding':'Refund / Delivery','completed':'Completed','supplier-declined':'Declined'};
 
-  const rows=myReturns.map(r=>{
+  const srPER2=3,srTotal2=Math.max(1,Math.ceil(myReturns.length/srPER2));
+  pg=Math.min(Math.max(1,pg),srTotal2);
+  const srShown=myReturns.slice((pg-1)*srPER2,pg*srPER2);
+  const rows=srShown.map(r=>{
     let actions='';
     if(r.status==='supplier-pending'){
       actions=`<div class="ret-actions">
@@ -6337,6 +6137,7 @@ function pgSupReturns(){
     ${rows.length?rows.join(''):`<div class="card cb"><div class="empty"><div class="eico"><i data-lucide="package-open"></i></div>
       <h3>No return requests</h3><p>The store has not sent any return requests yet.</p>
     </div></div>`}
+    ${makePager(pg,srTotal2,'pgSupReturns','')}
   `);
 }
 
