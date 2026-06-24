@@ -4762,9 +4762,9 @@ function pgReports(){
           </div>
         </div>
         <div class="rfg">
-          ${RPT.mode==='range'?`<div class="fg"><label>From</label><input type="date" id="rdf" value="${RPT.from}" onchange="RPT.from=this.value;refreshRpt()"/></div>
-            <div class="fg"><label>To</label><input type="date" id="rdt" value="${RPT.to}" onchange="RPT.to=this.value;refreshRpt()"/></div>`
-            :`<div class="fg"><label>Date</label><input type="date" id="rds" value="${RPT.single}" onchange="RPT.single=this.value;refreshRpt()"/></div><div></div>`}
+          ${RPT.mode==='range'?`<div class="fg"><label>From</label><input type="date" id="rdf" value="${RPT.from}" onchange="RPT.from=this.value;window._rptPg=1;refreshRpt()"/></div>
+            <div class="fg"><label>To</label><input type="date" id="rdt" value="${RPT.to}" onchange="RPT.to=this.value;window._rptPg=1;refreshRpt()"/></div>`
+            :`<div class="fg"><label>Date</label><input type="date" id="rds" value="${RPT.single}" onchange="RPT.single=this.value;window._rptPg=1;refreshRpt()"/></div><div></div>`}
           <div class="fg"><label>Category</label>
             <div class="cbox" id="rpt-cat-cbox"></div>
           </div>
@@ -4804,22 +4804,22 @@ function initRptCatCombo(){
     if(!dd.classList.contains('open'))return;
     if(e.key==='ArrowDown'){e.preventDefault();hl=Math.min(hl+1,filtered.length-1);renderDD();}
     else if(e.key==='ArrowUp'){e.preventDefault();hl=Math.max(hl-1,0);renderDD();}
-    else if(e.key==='Enter'){e.preventDefault();const pick=hl>=0?filtered[hl]:filtered.length===1?filtered[0]:null;if(pick){RPT.cat=pick;inp.value=pick;closeDD();refreshRpt();}}
+    else if(e.key==='Enter'){e.preventDefault();const pick=hl>=0?filtered[hl]:filtered.length===1?filtered[0]:null;if(pick){RPT.cat=pick;inp.value=pick;closeDD();window._rptPg=1;refreshRpt();}}
     else if(e.key==='Escape'){closeDD();inp.blur();}
   });
   dd.addEventListener('mousedown',e=>{
     const opt=e.target.closest('.cbox-opt');if(!opt)return;
-    e.preventDefault();RPT.cat=opt.dataset.cat;inp.value=opt.dataset.cat;closeDD();refreshRpt();
+    e.preventDefault();RPT.cat=opt.dataset.cat;inp.value=opt.dataset.cat;closeDD();window._rptPg=1;refreshRpt();
   });
-  if(clr)clr.addEventListener('mousedown',e=>{e.preventDefault();RPT.cat='';inp.value='';refreshRpt();});
+  if(clr)clr.addEventListener('mousedown',e=>{e.preventDefault();RPT.cat='';inp.value='';window._rptPg=1;refreshRpt();});
   document.addEventListener('click',function outside(e){if(!wrap.contains(e.target)){closeDD();document.removeEventListener('click',outside);}});
 }
-function setRptMode(m){RPT.mode=m;pgReports();}
+function setRptMode(m){RPT.mode=m;window._rptPg=1;pgReports();}
 function setRptQ(p){const td=new Date(),iso=d=>d.toISOString().split('T')[0];
   if(p==='week'){const d=td.getDay()||7;const mo=new Date(td);mo.setDate(td.getDate()-d+1);RPT.from=iso(mo);RPT.to=iso(td);}
   else{RPT.from=td.toISOString().slice(0,7)+'-01';RPT.to=iso(td);}
-  RPT.mode='range';pgReports();}
-function resetRpt(){const td=new Date().toISOString().split('T')[0];RPT={from:td.slice(0,7)+'-01',to:td,cat:'',mode:'range',single:td};pgReports();}
+  RPT.mode='range';window._rptPg=1;pgReports();}
+function resetRpt(){const td=new Date().toISOString().split('T')[0];RPT={from:td.slice(0,7)+'-01',to:td,cat:'',mode:'range',single:td};window._rptPg=1;pgReports();}
 function getFiltTxns(){
   ensureDemoTxns(RPT.mode==='single'?RPT.single:RPT.from,RPT.mode==='single'?RPT.single:RPT.to);
   return DB.transactions.filter(t=>{
@@ -4828,17 +4828,20 @@ function getFiltTxns(){
   if(RPT.cat){const b=DB.books.find(x=>x.id===t.bookId);if(!b||b.category!==RPT.cat)return false;}
   return true;});}
 
-function refreshRpt(){
+function refreshRpt(pg){
+  if(!pg)pg=window._rptPg||1;
+  window._rptPg=pg;
   const txns=getFiltTxns();
   const el=isel('rptbody');if(!el)return;
   if(!txns.length){
     el.innerHTML='<div class="card cb"><div class="empty"><div class="eico"><i data-lucide="search-x"></i></div><h3>No data for selected filters</h3></div></div>';
-    if(window.lucide&&lucide.createIcons)try{if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){};}catch(e){}return;
+    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+    return;
   }
   const TAX_RATE=TAX_RATE_FIXED;
   const lbl=RPT.mode==='single'?fmtD(RPT.single):(fmtD(RPT.from)+' — '+fmtD(RPT.to));
 
-  /* Aggregate by book */
+  /* Aggregate by book (all txns) */
   const byBook={};
   txns.forEach(function(t){
     const bk=DB.books.find(function(b){return b.id===t.bookId;});
@@ -4853,7 +4856,7 @@ function refreshRpt(){
   const totalUnits=items.reduce(function(a,i){return a+i.qty;},0);
   const uC=new Set(txns.map(function(t){return t.custId;})).size;
 
-  /* Sales by category */
+  /* Sales by category (all txns) */
   const byCat={};
   txns.forEach(function(t){
     const b=DB.books.find(function(x){return x.id===t.bookId;});
@@ -4863,8 +4866,16 @@ function refreshRpt(){
   });
   const ca=Object.entries(byCat).map(function(e){return{c:e[0],q:e[1].q,r:e[1].r};}).sort(function(a,b){return b.q-a.q;});
 
-  /* Transaction rows */
-  const txnRows=[...txns].sort(function(a,b){return b.date.localeCompare(a.date);}).map(function(t){
+  /* Paginate transaction rows */
+  const sortedTxns=[...txns].sort(function(a,b){return b.date.localeCompare(a.date);});
+  const PER=10;
+  const rptTotal=Math.max(1,Math.ceil(sortedTxns.length/PER));
+  pg=Math.min(Math.max(1,pg),rptTotal);
+  window._rptPg=pg;
+  const pagedTxns=sortedTxns.slice((pg-1)*PER,pg*PER);
+  const rptFrom=(pg-1)*PER+1,rptTo=Math.min(pg*PER,sortedTxns.length);
+
+  const txnRows=pagedTxns.map(function(t){
     const bk=DB.books.find(function(b){return b.id===t.bookId;});
     const tax=t.qty*t.unitPrice*(TAX_RATE/100);
     const total=t.qty*t.unitPrice+tax;
@@ -4894,7 +4905,6 @@ function refreshRpt(){
       +'</tr>';
   }).join('');
 
-  /* Build HTML string using concatenation — no nested template literals */
   let html='';
   /* KPI */
   html+='<div class="rkg">'
@@ -4908,7 +4918,7 @@ function refreshRpt(){
   /* Txn table */
   html+='<div class="card" style="margin-bottom:14px">'
     +'<div class="ch"><h2>Sales Transactions — '+lbl+(RPT.cat?' · '+RPT.cat:'')+'</h2>'
-    +'<span class="badge bgr">'+txns.length+' records</span></div>'
+    +'<span style="font-size:.75rem;color:var(--tl)">Showing '+rptFrom+'–'+rptTo+' of '+sortedTxns.length+'</span></div>'
     +'<div class="tw"><table style="table-layout:fixed;width:100%">'
     +'<colgroup>'
     +'<col style="width:100px"><col style="width:80px"><col style="width:130px"><col style="width:150px">'
@@ -4928,14 +4938,16 @@ function refreshRpt(){
     +'</tr></thead>'
     +'<tbody>'+txnRows
     +'<tr style="background:var(--ndk);color:#fff;font-weight:700">'
-    +'<td colspan="5" style="padding:9px 11px;color:#fff">TOTAL</td>'
+    +'<td colspan="5" style="padding:9px 11px;color:#fff">TOTAL (all '+txns.length+' records)</td>'
     +'<td style="padding:9px 11px;text-align:right;color:#fff">'+totalUnits+'</td>'
     +'<td style="padding:9px 11px;text-align:right;color:#fff">'+rmF(salesAmount)+'</td>'
     +'<td style="padding:9px 11px;text-align:right;color:#fde68a">'+rmF(salesTax)+'</td>'
     +'<td style="padding:9px 11px;text-align:right;color:#86efac;font-weight:800">'+rmF(salesTotal)+'</td>'
     +'<td style="padding:9px 11px"></td>'
     +'</tr>'
-    +'</tbody></table></div></div>';
+    +'</tbody></table></div>'
+    +makePager(pg,rptTotal,'refreshRpt','')
+    +'</div>';
   /* Category breakdown */
   html+='<div class="card">'
     +'<div class="ch"><h2>Sales by Category</h2></div>'
