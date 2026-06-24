@@ -630,6 +630,20 @@ transactions:[
   {id:'t23',ref:'TXN-2606-008',custId:'CUST-10921',custName:'Lee Mei Xian',bookId:'b77',bookTitle:'One Hundred Years of Solitude',qty:1,unitPrice:32.00,date:'2026-06-08',staffId:'u5',staffName:'Tan Mei Li',note:''},
   {id:'t24',ref:'TXN-2606-009',custId:'CUST-25511',custName:'Azlan Hamid',bookId:'b55',bookTitle:'Development Economics',qty:1,unitPrice:60.00,date:'2026-06-09',staffId:'u4',staffName:'Nurul Huda',note:''},
   {id:'t25',ref:'TXN-2606-010',custId:'CUST-29900',custName:'Kavitha Raj',bookId:'b23',bookTitle:'Cell Biology',qty:1,unitPrice:82.00,date:'2026-06-10',staffId:'u3',staffName:'Ibad',note:'Lab'},
+  {id:'t26',ref:'TXN-2606-011',custId:'CUST-12234',custName:'Ahmad Farid',bookId:'b72',bookTitle:'The Great Gatsby',qty:2,unitPrice:28.00,date:'2026-06-11',staffId:'u4',staffName:'Nurul Huda',note:''},
+  {id:'t27',ref:'TXN-2606-012',custId:'CUST-19875',custName:'Siti Aisyah',bookId:'b07',bookTitle:'Clean Code',qty:1,unitPrice:48.00,date:'2026-06-12',staffId:'u3',staffName:'Ibad',note:''},
+  {id:'t28',ref:'TXN-2606-013',custId:'CUST-30112',custName:'Faiz Roslan',bookId:'b53',bookTitle:'Macroeconomics',qty:2,unitPrice:68.00,date:'2026-06-13',staffId:'u5',staffName:'Tan Mei Li',note:'Group buy'},
+  {id:'t29',ref:'TXN-2606-014',custId:'CUST-15567',custName:'Priya Nair',bookId:'b41',bookTitle:'Malaysian History',qty:1,unitPrice:42.00,date:'2026-06-14',staffId:'u4',staffName:'Nurul Huda',note:''},
+  {id:'t30',ref:'TXN-2606-015',custId:'CUST-33451',custName:'Darren Loh',bookId:'b06',bookTitle:'AI: A Modern Approach',qty:1,unitPrice:85.00,date:'2026-06-15',staffId:'u3',staffName:'Ibad',note:'Research'},
+  {id:'t31',ref:'TXN-2606-016',custId:'CUST-18843',custName:'Wong Jia Hui',bookId:'b74',bookTitle:'To Kill a Mockingbird',qty:2,unitPrice:30.00,date:'2026-06-16',staffId:'u5',staffName:'Tan Mei Li',note:''},
+  {id:'t32',ref:'TXN-2606-017',custId:'CUST-10921',custName:'Lee Mei Xian',bookId:'b35',bookTitle:'Strategic Management',qty:1,unitPrice:75.00,date:'2026-06-17',staffId:'u4',staffName:'Nurul Huda',note:''},
+  {id:'t33',ref:'TXN-2606-018',custId:'CUST-22001',custName:'Nurul Ain',bookId:'b78',bookTitle:'The Alchemist',qty:3,unitPrice:25.00,date:'2026-06-18',staffId:'u3',staffName:'Ibad',note:'Gift'},
+  {id:'t34',ref:'TXN-2606-019',custId:'CUST-25511',custName:'Azlan Hamid',bookId:'b09',bookTitle:'The Pragmatic Programmer',qty:1,unitPrice:52.00,date:'2026-06-19',staffId:'u5',staffName:'Tan Mei Li',note:''},
+  {id:'t35',ref:'TXN-2606-020',custId:'CUST-29900',custName:'Kavitha Raj',bookId:'b01',bookTitle:'Introduction to Programming',qty:2,unitPrice:45.00,date:'2026-06-20',staffId:'u3',staffName:'Ibad',note:'Class set'},
+  {id:'t36',ref:'TXN-2606-021',custId:'CUST-11122',custName:'Hassan Omar',bookId:'b31',bookTitle:'Business Management',qty:1,unitPrice:60.00,date:'2026-06-21',staffId:'u4',staffName:'Nurul Huda',note:''},
+  {id:'t37',ref:'TXN-2606-022',custId:'CUST-13308',custName:'Raj Suresh',bookId:'b57',bookTitle:'Behavioural Economics',qty:1,unitPrice:45.00,date:'2026-06-22',staffId:'u5',staffName:'Tan Mei Li',note:''},
+  {id:'t38',ref:'TXN-2606-023',custId:'CUST-20034',custName:'Tan Boon Huat',bookId:'b73',bookTitle:'Pride and Prejudice',qty:2,unitPrice:25.00,date:'2026-06-23',staffId:'u3',staffName:'Ibad',note:''},
+  {id:'t39',ref:'TXN-2606-024',custId:'CUST-12234',custName:'Ahmad Farid',bookId:'b25',bookTitle:'Biochemistry',qty:1,unitPrice:90.00,date:'2026-06-24',staffId:'u4',staffName:'Nurul Huda',note:'Walk-in'},
 ],
 stockRequests:[
   {id:'req1',supplierId:'sp2',supplierName:'Buku Kita Trading',type:'restock',bookId:'b02',bookTitle:'Data Structures & Algorithms',category:'Computer Science',isNewGenre:false,newGenreDetails:'',qty:15,unitPrice:55.00,note:'Currently out of stock.',status:'pending',submittedAt:'2026-06-08T09:30:00',reviewedAt:null,reviewNote:'',deliveredAt:null,deliveryNote:''},
@@ -1229,7 +1243,12 @@ function pgBooks(s='',stf=''){
     const matchStat=!stf||st===stf;
     return matchQ&&matchCat&&matchStat&&!isCatDisabled(b.category);
   });
-  const rows=bks.length?bks.map(b=>{const st=sSt(b);const sup=DB.suppliers.find(x=>x.id===b.supplierId);return`<tr>
+
+  const PAGE=10;
+  const visible=bks.slice(0,PAGE);
+  const hidden=bks.slice(PAGE);
+
+  const makeRow=b=>{const st=sSt(b);const sup=DB.suppliers.find(x=>x.id===b.supplierId);return`<tr>
     <td><div style="font-weight:600">${b.title}</div><div style="font-size:.7rem;color:var(--tl);margin-top:2px">ISBN: ${b.isbn}</div></td>
     <td><span class="sku">${b.sku}</span></td>
     <td><span class="rfidtag">${b.rfid}</span></td>
@@ -1243,21 +1262,44 @@ function pgBooks(s='',stf=''){
       <button class="bic" onclick="printBookBarcode('${b.id}')" style="margin-right:2px" title="Print Barcode Label"><i data-lucide="barcode"></i></button>
       ${ce?`<button class="bic ed" onclick="editBook('${b.id}')"><i data-lucide="pencil"></i></button>
       <button class="bic dl" onclick="delBook('${b.id}')" style="margin-left:3px"><i data-lucide="trash-2"></i></button>`
-      :''}</td></tr>`;}).join('')
+      :''}</td></tr>`;};
+
+  const rows=bks.length
+    ? visible.map(makeRow).join('')
+      + (hidden.length ? hidden.map(b=>`<tr class="bk-extra" style="display:none">${makeRow(b).replace(/^<tr>/,'').replace(/<\/tr>$/,'')}</tr>`).join('') : '')
     :`<tr><td colspan="12"><div class="empty"><div class="eico"><i data-lucide="search-x"></i></div><h3>No books found</h3>${_bkCats.length?'<p>Try removing some category filters.</p>':''}</div></td></tr>`;
+
+  const seeMoreBtn=hidden.length?`<div id="bk-seemore-row" style="padding:14px;text-align:center;border-top:1px solid var(--bd)">
+    <button class="btn bno" onclick="bkShowMore()" style="gap:6px;min-width:160px">
+      <i data-lucide="chevrons-down"></i>See More
+      <span class="badge bgr" style="margin-left:2px">${hidden.length} more</span>
+    </button>
+  </div>`:'';
+
   const catBtn=ce?'<button class="btn bno" onclick="openManageCats()"><i data-lucide="tag"></i>Manage Categories</button>':'';
   const addBookBtn=ce?'<button class="btn bnn" onclick="editBook(null)"><i data-lucide="plus"></i>Add Book</button>':'';
   const statOpts=['In Stock','Low Stock','Out of Stock'].map(v=>`<option value="${v}"${stf===v?' selected':''}>${v}</option>`).join('');
+
   setHTML(`<div class="ph"><div><h2>Book Catalogue</h2><p>${DB.books.length} titles — each with unique SKU, RFID tag &amp; Barcode</p></div>
     <div class="pha">${catBtn}${addBookBtn}</div></div>
     <div class="card"><div class="ch"><div class="tb2">
       <div class="sbox"><i data-lucide="search"></i><input id="bk-srch" type="text" placeholder="Search title, author, SKU, RFID…" value="${s}" oninput="dbs('bk',pgBooks,this.value,document.querySelector('select.flt')?document.querySelector('select.flt').value:'')"/><button class="qr-scan-btn" type="button" title="Scan QR / Barcode" onclick="openQR(isel('bk-srch'))"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button></div>
       <select class="flt" onchange="pgBooks(isel('bk-srch')?isel('bk-srch').value:'',this.value)"><option value="">All Status</option>${statOpts}</select>
       <div class="cbox" id="cat-cbox"></div>
-    </div></div>
+    </div>
+    <span style="font-size:.75rem;color:var(--tl)">Showing ${Math.min(PAGE,bks.length)} of ${bks.length}</span>
+    </div>
     <div class="tw"><table><thead><tr><th>Title / ISBN</th><th>SKU</th><th>RFID Tag</th><th>Barcode</th><th>Author</th><th>Category</th><th>Price</th><th>Qty</th><th>Min</th><th>Status</th><th>Supplier</th><th>Action</th></tr></thead>
-    <tbody>${rows}</tbody></table></div></div>`);
+    <tbody id="bk-tbody">${rows}</tbody></table></div>
+    ${seeMoreBtn}
+    </div>`);
   initCatCombo(stf);
+}
+
+function bkShowMore(){
+  document.querySelectorAll('.bk-extra').forEach(r=>r.style.display='');
+  const btn=isel('bk-seemore-row');if(btn)btn.remove();
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
 }
 
 /* Toggle a category in/out of the multi-select filter */
@@ -2385,7 +2427,11 @@ function pgHistory(s='',cf=''){
   });
   const tR=txns.reduce((a,t)=>a+t.qty*t.unitPrice,0);
   const tU=txns.reduce((a,t)=>a+t.qty,0);
-  const rows=txns.length?txns.map(t=>{const bk=DB.books.find(b=>b.id===t.bookId);return`<tr>
+  const PAGE=10;
+  const visible=txns.slice(0,PAGE);
+  const hidden=txns.slice(PAGE);
+
+  const makeRow=t=>{const bk=DB.books.find(b=>b.id===t.bookId);return`<tr>
     <td><span class="txr">${t.ref}</span></td><td>${fmtD(t.date)}</td>
     <td><span class="cid">${t.custId}</span><div style="font-size:.73rem;color:var(--tl)">${t.custName}</div></td>
     <td><div style="font-weight:600">${t.bookTitle}</div>
@@ -2396,8 +2442,20 @@ function pgHistory(s='',cf=''){
     <td style="text-align:right;font-weight:700;color:var(--ok)">${rmF(t.qty*t.unitPrice)}</td>
     <td style="font-size:.77rem">${t.staffName}</td>
     <td style="font-size:.75rem;color:var(--tl)">${t.note||'—'}</td>
-    <td><button class="bic" onclick="viewTxnReceipt('${t.id}')" title="View Receipt"><i data-lucide="receipt"></i></button></td></tr>`;}).join('')
+    <td><button class="bic" onclick="viewTxnReceipt('${t.id}')" title="View Receipt"><i data-lucide="receipt"></i></button></td></tr>`;};
+
+  const rows=txns.length
+    ? visible.map(makeRow).join('')
+      + (hidden.length ? hidden.map(t=>`<tr class="hi-extra" style="display:none">${makeRow(t).replace(/^<tr>/,'').replace(/<\/tr>$/,'')}</tr>`).join('') : '')
     :`<tr><td colspan="11"><div class="empty"><div class="eico"><i data-lucide="search-x"></i></div><h3>No records</h3></div></td></tr>`;
+
+  const seeMoreBtn=hidden.length?`<div id="hi-seemore-row" style="padding:14px;text-align:center;border-top:1px solid var(--bd)">
+    <button class="btn bno" onclick="hiShowMore()" style="gap:6px;min-width:160px">
+      <i data-lucide="chevrons-down"></i>See More
+      <span class="badge bgr" style="margin-left:2px">${hidden.length} more</span>
+    </button>
+  </div>`:'';
+
   setHTML(`<div class="sg" style="grid-template-columns:repeat(3,1fr)">
     <div class="sc"><div class="si blue"><i data-lucide="receipt"></i></div><div><div class="sv">${txns.length}</div><div class="sl">Transactions</div></div></div>
     <div class="sc"><div class="si purple"><i data-lucide="shopping-cart"></i></div><div><div class="sv">${tU}</div><div class="sl">Units Sold</div></div></div>
@@ -2425,9 +2483,13 @@ function pgHistory(s='',cf=''){
   <div class="card"><div class="ch"><div class="tb2">
     <div class="sbox"><i data-lucide="search"></i><input id="hi-srch" type="text" placeholder="Search ref, customer, book, SKU…" value="${s}" oninput="dbs('hi',pgHistory,this.value,cf)"/><button class="qr-scan-btn" type="button" title="Scan receipt barcode" onclick="openQR(isel('hi-srch'))"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/></svg></button></div>
     <div class="cbox" id="hi-cat-cbox"></div>
-  </div></div>
+  </div>
+  <span style="font-size:.75rem;color:var(--tl)">Showing ${Math.min(PAGE,txns.length)} of ${txns.length}</span>
+  </div>
   <div class="tw"><table><thead><tr><th>Ref</th><th>Date</th><th>Customer</th><th>Book / SKU</th><th>Category</th><th style="text-align:right">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th><th>Staff</th><th>Note</th><th></th></tr></thead>
-  <tbody>${rows}</tbody></table></div></div>`);
+  <tbody id="hi-tbody">${rows}</tbody></table></div>
+  ${seeMoreBtn}
+  </div>`);
   initHistCatCombo(cf);
 }
 function setHistMode(m){HIST.mode=m;pgHistory(isel('hi-srch')?isel('hi-srch').value:'',CP_HIST_CF());}
@@ -2436,6 +2498,11 @@ function setHistQ(p){const td=new Date(),iso=d=>d.toISOString().split('T')[0];
   else{HIST.from=td.toISOString().slice(0,7)+'-01';HIST.to=iso(td);}
   HIST.mode='range';pgHistory(isel('hi-srch')?isel('hi-srch').value:'',CP_HIST_CF());}
 function resetHist(){const td=new Date().toISOString().split('T')[0];HIST={from:td.slice(0,7)+'-01',to:td,mode:'range',single:td};pgHistory();}
+function hiShowMore(){
+  document.querySelectorAll('.hi-extra').forEach(r=>r.style.display='');
+  const btn=isel('hi-seemore-row');if(btn)btn.remove();
+  if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+}
 function CP_HIST_CF(){const inp=isel('hc-input');return inp?inp.value:'';}
 /* Type-ahead category combobox for Transaction History — mirrors the one in Book Catalogue */
 function initHistCatCombo(cf){
