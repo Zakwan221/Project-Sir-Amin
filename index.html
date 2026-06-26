@@ -578,6 +578,38 @@ const RAWBOOKS=[
   ['b78','The Alchemist','Paulo Coelho','978-0-100008-08-8','Literature',25.00,35,12,'sp3'],
   ['b79','Malay Literature: Classic to Modern','Hashim Awang','978-0-100008-09-9','Literature',38.00,10,8,'sp1'],
   ['b80','Short Stories of the Archipelago','Various Authors','978-0-100008-10-0','Literature',34.00,8,8,'sp2'],
+  /* Extra — Computer Science */
+  ['b81','Machine Learning','Tom M. Mitchell','978-0-100009-01-1','Computer Science',88.00,6,8,'sp1'],
+  ['b82','Deep Learning','Goodfellow, Bengio','978-0-100009-02-2','Computer Science',95.00,4,6,'sp2'],
+  ['b83','Computer Vision','Szeliski','978-0-100009-03-3','Computer Science',82.00,7,8,'sp3'],
+  /* Extra — Business */
+  ['b84','Financial Management','Van Horne','978-0-100009-04-4','Business',74.00,11,8,'sp1'],
+  ['b85','International Business','Griffin & Pustay','978-0-100009-05-5','Business',80.00,5,6,'sp2'],
+  ['b86','Business Analytics','Evans','978-0-100009-06-6','Business',68.00,9,8,'sp3'],
+  /* Extra — Science */
+  ['b87','Molecular Biology','Watson et al.','978-0-100009-07-7','Science',92.00,3,6,'sp1'],
+  ['b88','Organic Chemistry II','Wade','978-0-100009-08-8','Science',86.00,7,8,'sp2'],
+  ['b89','Ecology','Begon et al.','978-0-100009-09-9','Science',70.00,10,8,'sp3'],
+  /* Extra — Engineering */
+  ['b90','Chemical Engineering','Fogler','978-0-100009-10-0','Engineering',88.00,5,8,'sp1'],
+  ['b91','Civil Engineering Materials','Mamlouk','978-0-100009-11-1','Engineering',76.00,8,8,'sp2'],
+  ['b92','Robotics','Siciliano et al.','978-0-100009-12-2','Engineering',84.00,4,6,'sp3'],
+  /* Extra — Mathematics */
+  ['b93','Calculus','Stewart','978-0-100009-13-3','Mathematics',72.00,12,10,'sp1'],
+  ['b94','Probability Theory','Durrett','978-0-100009-14-4','Mathematics',68.00,6,8,'sp2'],
+  ['b95','Topology','Munkres','978-0-100009-15-5','Mathematics',75.00,5,6,'sp3'],
+  /* Extra — Economics */
+  ['b96','Game Theory','Osborne','978-0-100009-16-6','Economics',62.00,8,6,'sp1'],
+  ['b97','Monetary Economics','Walsh','978-0-100009-17-7','Economics',70.00,5,6,'sp2'],
+  ['b98','Health Economics','Folland et al.','978-0-100009-18-8','Economics',65.00,7,6,'sp3'],
+  /* Extra — Literature */
+  ['b99','Crime and Punishment','Fyodor Dostoevsky','978-0-100009-19-9','Literature',30.00,14,8,'sp1'],
+  ['b100','Things Fall Apart','Chinua Achebe','978-0-100009-20-0','Literature',28.00,18,10,'sp2'],
+  ['b101','The Kite Runner','Khaled Hosseini','978-0-100009-21-1','Literature',32.00,12,8,'sp3'],
+  /* Extra — History */
+  ['b102','The Art of War','Sun Tzu','978-0-100009-22-2','History',22.00,25,10,'sp1'],
+  ['b103','Sapiens','Yuval Noah Harari','978-0-100009-23-3','History',40.00,16,10,'sp2'],
+  ['b104','A Short History of Nearly Everything','Bill Bryson','978-0-100009-24-4','History',38.00,12,8,'sp3'],
 ];
 
 /* Auto-generate SKU, RFID, Barcode for each book */
@@ -644,6 +676,17 @@ transactions:[
   {id:'t37',ref:'TXN-2606-022',custId:'CUST-13308',custName:'Raj Suresh',bookId:'b57',bookTitle:'Behavioural Economics',qty:1,unitPrice:45.00,date:'2026-06-22',staffId:'u5',staffName:'Tan Mei Li',note:''},
   {id:'t38',ref:'TXN-2606-023',custId:'CUST-20034',custName:'Tan Boon Huat',bookId:'b73',bookTitle:'Pride and Prejudice',qty:2,unitPrice:25.00,date:'2026-06-23',staffId:'u3',staffName:'Ibad',note:''},
   {id:'t39',ref:'TXN-2606-024',custId:'CUST-12234',custName:'Ahmad Farid',bookId:'b25',bookTitle:'Biochemistry',qty:1,unitPrice:90.00,date:'2026-06-24',staffId:'u4',staffName:'Nurul Huda',note:'Walk-in'},
+  {id:'t40',ref:'TXN-2606-025',custId:'CUST-33451',custName:'Darren Loh',bookId:'b05',bookTitle:'Computer Networks',qty:1,unitPrice:70.00,date:'2026-06-24',staffId:'u3',staffName:'Ibad',note:''},
+  {id:'t41',ref:'TXN-2606-026',custId:'CUST-10921',custName:'Lee Mei Xian',bookId:'b41',bookTitle:'Malaysian History',qty:2,unitPrice:42.00,date:'2026-06-24',staffId:'u5',staffName:'Tan Mei Li',note:''},
+  {id:'t42',ref:'TXN-2606-027',custId:'CUST-19875',custName:'Siti Aisyah',bookId:'b54',bookTitle:'Microeconomics',qty:1,unitPrice:65.00,date:'2026-06-25',staffId:'u4',staffName:'Nurul Huda',note:''},
+  {id:'t43',ref:'TXN-2606-028',custId:'CUST-22001',custName:'Nurul Ain',bookId:'b08',bookTitle:'Design Patterns',qty:1,unitPrice:72.00,date:'2026-06-25',staffId:'u3',staffName:'Ibad',note:''},
+  {id:'t44',ref:'TXN-2606-029',custId:'CUST-15567',custName:'Priya Nair',bookId:'b35',bookTitle:'Strategic Management',qty:1,unitPrice:75.00,date:'2026-06-25',staffId:'u5',staffName:'Tan Mei Li',note:''},
+  {id:'t45',ref:'TXN-2606-030',custId:'CUST-30112',custName:'Faiz Roslan',bookId:'b10',bookTitle:'Computer Architecture',qty:2,unitPrice:78.00,date:'2026-06-25',staffId:'u3',staffName:'Ibad',note:'Group'},
+  {id:'t46',ref:'TXN-2606-031',custId:'CUST-29900',custName:'Kavitha Raj',bookId:'b74',bookTitle:'To Kill a Mockingbird',qty:1,unitPrice:30.00,date:'2026-06-26',staffId:'u4',staffName:'Nurul Huda',note:''},
+  {id:'t47',ref:'TXN-2606-032',custId:'CUST-18843',custName:'Wong Jia Hui',bookId:'b01',bookTitle:'Introduction to Programming',qty:3,unitPrice:45.00,date:'2026-06-26',staffId:'u5',staffName:'Tan Mei Li',note:'Class set'},
+  {id:'t48',ref:'TXN-2606-033',custId:'CUST-11122',custName:'Hassan Omar',bookId:'b57',bookTitle:'Behavioural Economics',qty:1,unitPrice:45.00,date:'2026-06-26',staffId:'u3',staffName:'Ibad',note:''},
+  {id:'t49',ref:'TXN-2606-034',custId:'CUST-25511',custName:'Azlan Hamid',bookId:'b23',bookTitle:'Cell Biology',qty:1,unitPrice:82.00,date:'2026-06-26',staffId:'u4',staffName:'Nurul Huda',note:'Research'},
+  {id:'t50',ref:'TXN-2606-035',custId:'CUST-13308',custName:'Raj Suresh',bookId:'b09',bookTitle:'The Pragmatic Programmer',qty:2,unitPrice:52.00,date:'2026-06-26',staffId:'u5',staffName:'Tan Mei Li',note:''},
 ],
 stockRequests:[
   {id:'req1',supplierId:'sp2',supplierName:'Buku Kita Trading',type:'restock',bookId:'b02',bookTitle:'Data Structures & Algorithms',category:'Computer Science',isNewGenre:false,newGenreDetails:'',qty:15,unitPrice:55.00,note:'Currently out of stock.',status:'pending',submittedAt:'2026-06-08T09:30:00',reviewedAt:null,reviewNote:'',deliveredAt:null,deliveryNote:''},
@@ -2595,7 +2638,9 @@ function pgHistory(pg,s,cf){
   <span style="font-size:.75rem;color:var(--tl)">${allTxns.length?`Showing ${hiFrom}–${hiTo} of ${allTxns.length}`:'No results'}</span>
   </div>
   <div class="tw"><table><thead><tr><th>Ref</th><th>Date</th><th>Customer</th><th>Book / SKU</th><th>Category</th><th style="text-align:right">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th><th>Staff</th><th>Note</th><th></th></tr></thead>
-  <tbody>${rows}</tbody></table></div></div>`);
+  <tbody>${rows}</tbody></table></div>
+  ${makePager(pg,hiTotal,'pgHistory',"'"+(s||'').replace(/'/g,"\\'")+'\',\''+((_hiCats||[]).join(','))+'\'')}
+  </div>`);
   initHistCatCombo(cf);
 }
 function setHistMode(m){HIST.mode=m;pgHistory(1,isel('hi-srch')?isel('hi-srch').value:'',CP_HIST_CF());}
@@ -3446,7 +3491,7 @@ function pgSupCatalogue(supId,s,stf,pg){
       </tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
-    ${makePager(pg,scTotal,'pgSupCatalogue',"'${supId}','"+(s||'').replace(/'/g,"\\'")+'\',\''+(stf||'')+"'")}
+    ${makePager(pg,scTotal,'pgSupCatalogue',"'"+supId+"','"+(s||'').replace(/'/g,"\\'")+"','"+( stf||'')+"'")}
   </div>`);
   if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
   initScCatCombo(stf,supId);
@@ -4762,9 +4807,9 @@ function pgReports(){
           </div>
         </div>
         <div class="rfg">
-          ${RPT.mode==='range'?`<div class="fg"><label>From</label><input type="date" id="rdf" value="${RPT.from}" onchange="RPT.from=this.value;refreshRpt()"/></div>
-            <div class="fg"><label>To</label><input type="date" id="rdt" value="${RPT.to}" onchange="RPT.to=this.value;refreshRpt()"/></div>`
-            :`<div class="fg"><label>Date</label><input type="date" id="rds" value="${RPT.single}" onchange="RPT.single=this.value;refreshRpt()"/></div><div></div>`}
+          ${RPT.mode==='range'?`<div class="fg"><label>From</label><input type="date" id="rdf" value="${RPT.from}" onchange="RPT.from=this.value;window._rptPg=1;refreshRpt()"/></div>
+            <div class="fg"><label>To</label><input type="date" id="rdt" value="${RPT.to}" onchange="RPT.to=this.value;window._rptPg=1;refreshRpt()"/></div>`
+            :`<div class="fg"><label>Date</label><input type="date" id="rds" value="${RPT.single}" onchange="RPT.single=this.value;window._rptPg=1;refreshRpt()"/></div><div></div>`}
           <div class="fg"><label>Category</label>
             <div class="cbox" id="rpt-cat-cbox"></div>
           </div>
@@ -4804,22 +4849,22 @@ function initRptCatCombo(){
     if(!dd.classList.contains('open'))return;
     if(e.key==='ArrowDown'){e.preventDefault();hl=Math.min(hl+1,filtered.length-1);renderDD();}
     else if(e.key==='ArrowUp'){e.preventDefault();hl=Math.max(hl-1,0);renderDD();}
-    else if(e.key==='Enter'){e.preventDefault();const pick=hl>=0?filtered[hl]:filtered.length===1?filtered[0]:null;if(pick){RPT.cat=pick;inp.value=pick;closeDD();refreshRpt();}}
+    else if(e.key==='Enter'){e.preventDefault();const pick=hl>=0?filtered[hl]:filtered.length===1?filtered[0]:null;if(pick){RPT.cat=pick;inp.value=pick;closeDD();window._rptPg=1;refreshRpt();}}
     else if(e.key==='Escape'){closeDD();inp.blur();}
   });
   dd.addEventListener('mousedown',e=>{
     const opt=e.target.closest('.cbox-opt');if(!opt)return;
-    e.preventDefault();RPT.cat=opt.dataset.cat;inp.value=opt.dataset.cat;closeDD();refreshRpt();
+    e.preventDefault();RPT.cat=opt.dataset.cat;inp.value=opt.dataset.cat;closeDD();window._rptPg=1;refreshRpt();
   });
-  if(clr)clr.addEventListener('mousedown',e=>{e.preventDefault();RPT.cat='';inp.value='';refreshRpt();});
+  if(clr)clr.addEventListener('mousedown',e=>{e.preventDefault();RPT.cat='';inp.value='';window._rptPg=1;refreshRpt();});
   document.addEventListener('click',function outside(e){if(!wrap.contains(e.target)){closeDD();document.removeEventListener('click',outside);}});
 }
-function setRptMode(m){RPT.mode=m;pgReports();}
+function setRptMode(m){RPT.mode=m;window._rptPg=1;pgReports();}
 function setRptQ(p){const td=new Date(),iso=d=>d.toISOString().split('T')[0];
   if(p==='week'){const d=td.getDay()||7;const mo=new Date(td);mo.setDate(td.getDate()-d+1);RPT.from=iso(mo);RPT.to=iso(td);}
   else{RPT.from=td.toISOString().slice(0,7)+'-01';RPT.to=iso(td);}
-  RPT.mode='range';pgReports();}
-function resetRpt(){const td=new Date().toISOString().split('T')[0];RPT={from:td.slice(0,7)+'-01',to:td,cat:'',mode:'range',single:td};pgReports();}
+  RPT.mode='range';window._rptPg=1;pgReports();}
+function resetRpt(){const td=new Date().toISOString().split('T')[0];RPT={from:td.slice(0,7)+'-01',to:td,cat:'',mode:'range',single:td};window._rptPg=1;pgReports();}
 function getFiltTxns(){
   ensureDemoTxns(RPT.mode==='single'?RPT.single:RPT.from,RPT.mode==='single'?RPT.single:RPT.to);
   return DB.transactions.filter(t=>{
@@ -4828,17 +4873,20 @@ function getFiltTxns(){
   if(RPT.cat){const b=DB.books.find(x=>x.id===t.bookId);if(!b||b.category!==RPT.cat)return false;}
   return true;});}
 
-function refreshRpt(){
+function refreshRpt(pg){
+  if(!pg)pg=window._rptPg||1;
+  window._rptPg=pg;
   const txns=getFiltTxns();
   const el=isel('rptbody');if(!el)return;
   if(!txns.length){
     el.innerHTML='<div class="card cb"><div class="empty"><div class="eico"><i data-lucide="search-x"></i></div><h3>No data for selected filters</h3></div></div>';
-    if(window.lucide&&lucide.createIcons)try{if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){};}catch(e){}return;
+    if(window.lucide&&lucide.createIcons)try{lucide.createIcons();}catch(e){}
+    return;
   }
   const TAX_RATE=TAX_RATE_FIXED;
   const lbl=RPT.mode==='single'?fmtD(RPT.single):(fmtD(RPT.from)+' — '+fmtD(RPT.to));
 
-  /* Aggregate by book */
+  /* Aggregate by book (all txns) */
   const byBook={};
   txns.forEach(function(t){
     const bk=DB.books.find(function(b){return b.id===t.bookId;});
@@ -4853,7 +4901,7 @@ function refreshRpt(){
   const totalUnits=items.reduce(function(a,i){return a+i.qty;},0);
   const uC=new Set(txns.map(function(t){return t.custId;})).size;
 
-  /* Sales by category */
+  /* Sales by category (all txns) */
   const byCat={};
   txns.forEach(function(t){
     const b=DB.books.find(function(x){return x.id===t.bookId;});
@@ -4863,8 +4911,16 @@ function refreshRpt(){
   });
   const ca=Object.entries(byCat).map(function(e){return{c:e[0],q:e[1].q,r:e[1].r};}).sort(function(a,b){return b.q-a.q;});
 
-  /* Transaction rows */
-  const txnRows=[...txns].sort(function(a,b){return b.date.localeCompare(a.date);}).map(function(t){
+  /* Paginate transaction rows */
+  const sortedTxns=[...txns].sort(function(a,b){return b.date.localeCompare(a.date);});
+  const PER=10;
+  const rptTotal=Math.max(1,Math.ceil(sortedTxns.length/PER));
+  pg=Math.min(Math.max(1,pg),rptTotal);
+  window._rptPg=pg;
+  const pagedTxns=sortedTxns.slice((pg-1)*PER,pg*PER);
+  const rptFrom=(pg-1)*PER+1,rptTo=Math.min(pg*PER,sortedTxns.length);
+
+  const txnRows=pagedTxns.map(function(t){
     const bk=DB.books.find(function(b){return b.id===t.bookId;});
     const tax=t.qty*t.unitPrice*(TAX_RATE/100);
     const total=t.qty*t.unitPrice+tax;
@@ -4894,7 +4950,6 @@ function refreshRpt(){
       +'</tr>';
   }).join('');
 
-  /* Build HTML string using concatenation — no nested template literals */
   let html='';
   /* KPI */
   html+='<div class="rkg">'
@@ -4908,7 +4963,7 @@ function refreshRpt(){
   /* Txn table */
   html+='<div class="card" style="margin-bottom:14px">'
     +'<div class="ch"><h2>Sales Transactions — '+lbl+(RPT.cat?' · '+RPT.cat:'')+'</h2>'
-    +'<span class="badge bgr">'+txns.length+' records</span></div>'
+    +'<span style="font-size:.75rem;color:var(--tl)">Showing '+rptFrom+'–'+rptTo+' of '+sortedTxns.length+'</span></div>'
     +'<div class="tw"><table style="table-layout:fixed;width:100%">'
     +'<colgroup>'
     +'<col style="width:100px"><col style="width:80px"><col style="width:130px"><col style="width:150px">'
@@ -4928,14 +4983,16 @@ function refreshRpt(){
     +'</tr></thead>'
     +'<tbody>'+txnRows
     +'<tr style="background:var(--ndk);color:#fff;font-weight:700">'
-    +'<td colspan="5" style="padding:9px 11px;color:#fff">TOTAL</td>'
+    +'<td colspan="5" style="padding:9px 11px;color:#fff">TOTAL (all '+txns.length+' records)</td>'
     +'<td style="padding:9px 11px;text-align:right;color:#fff">'+totalUnits+'</td>'
     +'<td style="padding:9px 11px;text-align:right;color:#fff">'+rmF(salesAmount)+'</td>'
     +'<td style="padding:9px 11px;text-align:right;color:#fde68a">'+rmF(salesTax)+'</td>'
     +'<td style="padding:9px 11px;text-align:right;color:#86efac;font-weight:800">'+rmF(salesTotal)+'</td>'
     +'<td style="padding:9px 11px"></td>'
     +'</tr>'
-    +'</tbody></table></div></div>';
+    +'</tbody></table></div>'
+    +makePager(pg,rptTotal,'refreshRpt','')
+    +'</div>';
   /* Category breakdown */
   html+='<div class="card">'
     +'<div class="ch"><h2>Sales by Category</h2></div>'
